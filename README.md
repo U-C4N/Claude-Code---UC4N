@@ -70,6 +70,4 @@ Each version lives in its own folder (`Claude_Code_vX.Y.ZZZ/`). The numbered `.m
 
 [![X](https://img.shields.io/badge/%F0%9D%95%8F-@UEdizaslan-000000?style=for-the-badge&logo=x&logoColor=white)](https://x.com/UEdizaslan)
 
-𝕏 [@UEdizaslan](https://x.com/UEdizaslan)
-
 </div>
