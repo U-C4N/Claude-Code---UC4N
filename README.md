@@ -14,6 +14,8 @@ Each version lives in its own folder (`Claude_Code_vX.Y.ZZZ/`). The numbered `.m
 |---|---|---|
 | v2.1.187 | `Claude_Code_v2.1.187/` | 33 |
 | v2.1.195 | `Claude_Code_v2.1.195/` | 26 |
+| v2.1.199 | `Claude_Code_v2.1.199/` | 27 |
+| v2.1.201 | `Claude_Code_v2.1.201/` | 26 |
 
 ---
 
@@ -61,6 +63,75 @@ Each version lives in its own folder (`Claude_Code_vX.Y.ZZZ/`). The numbered `.m
 3. **New "reversibility & blast radius" policy** — ask before destructive actions by default.
 4. **New model tier: Fable 5** (Opus 4.7+ / Opus 4.6+ + Sonnet 4.6), with an excessive-token warning.
 5. **Auto-mode rule critique matured** — into a 4-dimension evaluation rubric.
+
+---
+
+## Changelog: v2.1.195 → v2.1.199
+
+> Extraction format changed from numbered `.md` to descriptive `.txt` filenames. Section count increased to 27 (new sections extracted, some merged).
+
+### 🆕 Added / newly extracted
+
+- **`auto_critique`** — Auto-mode rule critique logic extracted as standalone section
+- **`blast_radius`** — "Reversibility & blast radius" safety policy (was `04_doing_tasks_section` in v2.1.195, now independent)
+- **`claude_md_override`** — CLAUDE.md / project instructions override mechanism
+- **`exit_plan_mode`** — Plan mode exit tool description
+- **`policy_spec`** — `<policy_spec>` Bash command prefix detection rules
+- **`tool_denial_guidance`** — Tool denial recovery guidance
+
+### ✳️ Expanded
+
+- **`coordinator`** — Now includes full §2 tools, §3 workers, §4 workflow, §5 concurrency, §6 verification sections
+- **`autonomous_loop`** — Fuller extraction with timer invocation and repeated invocation sections
+- **`explore_agent`** — Longer extraction with tool descriptions
+
+### 🔧 Renamed / restructured
+
+- `01_cyber_risk_instruction` → `cyber_risk`
+- `02_simple_mode_intro` → `simple_mode_intro`
+- `03_system_harness_section` → `system_harness`
+- `07_git_operations` → `git_operations`
+- `10_explore_agent` → `explore_agent`
+- `12_coordinator_system_prompt` → `coordinator`
+- `14_auto_mode_critique` → `auto_critique`
+- `19_session_title` → `session_title`
+- `20_todo_reminder` → `todo_reminder`
+- `21_chrome_browser_automation` → `chrome_browser`
+- `22_identity_strings` → split into `identity_cli`, `identity_sdk`, `identity_agent`
+- `23_claude_fable_unavailable` → `fable_unavailable` + `fable5_description`
+- `24_tool_prompts` → absorbed into individual agent files
+- `28_context_management` → `context_management`
+- `29_plan_mode_guard` → `plan_mode_guard`
+- `34_autonomous_loop` → `autonomous_loop`
+- `35_agent_sdk_identity` → absorbed into `identity_sdk`
+
+### ➖ Not present
+
+- `06_tone_conciseness`, `09_agent_env_notes`, `11_verification_agent`, `13_auto_mode_classifier_intro`, `15_output_style_proactive`, `16_output_style_explanatory`, `17_output_style_learning`, `18_compact_service`, `25_js_prompt_assemblies`, `26_plan_agent`, `27_statusline_agent`, `30_builtin_agents`, `31_memory_selection`, `32_github_issue_title`, `33_team_coordination` — extraction scope differences or content merges
+
+---
+
+## Changelog: v2.1.199 → v2.1.201
+
+> Patch-level bump (2 versions). Most sections are identical or near-identical. Key meaningful changes below.
+
+### 🆕 Added
+
+- **`autonomous_loop` — Major expansion.** Now includes new guidance on broader scope: *"following through on the spirit of the task they gave you, not just its literal scope"*, persistence (*"Only stop if the original task is provably complete or the user said to stop"*), and browser notification rules (*"Keep the message under 200 characters, one line, no markdown. Lead with what they'd act on"*). The "Repeated invocations" section was rewritten to bias toward broader scope exploration before quitting.
+
+### ✳️ Expanded / matured
+
+- **`simple_mode_intro`** — Rewritten intro text; now starts with *"You work alongside the user on software engineering tasks"* instead of the previous identity-first format
+- **`plan_mode_guard`** — Wording changed around what tools are allowed in plan mode; exception clause expanded
+
+### 🔧 Minor / formatting
+
+- **`blast_radius`**, **`cyber_risk`**, **`fable5_description`** — Extraction format differences, core content unchanged
+- Remaining sections show byte-level differences consistent with extraction noise rather than content changes
+
+### ➖ Dropped
+
+- **`todo_reminder`** — Not found in v2.1.201 extraction (was HTML entity false-positive in v2.1.199)
 
 ---
 
