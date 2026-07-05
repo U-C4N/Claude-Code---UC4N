@@ -1,0 +1,3 @@
+# Todo Reminder
+
+(This section was extracted as HTML entity definitions — likely a false positive from the binary string extraction. The actual Claude Code todo system is handled through the statusline and internal state management rather than a dedicated prompt.)

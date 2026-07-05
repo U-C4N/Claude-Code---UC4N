@@ -1,0 +1,5 @@
+# CLAUDE.md / Project Instructions Override
+
+Codebase and user instructions are shown below. Be sure to adhere to these instructions. IMPORTANT: These instructions OVERRIDE any default behavior and you MUST follow them exactly as written.
+
+(This prompt is injected when CLAUDE.md files or project-level instructions are present. The `<managed-settings>` tag wraps organization-managed policy instructions.)

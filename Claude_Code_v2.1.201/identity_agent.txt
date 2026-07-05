@@ -1,0 +1,139 @@
+IDE any default behavior and you MUST follow them exactly as written.
+session_start
+/v2/ccr-sessions/-/chat-project
+user:projects:read
+user:projects:write
+claude-opus-4-8
+You are Claude Code, Anthropic's official CLI for Claude.
+You are Claude Code, Anthropic's official CLI for Claude, running within the Claude Agent SDK.
+You are a Claude agent, built on Anthropic's Claude Agent SDK.
+callToolStream
+_authThenStart
+_commonHeaders
+_startOrAuth
+finishAuth
+setProtocolVersion
+_startOrAuthSse
+_getNextReconnectionDelay
+_scheduleReconnection
+_handleSseStream
+terminateSession
+resumeStream
+https://claude.com/claude-code
+ListMcpResourcesTool
+Lists available resources from configured MCP servers.
+Each resource object includes a 'server' field indicating which server it's from.
+Usage examples:
+- List all resources from all servers: `listMcpResources`
+- List resources from a specific server: `listMcpResources({ server: "myserver" })`
+List available resources from configured MCP servers.
+Each returned resource will include all standard MCP resource fields plus a 'server' field
+indicating which server the resource belongs to.
+Parameters:
+- server (optional): The name of a specific MCP server to get resources from. If not provided,
+resources from all servers will be returned.
+diffWithOptionsObj
+addToPath
+extractCommon
+removeEmpty
+castInput
+tokenize
+buildValues
+The socket connection was closed unexpectedly
+urn:ietf:params:oauth:grant-type:token-exchange
+urn:ietf:params:oauth:token-type:id-jag
+urn:ietf:params:oauth:token-type:id_token
+setMetadata
+getCuratedMetadataScope
+markStepUpPending
+clientInformation
+saveClientInformation
+tokens
+saveTokens
+logTokenPersistFailed
+xaaRefresh
+redirectToAuthorization
+saveCodeVerifier
+codeVerifier
+invalidateCredentials
+saveDiscoveryState
+discoveryState
+refreshAuthorization
+readConcurrentRefreshWinner
+_doRefresh
+io.modelcontextprotocol/skills
+inode/directory
+ReadMcpResourceTool
+Reads a specific resource from an MCP server.
+- server: The name of the MCP server to read from
+- uri: The URI of the resource to read
+Usage examples:
+- Read a resource from a server: `readMcpResource({ server: "myserver", uri: "my-resource-uri" })`
+Reads a specific resource from an MCP server, identified by server name and resource URI.
+Parameters:
+- server (required): The name of the MCP server from which to read the resource
+- uri (required): The URI of the resource to read
+ReadMcpResourceDirTool
+List the direct children of a directory resource on an MCP server.
+- server: The name of the MCP server to read from
+- uri: The URI of the directory resource
+Only usable against a server that has declared support for directory listing. The listing is not recursive.
+claude-code-jetbrains-plugin
+anthropic.claude-code
+handleError
+handleCloseCleanup
+without an SSE event boundary
+X-CCR-Turn-Id
+</invoke>
+mcp-skill-archives
+meta.json
+skill://index.json
+memdir_relevance
+memdir_aki_extract
+tengu-model-error-overrides
+Efficient for routine tasks
+Best for everyday, complex tasks
+Fastest for quick answers
+Most capable for your hardest and longest-running tasks
+https://support.claude.com/en/articles/15363606
+https://support.claude.com/en/articles/8106465
+https://claude.com/form/cyber-use-case
+Switch models when a message is flagged
+These measures let us bring you Mythos-level capabilities sooner, and we're working to refine them.
+This model's safeguards flagged this message. This sometimes happens with safe, normal conversations.
+anthropic-ratelimit-unified-representative-claim
+anthropic-ratelimit-unified-overage-status
+anthropic-ratelimit-unified-overage-disabled-reason
+tengu_usage_overage_included_models
+API Error
+AWS credentials expired or invalid
+AWS authentication failed
+Prompt is too long
+Credit balance is too low
+Not logged in
+Please run /login
+Invalid API key
+Fix external API key
+Your ANTHROPIC_API_KEY belongs to a disabled organization
+Unset the environment variable to use your subscription instead
+Your ANTHROPIC_API_KEY belongs to a disabled organization
+Update or unset the environment variable
+Your organization has disabled API key authentication
+Unset ANTHROPIC_API_KEY to use your claude.ai account instead
+Your organization has disabled API key authentication
+Unset ANTHROPIC_API_KEY and run /login to sign in with your claude.ai account
+Your organization has disabled API key authentication
+Unset the apiKeyHelper setting and run /login to sign in with your claude.ai account
+Your organization has disabled API key authentication
+Run /login to sign in with your claude.ai account
+OAuth token revoked
+Please run /login
+Authentication error
+This may be a temporary network issue, please try again
+https://status.claude.com
+Repeated 529 Overloaded errors
+Opus is experiencing high load, please use /model to switch to Sonnet
+Fable is experiencing high load, please use /model to switch to Sonnet
+Request timed out
+Your organization has disabled Claude subscription access for Claude Code
+Use an Anthropic API key instead, or ask your admin to enable access

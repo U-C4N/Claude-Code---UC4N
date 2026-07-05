@@ -1,0 +1,18 @@
+try, re-finding its current `stash@{n}` by tag first.",FCa="You are an agent for Claude Code, Anthropic's official CLI for Claude. Given the user's message, you should use the tools available to complete the task. Complete the task fully\u2014don't gold-plate, but don't leave it half-done. When you complete the task, respond with a concise report covering what was done and any key findings \u2014 the caller will relay this to the user, so it only needs the essentials.",wDp=`# Context management
+When the conversation grows long, some or all of the current context is summarized; the summary, along with any remaining unsummarized context, is provided in the next context window so work can continue \u2014 you don't need to wrap up early or hand off mid-task.`,xDp=`# Focus mode
+The user has focus mode enabled. In focus mode, the user only sees your final text message in each response. They do not see tool calls, tool results, or any text you emit between tool calls. This overrides earlier guidance about giving short updates between tool calls \u2014 skip those updates and put everything the user needs to know in your final message. Do not assume they saw earlier progress updates.`,kDp=`# Focus mode
+`)}}blockquote(e){let t=this.rules.block.blockquote.exec(e);if(t){let n=vqt(t[0],`
+`).split(`
+`),r="",o="",s=[];while(n.length>0){let i=!1,a=[],l;for(l=0;l<n.length;l++)if(this.rules.other.blockquoteStart.test(n[l]))a.push(n[l]),i=!0;else if(!i)a.push(n[l]);else break;n=n.slice(l);let c=a.join(`
+`),u=c.replace(this.rules.other.blockquoteSetextReplace,`
+$1`).replace(this.rules.other.blockquoteSetextReplace2,"");r=r?`${r}
+${c}`:c,o=o?`${o}
+`+n.join(`
+`),g=this.blockquote(m);s[s.length-1]=g,r=r.substring(0,r.length-f.raw.length)+g.raw,o=o.substring(0,o.length-f.text.length)+g.text;break}else if(p?.type==="list"){let f=p,m=f.raw+`
+`+n.join(`
+`),g=this.list(m);s[s.length-1]=g,r=r.substring(0,r.length-p.raw.length)+g.raw,o=o.substring(0,o.length-f.raw.length)+g.raw,n=m.substring(s.at(-1).raw.length).split(`
+`,1)[0].replace(this.rules.other.listReplaceTabs,(y)=>" ".repeat(3*y.length)),p=e.split(`
+`,1)[0],f=!d.trim(),m=0;if(this.options.pedantic)m=2,u=d.trimStart();else if(f)m=t[1].length+1;else m=t[2].search(this.rules.other.nonSpaceChar),m=m>4?1:m,u=d.slice(m),m+=t[1].length;if(f&&this.rules.other.blankLine.test(p))c+=p+`
+`,e=e.substring(p.length+1),l=!0;if(!l){let y=this.rules.other.nextBulletRegex(m),b=this.rules.other.hrRegex(m),_=this.rules.other.fencesBeginRegex(m),S=this.rules.other.headingBeginRegex(m),A=this.rules.other.htmlBeginRegex(m);while(e){let v=e.split(`
+`,1)[0],x;if(p=v,this.options.pedantic)p=p.replace(this.rules.other.listReplaceNesting,"  "),x=p;else x=p.replace(this.rules.other.tabCharGlobal,"    ");if(_.test(p))break;if(S.test(p))break;if(A.test(p))break;if(y.test(p))break;if(b.test(p))break;if(x.search(this.rules.other.nonSpaceChar)>=m||!p.trim())u+=`
+`+x.slice(m);else{if(f)break;if(d.replace(this.rules.other.tabCharGlobal,"    ").search(this.rules.other.nonSpaceChar)>=4)break;if(_.test(d))break;if(S.test(d))break;if(b.test(d))break;u+=`

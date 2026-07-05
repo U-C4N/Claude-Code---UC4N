@@ -1,0 +1,1 @@
+Fable is experiencing high load, please use /model to switch to Sonnet

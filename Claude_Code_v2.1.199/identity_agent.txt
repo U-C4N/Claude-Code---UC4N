@@ -1,0 +1,1 @@
+You are a Claude agent, built on Anthropic's Claude Agent SDK.

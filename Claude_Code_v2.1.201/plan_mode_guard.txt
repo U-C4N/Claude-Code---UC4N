@@ -1,0 +1,147 @@
+Plan mode is active. The user indicated that they do not want you to execute yet -- you MUST NOT make any edits (with the exception of the plan file mentioned below), run any non-readonly tools (including changing configs or making commits), or otherwise make any changes to the system. This supercedes any other instructions you have received.
+The user sent a new message while you were working:
+A message arrived in the bound thread while you were working:
+Messages arrived in the bound thread while you were working:
+not_started
+not_awaited
+https://http-intake.logs.us5.datadoghq.com/api/v2/logs
+https://github.com/anthropics/claude-code/issues/new?labels=bug,claude-in-chrome
+isRunning
+getClientCount
+handleMcpClient
+tryProcessMessage
+1.0.0
+getPhase
+transitionTo
+shutdownWorker
+respawnIfIdleStale
+retireIfSettled
+sigtermWorker
+onPtyAuthRequired
+rekeyForAuthMismatch
+fireAuthRekey
+claim
+socketAuth
+buildClaimFrame
+adopt
+unverified
+ringSnapshot
+preInitErrorTail
+decModeSnapshot
+noteActivity
+shiftGraceClocksForward
+seedFocus
+resize
+signalPtyPgrp
+resizeForRepaint
+rosterEntry
+cappedDispatch
+reply
+sendAttacherCaps
+doSpawn
+wirePty
+pushRing
+onExit
+settleCwdGone
+buildBridgeReattachEnvFromState
+scheduleRespawn
+settle
+connectRv
+startPidPoll
+pidRecycled
+pidRecycledAsync
+checkPid
+logVanished
+clearLiveness
+<system-reminder>
+https://anthropic.com/claude-code/plugin.schema.json
+Let's set up evals for this plugin.
+max_turns: 10
+allowed_tools: [Read, Glob, Grep, Skill]
+TODO: describe what the agent should do
+type: llm
+weight: 1
+TODO: describe what a successful response looks like
+<non-linux>
+changeit
+# >>> ccr-agent-proxy (managed by Claude Code) >>>
+# <<< ccr-agent-proxy <<<
+/run/ccr/session_token
+/v1/code/agent-proxy
+image-cache
+apply
+reserve
+cancelReservation
+tryStart
+forceEnd
+_notify
+slack_human
+claude-in-teams
+teams_human
+deactivate
+takeBatch
+retryDelay
+releaseBackpressure
+sleep
+sendWithRetry
+getWorkerState
+reportState
+reportMetadata
+reportInternalMetadata
+handleEpochMismatch
+startHeartbeat
+stopHeartbeat
+sendHeartbeat
+writeEvent
+toClientEvent
+flushStreamEventBuffer
+writeInternalEvent
+flushInternalEvents
+flushDeliveryAcks
+flushWorkerState
+readInternalEvents
+readSubagentInternalEvents
+paginatedGet
+getWithRetry
+reportDelivery
+getWorkerEpoch
+buffered
+joinPending
+(9(8(<(4(&('(
+at_mentioned
+https://github.com/anthropics/claude-code/issues/
+command-arg-
+slack_search_channels
+idle-teammate-summary
+launch-prompt-warning
+rc-active-badge
+fotw-claim
+readStream
+handleFrame
+handleStreamEnd
+resetLivenessTimer
+clearLivenessTimer
+startDriftWatch
+clearDriftWatch
+sendEvent
+sendControlResponse
+sendControlRequest
+sendControlCancelRequest
+reconnect
+reviveAfterExhaustion
+recordSeenControlResponseId
+handleControlRequest
+sendBashCommand
+reviveStreamForUserSend
+respondToPermissionRequest
+respondToUserDialogRequest
+cancelSession
+cancelControlRequest
+getSessionId
+sendInterrupt
+sendErrorResponse
+claude-cli
+com.anthropic.claude-code-url-handler
+Claude Code URL Handler
+claude-code-url-handler.desktop
+Claude Code URL Handler.app
