@@ -16,6 +16,56 @@ Each version lives in its own folder (`Claude_Code_vX.Y.ZZZ/`). The numbered `.m
 | v2.1.195 | `Claude_Code_v2.1.195/` | 26 |
 | v2.1.199 | `Claude_Code_v2.1.199/` | 27 |
 | v2.1.201 | `Claude_Code_v2.1.201/` | 26 |
+| v2.1.205 | `Claude_Code_v2.1.205/` | 54 |
+
+---
+
+## Changelog: v2.1.201 → v2.1.205
+
+> 4-version jump. **28 new sections** extracted. Major expansion in autonomous mode, new tool categories (MCP, skills, hooks, cron, web fetch), new agent identities (Agent SDK), and new guidance sections (plan vs memory, sandbox failures, commit/PR workflow, scratchpad directory).
+
+### 🆕 Added (28 new sections)
+
+- **Agent identity expansion: `agents_sdk`, `default_agent_prompt`, `capability_statement`, `interactive_agent_intro`** — Identity now split into four variants: CLI identity, Agent SDK identity, subagent default prompt, and interactive-mode intro. "You are highly capable" capability statement added as standalone section.
+- **`autonomous_loop_tick`** — New **dynamic pacing** section for autonomous loop. Separate from main autonomous_loop content.
+- **Auto-mode trifecta: `auto_mode_classifier`, `auto_mode_classifier_intro`, `auto_mode_process`** — Classifier now has its own standalone prompt, an intro/denial explanation, AND a classification review process section.
+- **Git/GitHub workflow: `commit_messages_pr`, `creating_pull_requests`, `git_workflow`** — Commit message format, PR creation guidelines, and general git workflow extracted as separate sections.
+- **Plan mode expansion: `plan_agent_specialist`, `plan_artifact_tool`, `plan_mode_instructions`, `plan_rejected_detail`, `plan_tool`, `plan_vs_memory`, `todo_list_usage`, `custom_workflow_body`** — Plan mode now has specialist agent prompts, artifact publishing, memory vs plan guidance, todo-list usage rules, and custom workflow body override.
+- **Hook system: `hooks`, `hook_condition`, `stop_condition`** — Full hook event table (PostToolUse, etc.), condition evaluation prompt, and stop-condition verification prompt.
+- **MCP & Skills: `mcp`, `skills`, `knowledge_mcp_search`** — MCP resource listing, skills delegation prompt, and MCP search strategy guidance.
+- **Web fetch: `web_fetch`, `web_fetch_tool`** — Web fetch tool description + IMPORTANT usage notes (HTTPS upgrade, redirect handling).
+- **Chrome integration: `chrome_browser_important`, `claude_in_chrome`** — Chrome browser IMPORTANT usage note + Claude in Chrome extension integration.
+- **Sandbox: `sandbox_failure`** — Sandbox failure detection and recovery guidance.
+- **Context & memory: `injected_context_notice`, `memory_selection`, `scratchpad_directory`, `todo_reminder`** — Context injection notice, memory selection prompt, scratchpad directory convention, and todo reminder (returned from v2.1.199).
+- **Tools: `advisor_tool`, `send_message_tool`, `statusline_agent`, `tool_denial_user`** — Advisor tool description, SendMessage tool, statusline agent, and user-refusal handling.
+- **`team_communication`** — Agent teammate communication section (extracted from `team_comm`).
+
+### ✳️ Expanded / matured
+
+- **`cyber_risk`** — Now includes Fable 5 / Mythos 5 identity paragraph and model tier description with link to anthropic.com/news.
+- **`autonomous_loop`** — Clean extraction with full autonomous stewardship, PR maintenance, repeated invocation, and "spirit of the task" guidance.
+- **`blast_radius`** — Full reversibility policy with destructive/hard-to-reverse/shared-state action examples.
+- **`git_operations`** — Full git workflow with commit steps, parallel tool calls, and PR workflow.
+
+### 🔧 Renamed / restructured
+
+- `identity_cli` + `identity_sdk` + `identity_agent` → `agents_sdk` + `default_agent_prompt` + `interactive_agent_intro`
+- `simple_mode_intro` → `interactive_agent_intro` (merged with system_harness)
+- `team_comm` → `team_communication`
+- `plan_mode_guard` → `plan_rejected`
+- `chrome_browser` → `chrome_browser_important`
+- `coordinator`, `explore_agent`, `session_title`, `fable_unavailable`, `output_style_proactive`, `compact_service`, `context_management`, `exit_plan_mode`, `policy_spec`, `claude_md_override` — content matches v2.1.201, extraction format differences only.
+
+### ➖ Changed / merged
+
+- `system_harness` — merged into `interactive_agent_intro`
+- `fable5_description` — merged into `cyber_risk` (same binary chunk)
+- `tool_denial_guidance` — split into `tool_denial_guidance` + `tool_denial_user`
+- `todo_reminder` — **returned** (was dropped in v2.1.201, confirmed real in v2.1.205)
+- `plan_agent` — **returned** (was dropped after v2.1.187)
+- `memory_selection` — **returned** (was dropped after v2.1.187)
+- `statusline_agent` — **returned** (was dropped after v2.1.195)
+- `auto_mode_classifier_intro` — **returned** (was not extracted since v2.1.195)
 
 ---
 

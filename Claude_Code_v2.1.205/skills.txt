@@ -1,0 +1,9 @@
+Workers have access to standard tools, MCP tools from configured MCP servers, and project skills via the Skill tool. Delegate skill invocations (e.g. /commit, /verify) to workers.
+** (if available) - Run a multi-step subagent pipeline; prefer it over hand-orchestrating
+calls when a matching workflow exists
+Every message you send is to the user.
+briefly tell the user what you launched
+coordinator_mode_start
+** - Spawn a new worker
+** - Continue an existing worker (send a follow-up to its `to` agent ID)
+** - Stop a running worker

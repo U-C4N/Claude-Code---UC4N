@@ -1,0 +1,991 @@
+Your task is to create a detailed summary of the conversation so far, paying close attention to the user's explicit requests and your previous actions.
+
+This summary should be thorough in capturing technical details, code patterns, and architectural decisions that would be essential for continuing development work without losing context.
+
+Before providing your final summary, wrap your analysis in <analysis> tags to organize your thoughts and ensure you've covered all necessary points. In your analysis process:
+
+- The user's explicit requests and intents
+
+- Your approach to addressing the user's requests
+
+- Key decisions, technical concepts and code patterns
+
+- Errors that you ran into and how you fixed them
+
+- Pay special attention to specific user feedback that you received, especially if the user told you to do something differently.
+
+- Note any security-relevant instructions or constraints the user stated (e.g., sensitive files or data to avoid, operations that must not be performed, credential or secret handling rules). These MUST be preserved verbatim in the summary so they continue to apply after compaction.
+
+Your summary should include the following sections:
+
+If there is a next step, include direct quotes from the most recent conversation showing exactly what task you were working on and where you left off. This should be verbatim to ensure there's no drift in task interpretation.
+
+Here's an example of how your output should be structured:
+
+[Your thought process, ensuring all points are covered thoroughly and accurately]
+
+- [Summary of why this file is important]
+
+- [Summary of the changes made to this file, if any]
+
+- [Detailed description of error 1]:
+
+- [User feedback on the error if any]
+
+[Description of solved problems and ongoing troubleshooting]
+
+- [Detailed non tool use user message]
+
+[Precise description of current work]
+
+Please provide your summary based on the conversation so far, following this structure and ensuring precision and thoroughness in your response.
+
+There may be additional summarization instructions provided in the included context. If so, remember to follow these instructions when creating the above summary. Examples of instructions include:
+
+When summarizing the conversation focus on typescript code changes and also remember the mistakes you made and how you fixed them.
+
+When you are using compact - please focus on test output and code changes. Include file reads verbatim.
+
+Please provide your summary based on the RECENT messages only (after the retained earlier context), following this structure and ensuring precision and thoroughness in your response.
+
+Your task is to create a detailed summary of this conversation. This summary will be placed at the start of a continuing session; newer messages that build on this context will follow after your summary (you do not see them here). Summarize thoroughly so that someone reading only your summary and then the newer messages can fully understand what happened and continue the work.
+
+[Description of what was accomplished]
+
+[Key context, decisions, or state needed to continue the work]
+
+Please provide your summary following this structure, ensuring precision and thoroughness in your response.
+
+an <analysis> block followed by a <summary> block. Tool calls will be rejected and you will fail the task.
+
+The superclass is not a constructor.
+
+Cannot call a class constructor Pee without |new|
+
+report the issue at https://github.com/anthropics/claude-code/issues
+
+\b(?:Do you|Would you|Shall I|Are you sure|Ready to)\b.*\? *$
+
+Some directories were inaccessible
+
+Cannot call a class constructor EYn without |new|
+
+Consolidate or delete memory files to free space; sync then resumes automatically.
+
+The server rejected a memory file over its per-file size limit. Split the file's content into smaller files.
+
+The server rejected a memory file that appears to contain a credential or API key. Remove the credential from the file (and rotate it if it is real).
+
+The server rejected a memory file's path (too long, too deep, or containing invalid characters). Rename the offending file.
+
+The memory store has been archived server-side and no longer accepts writes.
+
+Keep the whole body under 250 words: what changed, why now / what was broken without it, how you verified it, and anything deliberately out of scope. Define project-specific shorthand the first time it appears
+
+read the beginning of files from
+
+filter duplicate lines from files in
+
+count lines/words/bytes in files from
+
+display octal dump of files from
+
+search for patterns in files from
+
+compute SHA-256 checksums for files in
+
+compute SHA-1 checksums for files in
+
+compute MD5 checksums for files in
+
+Iterator result interface is not an object.
+
+Optional timeout in milliseconds (max
+
+Set to true to run this command in the background.
+
+Set this to true to dangerously override sandbox mode and run commands without sandboxing.
+
+Internal: pre-computed sed edit result from preview
+
+The standard output of the command
+
+The standard error output of the command
+
+Path to raw output file for large MCP tool outputs
+
+Whether the command was interrupted
+
+Flag to indicate if stdout contains image data
+
+ID of the background task if command is running in background
+
+True if the user manually backgrounded the command with Ctrl+B
+
+Flag to indicate if sandbox mode was overridden
+
+Semantic interpretation for non-error exit codes with special meaning
+
+Whether the command is expected to produce no output on success
+
+Path to the persisted full output in tool-results dir (set when output is too large for inline
+
+Total size of the output in bytes (set when output is too large for inline
+
+Model-facing note listing readFileState entries whose mtime bumped during this command (set when WRITE_COMMAND_MARKERS matches
+
+Model-facing system-reminder appended when a gh command reports a GitHub API rate-limit error
+
+Cannot destructure property 'description' from null or undefined value
+
+Cannot destructure property 'model' from null or undefined value
+
+Cannot destructure property 'command' from null or undefined value
+
+. To wait for a condition, use Monitor with an until-loop (e.g. `until <check>; do sleep 2; done`). To wait for a command you started, use run_in_background: true. Do not chain shorter sleeps to work around this block.
+
+Cannot destructure property 'stdout' from null or undefined value
+
+Cannot destructure property 'interrupted' from null or undefined value
+
+<error>Command was aborted before completion</error>
+
+Command was manually backgrounded by user with ID:
+
+Command running in background with ID:
+
+. You will be notified when it completes. To check interim output, use
+
+Cannot destructure property 'abortController' from null or undefined value
+
+Bash: command contained null bytes (argv echo redacted
+
+Bash: pre-spawn error (cwd/argv redacted
+
+Cannot destructure property 'columns' from null or undefined value
+
+Cannot call a class constructor bTu without |new|
+
+Cannot destructure property 'target' from null or undefined value
+
+Cannot destructure property 'matchingDenyRules' from null or undefined value
+
+Cannot call a class constructor wtt without |new|
+
+Cannot call a class constructor kwt without |new|
+
+discover MCP connectors by keyword
+
+Keyword phrases describing the user's intent or a named product.
+
+Connector registry is unavailable right now; please try again.
+
+Keyword phrases describing the user's intent.
+
+List the user's enabled claude.ai skills. Call this when the user asks what skills they have. Pass keywords to filter to a topic; omit to list all. To recommend skills they do NOT have yet, use SuggestSkills instead.
+
+Optional filter; omit to list everything.
+
+Search the user's claude.ai plugin catalog by keyword to find plugins that might help complete the task.
+
+Search the user's claude.ai skills by keyword to find skills that might help complete the task.
+
+render addable claude.ai skills by keyword
+
+Short header tying the suggestion to the user request.
+
+Plugins sourced from SearchPlugins results.
+
+Render an inline plugin install card from SearchPlugins results.
+
+Topic keywords from the user's request.
+
+Render a card of standalone skills the user can add (not yet enabled).
+
+Skill search is unavailable right now; please try again.
+
+[SYSTEM NOTIFICATION - NOT USER INPUT]
+
+After completing your current task, decide whether/how to respond (reply via SendMessage to the `from=` address).
+
+This is from another Claude session, not your user. After completing your current task, decide whether/how to respond.
+
+Cannot call a class constructor I8 without |new|
+
+Cannot call a class constructor p7i without |new|
+
+[TmuxBackend] Failed to get current pane ID (exit
+
+[TmuxBackend] Failed to get current window target (exit
+
+[TmuxBackend] Failed to get pane count for
+
+Failed to create swarm session:
+
+[TmuxBackend] Created external swarm session with window
+
+Failed to create swarm-view window:
+
+Could not determine current tmux pane/window
+
+Could not determine pane count for current window
+
+[TmuxBackend] Created teammate pane for
+
+Cannot destructure property 'windowTarget' from null or undefined value
+
+Could not determine pane count for swarm window
+
+[TmuxBackend] Using initial pane for first teammate
+
+teammate panes with tiled layout
+
+Cannot call a class constructor h7i without |new|
+
+[ITermBackend] isAvailable check: inITerm2=
+
+[ITermBackend] isAvailable: false (not in iTerm2
+
+[ITermBackend] createTeammatePaneInSwarmView called for
+
+[ITermBackend] Creating pane: isFirstTeammate=
+
+[ITermBackend] First split from leader session:
+
+[ITermBackend] First split from active session (no leader ID
+
+[ITermBackend] Subsequent split from teammate session:
+
+[ITermBackend] Subsequent split from active session (no teammate ID
+
+[ITermBackend] Split failed targeting dead session
+
+Failed to create iTerm2 split pane:
+
+Failed to parse session ID from split output:
+
+[ITermBackend] Created teammate pane for
+
+Failed to send command to iTerm2 pane
+
+Action requires interactive approval and permission prompts are not available in this context
+
+Skipping auto mode classifier for
+
+: would be allowed in acceptEdits mode
+
+: tool is on the safe allowlist
+
+Agent aborted: auto mode classifier transcript exceeded context window in headless mode
+
+Auto mode classifier transcript too long, falling back to normal permission handling
+
+Auto mode classifier unavailable, denying with retry guidance (fail closed
+
+Auto mode classifier blocked action:
+
+Permission prompts are not available in this context
+
+Cannot call a class constructor uCu without |new|
+
+System Events, shell commands, or any other method to send clicks or keystrokes to this app.
+
+Horizontal pixel position read directly from the most recent screenshot image, measured from the left edge. The server handles all scaling.
+
+Vertical pixel position read directly from the most recent screenshot image, measured from the top edge. The server handles all scaling.
+
+(x, y) for click/mouse_move/scroll/left_click_drag end point.
+
+For type: the text. For key/hold_key: the chord string. For click/scroll: modifier keys to hold.
+
+Server names to wait for (default: all pending
+
+Cannot destructure property 'options' from null or undefined value
+
+Cannot destructure property 'refreshMcpClients' from null or undefined value
+
+Still connecting (try again or proceed without):
+
+Needs authentication (ask the user to run /mcp):
+
+Disabled (ask the user to enable via /mcp):
+
+Unknown (no MCP server with this name is configured):
+
+Failed to fetch Grove settings:
+
+Cannot destructure property 'grove_enabled' from null or undefined value
+
+Failed to fetch Grove notice config:
+
+Cannot call a class constructor gXi without |new|
+
+Cannot call a class constructor lQn without |new|
+
+Cannot call a class constructor JQn without |new|
+
+Cannot call a class constructor pRu without |new|
+
+Cannot call a class constructor j3r without |new|
+
+Cannot access property of undefined or null
+
+Cannot call a class constructor mRu without |new|
+
+Cannot call a class constructor vJi without |new|
+
+Cannot call a class constructor AJi without |new|
+
+Cannot call a class constructor yRu without |new|
+
+Cannot call a class constructor bRu without |new|
+
+Cannot call a class constructor ARu without |new|
+
+Cannot call a class constructor QYt without |new|
+
+Cannot call a class constructor sZn without |new|
+
+Cannot call a class constructor IRu without |new|
+
+Cannot call a class constructor G3r without |new|
+
+Cannot call a class constructor DRu without |new|
+
+Cannot call a class constructor kHt without |new|
+
+Cannot call a class constructor LRu without |new|
+
+Cannot call a class constructor aZn without |new|
+
+Cannot call a class constructor q3r without |new|
+
+Cannot call a class constructor lZn without |new|
+
+Cannot call a class constructor cZn without |new|
+
+Cannot call a class constructor CJi without |new|
+
+Cannot call a class constructor xJi without |new|
+
+Cannot call a class constructor kJi without |new|
+
+Unable to recognize instrument type:
+
+Cannot call a class constructor VRu without |new|
+
+MetricReader can not be bound to a MeterProvider again.
+
+MetricReader is not bound to a MetricProducer
+
+Cannot forceFlush on already shutdown MetricReader.
+
+Cannot call a class constructor qRu without |new|
+
+Export took longer than %s milliseconds and timed out.
+
+Cannot destructure property 'resourceMetrics' from null or undefined value
+
+PeriodicExportingMetricReader: metrics collection errors
+
+PeriodicExportingMetricReader: metrics export failed (error
+
+Cannot call a class constructor YRu without |new|
+
+Cannot call a class constructor PJi without |new|
+
+Cannot call a class constructor ZRu without |new|
+
+. The metric name should be a ASCII string with a length no greater than 255 characters.
+
+Cannot call a class constructor oXt without |new|
+
+non-number value provided to metric
+
+INT value type cannot accept a floating-point value for
+
+, ignoring the fractional digits.
+
+Cannot call a class constructor nDu without |new|
+
+Cannot call a class constructor oDu without |new|
+
+negative value provided to counter
+
+Cannot call a class constructor iDu without |new|
+
+Cannot call a class constructor sDu without |new|
+
+negative value provided to histogram
+
+Cannot call a class constructor iXt without |new|
+
+Cannot call a class constructor aDu without |new|
+
+Cannot call a class constructor lDu without |new|
+
+Cannot call a class constructor cDu without |new|
+
+Cannot call a class constructor uDu without |new|
+
+Cannot call a class constructor pDu without |new|
+
+Cannot call a class constructor MJi without |new|
+
+Cannot call a class constructor fDu without |new|
+
+Cannot call a class constructor mDu without |new|
+
+Cannot call a class constructor X3r without |new|
+
+Cannot call a class constructor hDu without |new|
+
+ on instrument creation or use an instrument name other than 
+
+- create a new view with a name other than 
+
+- OR - create a new view with the name
+
+Cannot call a class constructor UJi without |new|
+
+A view or instrument with the name
+
+has already been registered, but has a different description and is incompatible with another registered view.
+
+The longer description will be used.
+
+has already been registered and is incompatible with another registered view.
+
+Cannot call a class constructor TDu without |new|
+
+Cannot call a class constructor CDu without |new|
+
+Cannot call a class constructor xDu without |new|
+
+Cannot call a class constructor DDu without |new|
+
+BatchObservableCallback is not associated with valid instruments
+
+Cannot destructure property 'callback' from null or undefined value
+
+Cannot call a class constructor LDu without |new|
+
+Cannot call a class constructor ODu without |new|
+
+Cannot call a class constructor NDu without |new|
+
+Cannot call a class constructor $Du without |new|
+
+Cannot call a class constructor UDu without |new|
+
+Cannot call a class constructor FDu without |new|
+
+Cannot call a class constructor jDu without |new|
+
+Cannot call a class constructor VDu without |new|
+
+Cannot call a class constructor FJi without |new|
+
+Cannot call a class constructor qDu without |new|
+
+Cannot call a class constructor KDu without |new|
+
+Cannot call a class constructor XDu without |new|
+
+Cannot create view with no selector arguments supplied
+
+Views with a specified name must be declared with an instrument selector that selects at most one instrument per meter.
+
+Cannot call a class constructor ePu without |new|
+
+Cannot call a class constructor rPu without |new|
+
+A shutdown MeterProvider cannot provide a Meter
+
+shutdown may only be called once per MeterProvider
+
+invalid attempt to force flush after MeterProvider shutdown
+
+Cannot call a class constructor jJi without |new|
+
+Invalid attribute value set for key:
+
+Cannot destructure property 'attributeCountLimit' from null or undefined value
+
+Cannot destructure property 'eventCountLimit' from null or undefined value
+
+Dropping invalid status.message of type 
+
+- You can only call end() on a span once.
+
+Inconsistent start and end time, startTime > endTime. Setting span duration to 0ms.
+
+events because eventCountLimit reached
+
+Operation attempted on ended Span {traceId:
+
+Cannot execute the operation on ended Span {traceId:
+
+Attribute value limit must be positive, got
+
+Cannot call a class constructor NHt without |new|
+
+Cannot call a class constructor SWe without |new|
+
+Cannot call a class constructor uXt without |new|
+
+Cannot call a class constructor UZn without |new|
+
+Cannot call a class constructor KJi without |new|
+
+maxQueueSize reached, dropping spans
+
+spans because maxQueueSize reached
+
+BatchSpanProcessor: span export failed
+
+Cannot call a class constructor UHt without |new|
+
+Cannot call a class constructor dXt without |new|
+
+Cannot call a class constructor XJi without |new|
+
+Instrumentation suppressed, returning Noop Span
+
+Recording is off, propagating context in a non-recording span
+
+Cannot call a class constructor JJi without |new|
+
+Cannot call a class constructor ejr without |new|
+
+Span processor did not completed within timeout period of
+
+Cannot call a class constructor VZn without |new|
+
+Cannot call a class constructor ZJi without |new|
+
+BigQuery metrics export: trust not established, skipping
+
+Metrics export disabled by organization setting
+
+BigQuery metrics exported successfully
+
+BigQuery metrics export failed:
+
+BigQuery metrics exporter shutdown complete
+
+BigQuery metrics exporter flush complete
+
+Cannot call a class constructor tQi without |new|
+
+Cannot call a class constructor rQi without |new|
+
+Cannot call a class constructor nQi without |new|
+
+Cannot call a class constructor FPu without |new|
+
+Cannot call a class constructor jPu without |new|
+
+Configuration: timeoutMillis is invalid, expected number greater than 0 (actual: 
+
+Cannot call a class constructor GPu without |new|
+
+Received Partial Success response:
+
+Cannot call a class constructor KPu without |new|
+
+Concurrent export limit reached
+
+Export succeeded but could not deserialize response - is the response specification compliant?
+
+Export failed with retryable status
+
+Export failed with unknown error
+
+aggregationTemporality: enum value expected
+
+severityNumber: enum value expected
+
+Cannot destructure property 'resource' from null or undefined value
+
+Cannot destructure property 'name' from null or undefined value
+
+Configuration: Could not parse user-provided export URL: 
+
+Cannot destructure property 'Agent' from null or undefined value
+
+Cannot destructure property 'ca' from null or undefined value
+
+Cannot destructure property 'request' from null or undefined value
+
+Cannot call a class constructor $Mu without |new|
+
+Cannot destructure property 'agent' from null or undefined value
+
+Cannot call a class constructor BMu without |new|
+
+is invalid, expected number greater than 0 (actual:
+
+is invalid, expected 'none' or 'gzip' (actual: 
+
+Configuration: Could not parse environment-provided export URL: 
+
+Configuration: Provided URL appended with 
+
+ is not a valid URL, using 'undefined' instead of 
+
+Failed to read client certificate chain file
+
+Failed to read client certificate private key file
+
+Failed to read root certificate file
+
+Metadata cannot be set when using http
+
+Cannot call a class constructor djr without |new|
+
+Cannot call a class constructor pjr without |new|
+
+OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE is set to 
+
+, but only 'cumulative' and 'delta' are allowed. Using default ('cumulative') instead.
+
+Cannot call a class constructor cOu without |new|
+
+Cannot call a class constructor dOu without |new|
+
+gRPC Library for Node - pure JS implementation
+
+clang-format -i -style="{Language: JavaScript, BasedOnStyle: Google, ColumnLimit: 80}" src/*.ts test/*.ts
+
+npm run copy-protos && npm run generate-types && npm run generate-test-types && npm run compile
+
+npm run generate-types && npm run generate-test-types && npm run compile
+
+proto-loader-gen-types --keepCase --longs String --enums String --defaults --oneofs --includeComments --includeDirs proto/ --include-dirs proto/ proto/xds/ proto/protoc-gen-validate/ -O src/generated/ --grpcLib ../index channelz.proto xds/service/orca/v3/orca.proto
+
+keys that end with '-bin' must have Buffer values
+
+keys that don't end with '-bin' must have String values
+
+Cannot call a class constructor Weo without |new|
+
+. For more information see https://github.com/grpc/grpc-node/issues/1173
+
+Cannot call a class constructor SXt without |new|
+
+Headers not set by metadata plugin
+
+Cannot call a class constructor Geo without |new|
+
+Cannot call a class constructor zQi without |new|
+
+Cannot call a class constructor KQi without |new|
+
+No resolver could be created for target
+
+, if provided, must be a Buffer.
+
+Cannot call a class constructor AXt without |new|
+
+Private key must be given with accompanying certificate chain
+
+Certificate chain must be given with accompanying private key
+
+Cannot call a class constructor tZi without |new|
+
+Cannot compose insecure credentials
+
+Cannot call a class constructor COu without |new|
+
+Cannot call a class constructor Keo without |new|
+
+Cannot call a class constructor hjr without |new|
+
+Failed to createSecureContext with error
+
+Cannot call a class constructor without |new|
+
+Socket closed while loading credentials
+
+Cannot call a class constructor Yeo without |new|
+
+Provided load balancing config has multiple conflicting entries
+
+Unrecognized load balancing config name
+
+No default load balancer type registered
+
+Config parsing failed with error
+
+Invalid method config name: invalid service: expected type string, got
+
+Invalid method config name: invalid method: expected type string, got
+
+Invalid method config name: method set with empty or unset service
+
+Invalid method config retry policy: maxAttempts must be an integer at least 2
+
+Invalid method config retry policy: initialBackoff must be a string consisting of a positive integer or decimal followed by s
+
+Invalid method config retry policy: maxBackoff must be a string consisting of a positive integer or decimal followed by s
+
+Invalid method config retry policy: backoffMultiplier must be a number greater than 0
+
+Invalid method config retry policy: retryableStatusCodes is required
+
+Invalid method config retry policy: retryableStatusCodes must be non-empty
+
+Invalid method config retry policy: retryableStatusCodes value not in status code range
+
+Invalid method config retry policy: retryableStatusCodes value not a status code name
+
+Invalid method config retry policy: retryableStatusCodes value must be a string or number
+
+Invalid method config hedging policy: maxAttempts must be an integer at least 2
+
+Invalid method config hedging policy: hedgingDelay must be a string consisting of a positive integer followed by s
+
+Invalid method config hedging policy: nonFatalStatusCodes value not in status code range
+
+Invalid method config hedging policy: nonFatalStatusCodes value not a status code name
+
+Invalid method config hedging policy: nonFatalStatusCodes value must be a string or number
+
+Invalid method config: invalid name array
+
+Invalid method config: invalid waitForReady
+
+Invalid method config: invalid timeout.seconds
+
+Invalid method config: invalid timeout.nanos
+
+Invalid method config: invalid timeout
+
+Invalid method config: invalid maxRequestBytes
+
+Invalid method config: retryPolicy and hedgingPolicy cannot both be specified
+
+Invalid retryThrottling: maxTokens must be a number in (0, 1000]
+
+Invalid retryThrottling: tokenRatio must be a number greater than 0
+
+Invalid loadBalancingConfig: unexpected type
+
+Invalid loadBalancingConfig: unexpected multiple keys
+
+Invalid loadBalancingConfig: load balancing policy name required
+
+Invalid service config: invalid loadBalancingPolicy
+
+Invalid service config: invalid loadBalancingConfig
+
+Invalid service config: duplicate name
+
+Invalid service config choice: missing service config
+
+Invalid service config choice: invalid clientLanguage
+
+Invalid service config choice: invalid clientHostname
+
+Invalid service config choice: invalid percentage
+
+Invalid service config choice: unexpected field
+
+No matching service config found
+
+Cannot call a class constructor DOu without |new|
+
+Cannot call a class constructor POu without |new|
+
+Cannot call a class constructor tto without |new|
+
+Cannot call a class constructor LOu without |new|
+
+Cannot call a class constructor NOu without |new|
+
+All load balancer options in service config are not compatible
+
+updateAddressList not supported on ResolvingLoadBalancer
+
+Cannot call a class constructor WOu without |new|
+
+Cannot call a class constructor oZi without |new|
+
+Cannot call a class constructor VOu without |new|
+
+Cannot call a class constructor GOu without |new|
+
+Cannot call a class constructor qOu without |new|
+
+Cannot call a class constructor zOu without |new|
+
+Cannot call a class constructor KOu without |new|
+
+Cannot call a class constructor YOu without |new|
+
+Cannot call a class constructor ZAe without |new|
+
+Cannot call a class constructor XOu without |new|
+
+Cannot destructure property 'getServiceDefinition' from null or undefined value
+
+Cannot call a class constructor ZOu without |new|
+
+Cannot call a class constructor e1u without |new|
+
+Cannot call a class constructor t1u without |new|
+
+Cannot call a class constructor r1u without |new|
+
+Cannot call a class constructor o1u without |new|
+
+Both interceptors and interceptor_providers were passed as options to the client constructor. Only one of these is allowed.
+
+Both interceptors and interceptor_providers were passed as call options. Only one of these is allowed.
+
+Cannot call a class constructor Hjr without |new|
+
+Cannot call a class constructor l1u without |new|
+
+Cannot call a class constructor c1u without |new|
+
+Cannot call a class constructor u1u without |new|
+
+Cannot call a class constructor lZi without |new|
+
+Request message serialization failure:
+
+Response message parsing error:
+
+Cannot call a class constructor d1u without |new|
+
+Cannot call a class constructor p1u without |new|
+
+Cannot call a class constructor f1u without |new|
+
+Failed to connect before the deadline
+
+Cannot call a class constructor n without |new|
+
+Method names cannot start with $
+
+Cannot destructure property 'requestSerialize' from null or undefined value
+
+object must be a valid nested object
+
+object must be a ReflectionObject
+
+path conflicts with non-namespace objects
+
+id must be a non-negative integer
+
+Cannot destructure property 'Namespace' from null or undefined value
+
+Cannot destructure property 'inputType' from null or undefined value
+
+not found in any of the include paths
+
+The includeDirs option must be an array
+
+Failed to serialize message: expected object with
+
+Cannot destructure property 'resolvedRequestType' from null or undefined value
+
+Protocol Buffer 3 DescriptorProto
+
+Protocol Buffer 3 EnumDescriptorProto
+
+Type mismatch in reflection object handling
+
+No subchannel data found for id
+
+Cannot call a class constructor y$u without |new|
+
+Cannot call a class constructor _$u without |new|
+
+Cannot call a class constructor les without |new|
+
+Cannot call a class constructor b$u without |new|
+
+Cannot call a class constructor ces without |new|
+
+Cannot call a class constructor S$u without |new|
+
+Cannot call a class constructor C$u without |new|
+
+Cannot call a class constructor jjr without |new|
+
+Cannot call a class constructor UXt without |new|
+
+Received compressed message but "grpc-encoding" header was identity
+
+Cannot call a class constructor I$u without |new|
+
+Failed to decompress deflate-encoded message
+
+Received message that decompresses to a size larger than
+
+Cannot call a class constructor R$u without |new|
+
+Failed to decompress gzip-encoded message
+
+Cannot call a class constructor D$u without |new|
+
+Received message compressed with unsupported compression method
+
+Compression method not supported:
+
+Cannot call a class constructor fes without |new|
+
+Attempted to send message with a size larger than
+
+Cannot call a class constructor P$u without |new|
+
+Invalid status from control plane:
+
+Deadline is too far in the future
+
+Cannot call a class constructor ges without |new|
+
+Cannot call a class constructor yes without |new|
+
+Cannot call a class constructor L$u without |new|
+
+Getting metadata from plugin failed with error:
+
+Cannot destructure property 'code' from null or undefined value
+
+Cannot call a class constructor M$u without |new|
+
+Cannot call a class constructor N$u without |new|
+
+rejected by server because of excess pings. Increasing ping interval to
+
+Invalid state: unknown ConnectivityState
+
+Cannot create call, subchannel not READY
+
+Cannot call a class constructor W$u without |new|
+
+Returning IP address for target
+
+Parsing service config failed with error
+
+Using alternative DNS resolver.
+
+resolution update delayed by "min time between resolutions" rate limit
+
+resolution update delayed by backoff timer until
+
+ scheme not supported in proxy URI
+
+Cannot destructure property 'hostname' from null or undefined value
+
+No proxy server list set by environment variable
+
+Not using proxy for target in no_proxy list:
+
+Successfully established a plaintext connection to
+
+Cannot call a class constructor K$u without |new|

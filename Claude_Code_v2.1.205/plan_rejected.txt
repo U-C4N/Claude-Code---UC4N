@@ -1,0 +1,985 @@
+Execute autonomously, minimize interruptions, prefer action over planning.
+
+The user doesn't want to proceed with this tool use. The tool use was rejected (eg. if it was a file edit, the new_string was NOT written to the file). STOP what you are doing and wait for the user to tell you how to proceed.
+
+Permission for this tool use was denied. The tool use was rejected (eg. if it was a file edit, the new_string was NOT written to the file). Try a different approach or report the limitation to complete your task.
+
+The agent proposed a plan that was rejected by the user. The user chose to stay in plan mode rather than proceed with implementation.
+
+IMPORTANT: You *may* attempt to accomplish this action using other tools that might naturally be used to accomplish this goal, e.g. using head instead of cat. But you *should not* attempt to work around this denial in malicious ways, e.g. do not use your ability to run tests to execute non-test actions. You should only try to work around this restriction in reasonable ways that do not attempt to bypass the intent behind this denial.
+
+[Tool result missing due to internal error]
+
+Permission for this action was denied by the Claude Code auto mode classifier. Reason:
+
+Permission for this action has been denied. Reason:
+
+, so auto mode cannot determine the safety of
+
+Plan mode is active. The user indicated that they do not want you to execute yet -- you MUST NOT make any edits (with the exception of the plan file mentioned below), run any non-readonly tools (including changing configs or making commits), or otherwise make any changes to the system. This supercedes any other instructions you have received.
+
+The user sent a new message while you were working:
+
+A message arrived in the bound thread while you were working:
+
+Messages arrived in the bound thread while you were working:
+
+Let's set up evals for this plugin.
+
+allowed_tools: [Read, Glob, Grep, Skill]
+
+TODO: describe what the agent should do
+
+TODO: describe what a successful response looks like
+
+# >>> ccr-agent-proxy (managed by Claude Code) >>>
+
+# >>> claude agent-proxy governed-git (auto-generated; do not edit) >>>
+
+# <<< claude agent-proxy governed-git <<<
+
+Analyze shell commands and explain what they do, why you're running them, and potential risks.
+
+Design guidance and fundamentals for Artifacts.
+
+This is not a git repository. The `/batch` command requires a git repo because it spawns agents in isolated git worktrees and creates PRs from each. Initialize a repo first, or run this from inside an existing one.
+
+Provide an instruction describing the batch change you want to make.
+
+/batch migrate from react to vue
+
+/batch replace all uses of lodash with native equivalents
+
+/batch add type annotations to all untyped function parameters
+
+The `--comment` flag was passed. After producing the findings list, if the
+
+review target is a GitHub PR, post each finding as an inline PR comment via
+
+mcp__github_inline_comment__create_inline_comment` (one call per finding;
+
+include a suggestion block only when it fully fixes the issue). If that tool
+
+is not available in this session, fall back to `gh api` (repos/{owner}/{repo}/pulls/{pr}/comments
+
+or print the findings instead. If the target is not a PR, print the findings
+
+to the terminal and note that `--comment` was ignored.
+
+# Knowledge MCP Search Strategies
+
+Query patterns for gathering organizational context during plugin customization.
+
+- Search: "GitHub" OR "GitLab" OR "Bitbucket
+
+- Search: "pull request" OR "merge request
+
+- Look for: repository links, CI/CD mentions
+
+- Search: "Asana" OR "Jira" OR "Linear" OR "Monday
+
+- Look for: task links, project board mentions
+
+- Search: "Slack" OR "Teams" OR "Discord
+
+- Look for: channel mentions, integration discussions
+
+- Search: "Datadog" OR "Grafana" OR "Mixpanel
+
+- Search: "monitoring" OR "observability
+
+- Look for: dashboard links, alert configurations
+
+- Search: "Figma" OR "Sketch" OR "Adobe XD
+
+- Look for: design file links, handoff discussions
+
+- Search: "Salesforce" OR "HubSpot
+
+- Look for: deal mentions, customer record links
+
+- Search for existing integrations or bookmarked links
+
+- Look for admin/setup documentation
+
+- Search: "story points" OR "estimation
+
+- Search: "workflow" OR "ticket status
+
+- Look for engineering process docs
+
+- Search: "standup" OR "engineering" OR "releases
+
+- Look for channel naming patterns
+
+## When Knowledge MCPs Are Unavailable
+
+If no knowledge MCPs are configured, skip automatic discovery and proceed directly to AskUserQuestion for all categories. Note: AskUserQuestion always includes a Skip button and a free-text input box for custom answers, so do not include `None` or `Other` as options.
+
+Create a new Cowork plugin from scratch, or customize an installed plugin for a specific organization. Use when: customize plugin, set up plugin, configure plugin, tailor plugin, adjust plugin settings, customize plugin connectors, customize plugin skill, tweak plugin, modify plugin configuration, create a plugin, build a plugin, make a new plugin, develop a plugin, scaffold a plugin.
+
+Push a React design system to claude.ai/design. This runs a converter that bundles the real component code (from Storybook or a bare package) and uploads it. Use when the user runs /design-sync or says "sync my design system to Claude Design".
+
+Create or customize a shareable plan Artifact from an implementation plan, design doc, or RFC. Use when asked to publish a plan as an artifact, restyle or edit a plan artifact, or present a plan as a shareable page.
+
+Hooks run commands at specific points in Claude Code's lifecycle.
+
+| PermissionRequest | Tool name | Run before permission prompt |
+
+| PreToolUse | Tool name | Run before tool, can block |
+
+| PostToolUse | Tool name | Run after successful tool |
+
+| PostToolUseFailure | Tool name | Run after tool fails |
+
+| Notification | Notification type | Run on notifications |
+
+| Stop | - | Run when Claude stops (including clear, resume, compact) |
+
+| PreCompact | "manual"/"auto" | Before compaction |
+
+| PostCompact | "manual"/"auto" | After compaction (receives summary) |
+
+| UserPromptSubmit | - | When user submits |
+
+| SessionStart | - | When session starts |
+
+**Common tool matchers:** `Bash`, `Write`, `Edit`, `Read`, `Glob`, `Grep
+
+**1. Command Hook** - Runs a shell command:
+
+**2. Prompt Hook** - Evaluates a condition with LLM:
+
+Only available for tool events: PreToolUse, PostToolUse, PermissionRequest.
+
+**3. Agent Hook** - Runs an agent with tools:
+
+tool_input": { "file_path": "/path/to/file.txt", "content": "..." },
+
+tool_response": { "success": true }  // PostToolUse only
+
+Hooks can return JSON to control behavior:
+
+systemMessage": "Warning shown to user in UI",
+
+stopReason": "Message shown when blocking",
+
+reason": "Explanation for decision",
+
+additionalContext": "Context injected back to model
+
+- `systemMessage` - Display a message to the user (all hooks
+
+- `continue` - Set to `false` to block/stop (default: true
+
+- `stopReason` - Message shown when `continue` is false
+
+- `suppressOutput` - Hide stdout from transcript (default: false
+
+- `decision` - "block" for PostToolUse/Stop/UserPromptSubmit hooks (deprecated for PreToolUse, use hookSpecificOutput.permissionDecision instead
+
+- `reason` - Explanation for decision
+
+- `hookSpecificOutput` - Event-specific output (must include `hookEventName`):
+
+- `additionalContext` - Text injected into model context
+
+- `permissionDecision` - "allow", "deny", or "ask" (PreToolUse only
+
+- `permissionDecisionReason` - Reason for the permission decision (PreToolUse only
+
+- `updatedInput` - Modified tool input (PreToolUse only
+
+command": "jq -r '.tool_response.filePath // .tool_input.file_path' | { read -r f; prettier --write \"$f\"; } 2>/dev/null || true
+
+command": "jq -r '.tool_input.command' >> ~/.claude/bash-log.txt
+
+**Stop hook that displays message to user:**
+
+Command must output JSON with `systemMessage` field:
+
+# Example command that outputs: {"systemMessage": "Session complete!"}
+
+echo '{"systemMessage": "Session complete!"}
+
+**Run tests after code changes:**
+
+command": "jq -r '.tool_input.file_path // .tool_response.filePath' | grep -E '\.(ts|js)$' && npm test || true
+
+What would you like to do with scheduled cloud agents?
+
+Answer questions about Claude Code itself: commands, flags, settings, hooks, skills, MCP servers, subagents, IDE integrations, sandboxing, deployment, and Claude Tag (Claude in Slack). Verifies against the running build before recommending any command, flag, or setting.
+
+Launch and drive this project's app to see a change working. Use when asked to run, start, or screenshot the app, or to confirm a change works in the real app (not just tests). First looks for a project skill that already covers launching the app; otherwise falls back to built-in patterns per project type (CLI, server, TUI, Electron, browser-driven, library).
+
+Orphaned by a previous Claude Code process exit and reported in an aggregate summary (over the per-task notification cap).
+
+How is Claude doing this session? (optional
+
+Did this memory help? (optional
+
+Auto mode is now Claude Code's default permission mode.
+
+Auto mode lets Claude handle permission prompts automatically. Claude checks each tool call for risky actions and prompt injection before executing, runs the ones it assesses as lower-risk, and blocks the rest.
+
+You are running in non-interactive mode and cannot return a response to the user until your team is shut down.
+
+You MUST shut down your team before preparing your final response:
+
+The user cannot receive your response until the team is completely shut down.
+
+Shut down your team and prepare your final response for the user.
+
+Unsupported JWE Content Encryption Algorithm
+
+Invalid or unsupported JWK "alg" (Algorithm) Parameter value
+
+given KeyObject instance cannot be used for this algorithm
+
+Invalid or unsupported "alg" (JWE Algorithm) header value
+
+ECONNREFUSED_SSRF: blocked (cloud metadata / link-local
+
+body{min-height:100vh;background:#FAF9F5;color:#141413;font:15px/1.5 ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 24px}
+
+.status{display:inline-flex;align-items:center;gap:8px;padding:4px 10px 4px 8px;border-radius:999px;background:rgba(85,138,66,.10);color:#345C28;font-size:12.5px;font-weight:500;letter-spacing:-.005em;margin-bottom:20px}
+
+.status::before{content:"";width:6px;height:6px;border-radius:50%;background:#558A42;box-shadow:0 0 0 3px rgba(85,138,66,.18)}
+
+.status.err::before{background:#A63244;box-shadow:0 0 0 3px rgba(166,50,68,.15)}
+
+.status.warn::before{background:#73726C;box-shadow:0 0 0 3px rgba(31,30,29,.12)}
+
+h1{font-family:ui-serif,Charter,"Iowan Old Style",Georgia,serif;font-weight:400;font-size:32px;line-height:1.15;letter-spacing:-.02em;margin:0 0 10px;text-wrap:balance}
+
+.code-input{width:100%;font:24px/1 ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,monospace;letter-spacing:.25em;text-align:center;text-transform:uppercase;padding:18px 16px;border:.5px solid rgba(31,30,29,.25);border-radius:12px;background:#FFF;color:#141413;outline:none;margin-bottom:16px}
+
+.code-input:focus{border-color:#2A78D6;box-shadow:0 0 0 3px rgba(42,120,214,.18)}
+
+.code-display{font:28px/1 ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,monospace;letter-spacing:.3em;text-align:center;padding:22px 16px;border:.5px solid rgba(31,30,29,.15);border-radius:12px;background:#FFF;margin-bottom:8px}
+
+.error-card{background:#FFF;border:.5px solid rgba(31,30,29,.15);border-left:3px solid #A63244;border-radius:10px;padding:14px 16px;font-size:14px;line-height:1.5;display:flex;align-items:flex-start;gap:10px}
+
+cloud session was archived before producing output
+
+You are an expert reviewer of auto mode classifier rules for Claude Code.
+
+Claude Code has an "auto mode" that uses an AI classifier to decide whether tool calls should be auto-approved or require user confirmation. Users can write custom rules in four categories:
+
+- **allow**: Actions the classifier should auto-approve
+
+- **soft_deny**: Destructive/irreversible actions the classifier should block unless clear user intent authorizes them
+
+- **hard_deny**: Security-boundary actions the classifier should block unconditionally (user intent does not clear these
+
+- **environment**: Context about the user's setup that helps the classifier make decisions
+
+Your job is to critique the user's custom rules for clarity, completeness, and potential issues. The classifier is an LLM that reads these rules as part of its system prompt.
+
+Be concise and constructive. Only comment on rules that could be improved. If all rules look good, say so.
+
+Usage: claude daemon [subcommand] [options]
+
+run [json-path]   Run the supervisor in the foreground (default when piped
+
+status            Show daemon pid, version, uptime
+
+logs              Tail the daemon log (Ctrl-C to stop
+
+uninstall         Remove the background service (launchctl/systemd
+
+stop              Shut down the supervisor and terminate background sessions
+
+--any           also stop a transient (non-service) daemon
+
+--keep-workers  leave detached sessions running
+
+install           Install as a launchctl/systemd service (persists across reboot
+
+start             Start the installed service
+
+restart           Restart the installed service
+
+--json-path <p>   Config file (default: ~/.claude/daemon.json
+
+--log-file <p>    Log file (default: ~/.claude/daemon.log
+
+The OS protocol handler passes exactly `--handle-uri <uri>`; extra arguments indicate argument injection via the URL. If invoking --handle-uri manually, place other flags before it.
+
+report the issue at https://github.com/anthropics/claude-code/issues
+
+Iterator result interface is not an object.
+
+Cannot destructure property 'totalCostUSD' from null or undefined value
+
+resetStateForTests can only be called in tests
+
+Count of lines of code modified, with the 'type' attribute indicating whether lines were added or removed and the 'model' attribute indicating which model made the change
+
+Number of pull requests created
+
+Cost of the Claude Code session
+
+Count of code editing tool permission decisions (accept/reject) for Edit, Write, and NotebookEdit tools
+
+Cannot destructure property 'writeFn' from null or undefined value
+
+The superclass is not a constructor.
+
+Cannot call a class constructor i without |new|
+
+Cannot specify both `message` and `error` params5
+
+Invalid input to extend: expected a plain object4
+
+Unmergable intersection. Error path:
+
+CLAUDE_CODE_MAX_TURNS must be a positive integer; got 
+
+Invalid environment variable format:
+
+, environment variables should be added as: -e KEY1=value1 -e KEY2=value2
+
+Private accessor was defined without a setter
+
+Cannot write private member to an object whose class did not declare it
+
+Private accessor was defined without a getter
+
+Cannot read private member from an object whose class did not declare it
+
+Cannot destructure property 'key' from null or undefined value
+
+fetch` is not defined as a global; Either pass `fetch` to the client, `new Anthropic({ fetch })` or polyfill the global, `globalThis.fetch = fetch
+
+ReadableStream` is not defined as a global; You will need to polyfill it, `globalThis.ReadableStream = ReadableStream
+
+Cannot destructure property 'done' from null or undefined value
+
+; Expected string, number, boolean, or null. If you need to pass nested query parameters, you can manually encode them, e.g. { query: { 'foo[key1]': value1, 'foo[key2]': value2 } }, and please open a GitHub issue requesting better support for your use case.
+
+Invalid token endpoint base URL 
+
+Refusing to send credential over non-https token endpoint 
+
+Token endpoint returned non-JSON response (status
+
+Token endpoint response missing access_token:
+
+Token endpoint response: unsupported token_type 
+
+ must not contain path separators
+
+ contains disallowed characters (allowed: letters, digits, '_', '.', '-'
+
+Identity token file path is empty
+
+Failed to read identity token file at
+
+KiB, exceeds the 16 KiB assertion limit
+
+Ensure your federation rule matches your identity token.
+
+If your federation rule is scoped to multiple workspaces, set the ANTHROPIC_WORKSPACE_ID environment variable, the 'workspace_id' config key, or the `workspaceId` option.
+
+View your authentication events in the Workload identity page of Claude Console for more details.
+
+Token exchange failed with status
+
+Token endpoint response missing required fields:
+
+has expired and no refresh is available (client_id
+
+User OAuth refresh failed to reach token endpoint:
+
+User OAuth refresh failed (HTTP
+
+User OAuth refresh response missing or invalid expires_in:
+
+Cannot destructure property 'config' from null or undefined value
+
+oidc_federation config requires an identity token (set authentication.identity_token, ANTHROPIC_IDENTITY_TOKEN_FILE, or ANTHROPIC_IDENTITY_TOKEN
+
+oidc_federation config requires 'federation_rule_id'. Set it in authentication.federation_rule_id in your profile, or via ANTHROPIC_FEDERATION_RULE_ID (profile takes precedence).
+
+oidc_federation config requires organization_id (set ANTHROPIC_ORGANIZATION_ID or config.organization_id
+
+user_oauth config requires authentication.credentials_path (or load via a profile so it defaults to <config_dir>/credentials/<profile>.json
+
+ is not a known authentication type
+
+ is not supported by this SDK version (only "file"
+
+identity_token.source "file" requires a non-empty path
+
+The default react-native fetch implementation does not support streaming. Please use expo/fetch: https://docs.expo.dev/versions/latest/sdk/expo/#expofetch-api
+
+Attempted to iterate over a response with no body
+
+Cannot destructure property 'response' from null or undefined value
+
+Cannot destructure property 'values' from null or undefined value
+
+The iterator, to which yield* delegated iteration, does not have a 'throw' method.
+
+expected header name to be a string
+
+The `parsed` property on `text` blocks is deprecated, please use `parsed_output` instead.
+
+Failed to parse structured output:
+
+Both output_format and output_config.format were provided. Please use only output_config.format (output_format is deprecated).
+
+Cannot destructure property 'output_format' from null or undefined value4
+
+Cannot destructure property 'resolvedPath' from null or undefined value
+
+Cannot destructure property 'bytesRead' from null or undefined value
+
+Cannot destructure property 'level' from null or undefined value
+
+Cannot destructure property 'once' from null or undefined value
+
+No profiling checkpoints recorded
+
+Cannot destructure property 'late' from null or undefined value
+
+Before any browser action, you MUST call
+
+your ask-user tool (if available
+
+with a question listing EVERY connected browser as a separate option (use the display name as the label, and include the deviceId in parentheses), plus one final option labeled exactly: 
+
+ Do not skip any connected browser and do not pick one yourself. If the user picks a specific browser, call select_browser with that browser's deviceId.
+
+Cannot destructure property 'errorMap' from null or undefined value
+
+Can't use "invalid_type_error" or "required_error" in conjunction with custom error map.
+
+Cannot destructure property 'message' from null or undefined value
+
+Mixed Zod versions detected in object shape.
+
+Expected CompleteRequestPrompt, but got
+
+Expected CompleteRequestResourceTemplate, but got
+
+Cannot destructure property 'additionalProperties' from null or undefined value
+
+Could not convert regex pattern at
+
+to a flag-independent form! Falling back to the flag-ignorant source
+
+Warning: OpenAI may not support records in schemas! Try an array of key-value pairs instead.
+
+Cannot destructure property 'type' from null or undefined value
+
+Schema is missing a method literal
+
+Schema method literal must be a string
+
+does not support task creation (required for
+
+does not support task creation for tools/call (required for
+
+does not support task creation for sampling/createMessage (required for
+
+does not support task creation for elicitation/create (required for
+
+Multiple Chrome browsers are connected to this account and none has been selected for this session.
+
+] Received result from socket bridge:
+
+Cannot destructure property 'result' from null or undefined value
+
+Cannot destructure property 'content' from null or undefined value
+
+] Unexpected result format from socket bridge
+
+Browser switching is only available with bridge connections.
+
+No other browsers available to switch to. Open Chrome with the Claude extension in another browser to switch.
+
+No browser responded within the timeout. Make sure Chrome is open with the Claude extension installed, then try again.
+
+Listing browsers is only available with bridge connections.
+
+select_browser requires a bridge connection and a deviceId argument.
+
+No connected browser has deviceId 
+
+. Call list_connected_browsers to see currently connected browsers.
+
+Cannot destructure property 'serverName' from null or undefined value
+
+] Failed to forward MCP notification:
+
+sendControlRequest not yet wired for
+
+Cannot destructure property 'parentSelector' from null or undefined value
+
+Cannot destructure property 'selector' from null or undefined value
+
+No SubtleCrypto implementation found
+
+Cannot destructure property 'instance' from null or undefined value
+
+Cannot destructure property 'apiHost' from null or undefined value
+
+Cannot destructure property 'streamingHost' from null or undefined valueÿÿÿÿÿÿÿ
+
+Must specify clientKey to enable streaming
+
+Cannot destructure property 'hashAttribute' from null or undefined value
+
+Cannot destructure property 'variation' from null or undefined value
+
+Cannot destructure property 'changed' from null or undefined value
+
+Cannot destructure property 'hashValue' from null or undefined value
+
+Cannot destructure property 'hashAttribute' from null or undefined valueÿÿÿÿÿÿÿ
+
+Cannot destructure property 'ctx' from null or undefined value
+
+CLAUDE_CODE_CUSTOM_OAUTH_URL is not an approved endpoint.
+
+Cannot destructure property 'suffix' from null or undefined value
+
+Cannot destructure property 'messages' from null or undefined value
+
+Cannot destructure property 'allOwnKeys' from null or undefined value
+
+Cannot destructure property 'caseless' from null or undefined value
+
+Blob is not supported. Use a Buffer instead.
+
+Request failed with status code d
+
+Cannot destructure property 'length' from null or undefined value
+
+There is no suitable adapter to dispatch the request
+
+is not supported by the environment
+
+is Anthropic-operated. Use firstPartyApi from
+
+Cannot destructure property 'streamIsTTY' from null or undefined value
+
+Cannot destructure property 'args' from null or undefined value
+
+EISDIR: illegal operation on a directory, read
+
+Not a regular file (device, FIFO, or socket
+
+Cannot destructure property 'buffer' from null or undefined value
+
+Git Bash not found; BashTool will be unavailable
+
+Cannot destructure property 'stdout' from null or undefined value
+
+Path must be a string, received
+
+Base directory must be a string, received
+
+takeApprovedPathsForWrite: no check-time stash for toolUseId=
+
+: its parent-directory symlink resolution changed after permission was checked.
+
+Cannot destructure property 'maxBytes' from null or undefined value
+
+readBoundedSync: content exceeds byte limit
+
+. The filesystem may have silently truncated the write (network drive / cloud sync).
+
+writeTextContent: on-disk size mismatch after write
+
+detectFileEncoding failed for expected reason:
+
+detectLineEndings failed for expected reason:
+
+Cannot destructure property 'relativePath' from null or undefined value
+
+Refusing to write through symlink:
+
+. Resolve the symlink and pass the real target path explicitly.
+
+Setting permissions for new file:
+
+Applied original permissions to temp file
+
+fchmod unsupported on this filesystem:
+
+fsync unsupported on this filesystem:
+
+closeSync also failed after temp write error:
+
+Temp file written successfully, size:
+
+Failed to write file atomically:
+
+writeFileSyncAndFlush: in-place fallback write failed; content preserved at temp path
+
+Preserving file permissions: ÿÿÿ
+
+close also failed after temp write error:
+
+writeFileAndFlush: in-place fallback write failed; content preserved at temp path
+
+Failed to enumerate /mnt/c/Users for Windows desktop path:
+
+Cannot destructure property 'env' from null or undefined value
+
+Cannot destructure property 'ignoreNonConfigurable' from null or undefined value
+
+Cannot destructure property 'name' from null or undefined value
+
+getStreamAsBuffer() is only supported in Node.js
+
+Cannot destructure property 'error' from null or undefined value
+
+Please use $(options).sync`command` instead of $.sync(options)`command`.
+
+ not found or is in an unsafe location (current directory
+
+safeSpawn: command not found or is in an unsafe location (current directory
+
+Cannot destructure property 'abortSignal' from null or undefined value
+
+Could not parse repository from:
+
+Cannot destructure property 'parseGitRemote' from null or undefined value
+
+Cannot destructure property 'code' from null or undefined value
+
+Untracked file capture: reached max file count (
+
+Untracked file capture: skipping
+
+Untracked file capture: reached total size limit (
+
+preserveGitStateForIssue: bounded git diff failed or overflowed (code=
+
+Cannot destructure property 'patch' from null or undefined value
+
+Shallow clone detected, using HEAD-only mode for issue
+
+No remote found, using HEAD-only mode for issue
+
+Merge-base failed, using HEAD-only mode for issue
+
+Failed to preserve git state for issue:
+
+Failed to add gitignore entry to global gitignore:
+
+ is tracked in the index; gitignore rules do not apply to tracked files
+
+core.excludesfile may point elsewhere
+
+Cannot access property of undefined or null
+
+Can not delete in empty document
+
+Cannot destructure property 'len' from null or undefined value
+
+Cannot destructure property 'size' from null or undefined value
+
+Failed to insert item into user JSONC array, falling back to overwrite:
+
+. Valid options are: user, project, local
+
+Argument list for exec form. When present, `command` is resolved as
+
+Path placeholders like ${CLAUDE_PLUGIN_ROOT} are substituted per-element as plain strings, so paths with quotes, $, or backticks never reach a shell parser. When absent, `command` runs through a shell (bash on POSIX, PowerShell on Windows without Git Bash).
+
+Shell interpreter. 'bash' uses your $SHELL (bash/zsh/sh); 'powershell' uses pwsh. Defaults to bash (powershell on Windows without Git Bash).
+
+Timeout in seconds for this specific command
+
+Custom status message to display in spinner while hook runs
+
+If true, hook runs once and is removed after execution
+
+If true, hook runs in background without blocking
+
+If true, hook runs in background and wakes the model on exit code 2 (blocking error). Implies async.
+
+Prompt to evaluate with LLM. Use $ARGUMENTS placeholder for hook input JSON.
+
+Timeout in seconds for this specific prompt evaluation
+
+Model to use for this prompt hook (e.g., "claude-sonnet-5"). If not specified, uses the default small fast model.
+
+Sets the continue value for the decision:"block" produced when ok is false. Default false (turn ends). Whether continue:true lets the turn proceed depends on the event's decision:"block" semantics. On PostToolUse, the reason is fed back to Claude and the turn continues.
+
+Name of an already-configured MCP server to invoke
+
+Name of the tool on that server to call
+
+Arguments passed to the MCP tool. String values support ${path} interpolation from the hook input JSON (e.g. "${tool_input.file_path}").
+
+Timeout in seconds for this specific tool call
+
+URL to POST the hook input JSON to
+
+Timeout in seconds for this specific request
+
+Additional headers to include in the request. Values may reference environment variables using $VAR_NAME or ${VAR_NAME} syntax (e.g., "Authorization": "Bearer $MY_TOKEN"). Only variables listed in allowedEnvVars will be interpolated.
+
+Explicit list of environment variable names that may be interpolated in header values. Only variables listed here will be resolved; all other $VAR references are left as empty strings. Required for env var interpolation to work.
+
+Prompt describing what to verify (e.g. "Verify that unit tests ran and passed."). Use $ARGUMENTS placeholder for hook input JSON.
+
+Timeout in seconds for agent execution (default 60
+
+Model to use for this agent hook (e.g., "claude-sonnet-5"). If not specified, uses Haiku.
+
+must be an object mapping hook event names to matcher arrays; received
+
+unknown hook event. Valid events:
+
+must be an array of matchers; received
+
+ is reserved for official Anthropic marketplaces. Only repositories from 'github.com/
+
+ is reserved for official Anthropic marketplaces and can only be used with GitHub sources from the 
+
+Stubbing unparseable marketplace plugin entry (
+
+Dropping unparseable marketplace plugin entry (index
+
+Cannot destructure property 'allow' from null or undefined value
+
+ is not supported in allow rules
+
+Permission rule cannot be empty
+
+Ensure all opening parentheses have matching closing parentheses
+
+Empty parentheses with no tool name
+
+Specify a tool name before the parentheses
+
+Either specify a pattern or use just 
+
+MCP rules do not support patterns in parentheses
+
+ without parentheses, or use "mcp__
+
+Tool names must start with uppercase
+
+The :* pattern must be at the end
+
+Move :* to the end for prefix matching, or use * for wildcard matching
+
+Bash(npm run:*) - prefix matching (legacy
+
+Prefix cannot be empty before :*
+
+Specify a command prefix before :*
+
+The ":*" syntax is only for Bash prefix rules
+
+Use glob patterns like "*" or "**" for file matching
+
+List of permission rules for allowed operations
+
+List of permission rules for denied operations
+
+List of permission rules that should always prompt for confirmation
+
+Default permission mode when Claude Code needs access ('manual' is accepted as an alias for 'default'
+
+Disable the ability to bypass permission prompts4
+
+Additional directories to include in the permission scope
+
+JSON Schema reference for Claude Code settings
+
+Path to a script that outputs authentication values
+
+Shell command that outputs a Proxy-Authorization header value (EAP
+
+Path to a script that exports AWS credentials
+
+Path to a script that refreshes AWS authentication
+
+Command to refresh GCP authentication (e.g., gcloud auth application-default login
+
+Executable that computes managed settings at startup. Honored only from admin-controlled policy sources.
+
+IdP issuer URL for OIDC discovery
+
+Claude Code's client_id registered at the IdP
+
+Fixed loopback callback port for the IdP OIDC login. Only needed if the IdP does not honor RFC 8252 port-any matching.
+
+XAA (SEP-990) IdP connection. Configure once; all XAA-enabled MCP servers reuse this.
+
+Custom file suggestion configuration for @ mentions
+
+Whether file picker should respect .gitignore files (default: true). Note: .ignore files are always respected.
+
+Show a friendly nudge after sustained continuous use (default false). Must be true for the reminder to fire.Æ
+
+Minutes of continuous use before the reminder fires (default 30). Re-fires every interval until you take a break.
+
+Minutes of inactivity that count as a break and reset the timer (default 10
+
+Custom reminder text. Leave unset for a rotating set of friendly nudges.
+
+Show a one-time nudge when you start or keep using the CLI inside your quiet-hours window (default false).
+
+Expected 24-hour local time "HH:MM" (e.g. "22:00"
+
+Start of the quiet-hours window, 24-hour local time "HH:MM".
+
+Expected 24-hour local time "HH:MM" (e.g. "07:00"
+
+End of the quiet-hours window, 24-hour local time "HH:MM". May be earlier than start for an overnight range.
+
+Number of days to retain chat transcripts before automatic cleanup (default: 30). Minimum 1. Use a large value for long retention; use --no-session-persistence to disable transcript writes entirely.
+
+Per-skill description character cap in the skill listing sent to Claude (default: 1536). Descriptions longer than this are truncated. Raise to opt in to higher per-turn context cost.
+
+Fraction of the context window (in characters) reserved for the skill listing sent to Claude (default: 0.01 = 1%). When the listing exceeds this, descriptions are shortened to fit. Raise to opt in to higher per-turn context cost.ÿÿÿ
+
+Environment variables to set for Claude Code sessions
+
+Attribution text for git commits, including any trailers. Empty string hides attribution.
+
+Attribution text for pull request descriptions. Empty string hides attribution.
+
+Whether to append the claude.ai session link to commits and PRs created from web or Remote Control sessions (default: true). Set to false to omit the Claude-Session trailer and PR-body link.
+
+Customize attribution text for commits and PRs. Each field defaults to the standard Claude Code attribution if not set.
+
+Deprecated: Use attribution instead. Whether to include Claude's co-authored by attribution in commits and PRs (defaults to true
+
+Include built-in commit and PR workflow instructions in Claude's system prompt (default: true
+
+Tool usage permissions configuration
+
+Override the default model used by Claude Code
+
+Fallback model(s) tried in order when the primary model is overloaded or unavailable. Each element accepts a model name or alias; "default" expands to the default model. CLI --fallback-model takes precedence.
+
+Allowlist of models that users can select. Accepts family aliases ("opus" allows any opus version), version prefixes ("opus-4-5" allows only that version), and full model IDs. If undefined, all models are available. If empty array, only the default model is available. Typically set in managed settings by enterprise administrators.
+
+When true and availableModels is a non-empty array, the Default model selection is also constrained: if the default model for the user tier is not in availableModels, Default resolves to the first allowed availableModels entry instead. Has no effect when availableModels is unset or an empty array. Typically set in managed settings by enterprise administrators.
+
+Override mapping from Anthropic model ID (e.g. "claude-opus-4-6") to provider-specific model ID (e.g. a Bedrock inference profile ARN). Typically set in managed settings by enterprise administrators.
+
+Whether to automatically approve all MCP servers in the project
+
+List of approved MCP servers from .mcp.json
+
+List of rejected MCP servers from .mcp.json
+
+When true in any settings source, claude.ai MCP cloud connectors are not auto-fetched or connected.
+
+(e.g. via --mcp-config or the SDK mcpServers option) still follows the normal MCP config trust flow. Any-source-true wins: a project can opt out, but a project-level false cannot override a user-level true.
+
+Per-skill listing overrides keyed by skill name. "name-only" lists the skill without its description; "user-invocable-only" hides it from the model but keeps /name; "off" hides it from both. Absent = on.
+
+Disable the skills and workflows that ship with Claude Code: bundled skills and workflows are removed entirely; built-in slash commands stay typable but are hidden from the model. Plugins, .claude/skills/, and .claude/commands/ are unaffected. Equivalent to CLAUDE_CODE_DISABLE_BUNDLED_SKILLS=1.
+
+Enterprise allowlist of MCP servers that can be used. Applies to all scopes including enterprise servers from managed-mcp.json. If undefined, all servers are allowed. If empty array, no servers are allowed. Denylist takes precedence - if a server is on both lists, it is denied.
+
+Enterprise denylist of MCP servers that are explicitly blocked. If a server is on the denylist, it will be blocked across all scopes including enterprise. Denylist takes precedence over allowlist - if a server is on both lists, it is denied.
+
+Custom commands to run before/after tool executions
+
+Directories to symlink from main repository to worktrees to avoid disk bloat. Must be explicitly configured - no directories are symlinked by default. Common examples: "node_modules", ".cache", ".bin
+
+Directories to include when creating worktrees, via git sparse-checkout (cone mode).
+
+Which ref new worktrees branch from. 'fresh' (default) branches from origin/<default-branch> for a clean tree. 'head' branches from your current local HEAD so unpushed commits and feature-branch state are present. Applies to --worktree, EnterWorktree, and agent isolation.
+
+Isolation mode for background sessions in this repo. 'worktree' (default) blocks Edit/Write in the main checkout until EnterWorktree is called. 'none' lets background jobs edit the working copy directly.
+
+Git worktree configuration for --worktree flag.
+
+Disable all hooks and statusLine execution
+
+Disable agent view (`claude agents`, `--bg`, /background, the on-demand daemon). Typically set in managed settings. Equivalent to CLAUDE_CODE_DISABLE_AGENT_VIEW=1.
+
+Disable Remote Control (claude.ai/code, `claude remote-control`, `--remote-control`/`--rc`, auto-start, and the in-session toggle). Typically set in managed settings.
+
+Disable the Workflows feature (also via CLAUDE_CODE_DISABLE_WORKFLOWS).
+
+Disable the Artifact tool (also via CLAUDE_CODE_DISABLE_ARTIFACT).
+
+Enable or disable the Artifact tool for this user. Unset defaults to enabled once the feature is available.
+
+Enable or disable the Workflows feature for this user. Unset = default by plan once the feature is available.
+
+Enable the "ultracode" keyword trigger: including the keyword in a prompt opts that turn into the Workflow tool. Set to false to disable the trigger. Default: true.
+
+Disable inline shell execution in skills and custom slash commands from user, project, or plugin sources. Commands are replaced with a placeholder instead of being run.
+
+Default shell for input-box ! commands. Defaults to 'bash' on all platforms (no Windows auto-flip).
+
+Whether Claude responds after an input-box ! bash command runs. Set to false to add the command output to context without a response. Default: true.
+
+When true (and set in managed settings), only hooks from managed settings run. User, project, and local hooks are ignored.
+
+Allowlist of URL patterns that HTTP hooks may target. Supports * as a wildcard (e.g. "https://hooks.example.com/*"). When set, HTTP hooks with non-matching URLs are blocked. If undefined, all URLs are allowed. If empty array, no HTTP hooks are allowed. Arrays merge across settings sources (same semantics as allowedMcpServers).
+
+Allowlist of environment variable names HTTP hooks may interpolate into headers. When set, each hook's effective allowedEnvVars is the intersection with this list. If undefined, no restriction is applied. Arrays merge across settings sources (same semantics as allowedMcpServers).
+
+When true (and set in managed settings), only permission rules (allow/deny/ask) from managed settings are respected. User, project, local, and CLI argument permission rules are ignored.
+
+When true (and set in managed settings), allowedMcpServers is only read from managed settings. deniedMcpServers still merges from all sources, so users can deny servers for themselves. Users can still add their own MCP servers, but only the admin-defined allowlist applies.
+
+When true (and set in managed settings), claude.ai cloud MCP connectors load alongside managed-mcp.json instead of being suppressed by its exclusive-control lockdown. Default off preserves the lockdown. Read from managed settings only.
+
+When set in managed settings, blocks non-plugin customization sources for the listed surfaces. Array form locks specific surfaces (e.g. ["skills", "hooks"]); `true` locks all four; `false` is an explicit no-op. Blocked: ~/.claude/{surface}/, .claude/{surface}/ (project), settings.json hooks, .mcp.json. NOT blocked: managed (policySettings) sources, plugin-provided customizations.
+
+marketplace allowlist, everything else blocked here.
+
+Re-run the status line command every N seconds in addition to event-driven updates
+
+Hide the built-in `-- INSERT --` / `-- VISUAL --` indicator below the prompt. Use this when your status line script renders `vim.mode` itself.
+
+Custom status line display configuration
+
+Extra clickable footer badges that appear when a regex matches turn output (tool results and assistant responses). Read from user, flag, and managed settings only; ignored in project .claude/settings.json and local .claude/settings.local.json. At most 5 badges render; the oldest is displaced by newer matches and /clear removes them. Use to surface IDs printed by project CLIs as session links.
+
+Custom per-subagent status line shown in the agent panel; receives row context as JSON on stdin
+
+Additional marketplaces to make available for this repository. Typically used in repository .claude/settings.json to ensure team members have required plugin sources.
+
+Enterprise strict list of allowed marketplace sources. When set in managed settings, ONLY these exact sources can be added as marketplaces. The check happens BEFORE downloading, so blocked sources never touch the filesystem.
+
+To pre-register allowed marketplaces for users, also set extraKnownMarketplaces.
+
+Enterprise blocklist of marketplace sources. When set in managed settings, these exact sources are blocked from being added as marketplaces. The check happens BEFORE downloading, so blocked sources never touch the filesystem.
+
+When true (and set in managed settings), rejects the --plugin-dir, --plugin-url, --agents, and non-sdk --mcp-config CLI flags at startup. Closes the CLI-flag bypass of strictKnownMarketplaces. Pair with allowedMcpServers for per-server MCP control; this setting does not gate other MCP entry points (SDK setMcpServers, claude mcp add, .mcp.json). Also blocks surfaces that spawn the CLI with these flags internally (see settings documentation). Only honored from managed settings; ignored in user/project/local settings.
+
+Marketplace names whose plugins may surface as contextual install suggestions (relevance-based tips). No marketplace-declared suggestions surface without this allowlist; the built-in first-party frontend-design tip is unaffected. Only honored when set in managed settings (policy scope); the key is ignored in user, project, and local settings. A name only takes effect when the marketplace is registered on the machine AND its registered source is also declared in managed settings, either as the extraKnownMarketplaces entry for that name or as an entry of strictKnownMarketplaces. A marketplace registered from a different source under an allowlisted name is ignored. The official marketplace is exempt from the source requirement: allowlisting its name alone suffices, since that name can only register from the official Anthropic source.
+
+Force a specific login method: "claudeai" for Claude Pro/Max, "console" for Console billing, "gateway" for the Cloud gateway OIDC device flow
+
+Controls whether the SDK parent tier (Options.managedSettings / --managed-settings) layers under this admin tier. "first-wins
+
+source. "merge": parent's restrictive-only-filtered settings union under the admin winner. Has no effect when no admin tier exists (parent applies as the sole policy tier, still filtered restrictive-only).
+
+Organization UUID to require for OAuth login. Accepts a single UUID string or an array of UUIDs (any one is permitted). When set in managed settings, login fails if the authenticated account does not belong to a listed organization.
+
+When set in managed settings, the CLI blocks startup until remote managed settings are freshly fetched, and exits if the fetch fails
+
+Path to a script that outputs OpenTelemetry headers
+
+Controls the output style for assistant responses
+
+Default transcript view mode on startup
+
+Preferred language for Claude responses and voice dictation (e.g., "japanese", "spanish"
+
+Skip the WebFetch blocklist check for enterprise environments with restrictive security policies
+
+Whether to show tips in the spinner
+
+Customize spinner verbs. mode: "append" adds verbs to defaults, "replace" uses only your verbs.

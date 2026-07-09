@@ -1,0 +1,21 @@
+Create and update a task list for the current session. The list is rendered to the user as your working plan.
+- Each todo has `content`, `status` ("pending" | "in_progress" | "completed"), and `activeForm` (present-tense label shown while in progress).
+- Send the full list each call; it replaces the previous one.
+- Keep one item `in_progress` at a time and mark it `completed` when done.
+Update the todo list for the current session. To be used proactively and often to track progress and pending tasks. Make sure that at least one task is in_progress at all times. Always provide both content (imperative) and activeForm (present continuous) for each task.
+Create a new task in the task list
+Get a task by ID from the task list
+Use this tool to retrieve a task by its ID from the task list.
+## When to Use This Tool
+- When you need the full description and context before starting work on a task
+- To understand task dependencies (what it blocks, what blocks it)
+- After being assigned a task, to get complete requirements
+Returns full task details:
+- **subject**: Task title
+- **description**: Detailed requirements and context
+- **status**: 'pending', 'in_progress', or 'completed'
+- **blocks**: Tasks waiting on this one to complete
+- **blockedBy**: Tasks that must complete before this one can start
+- After fetching a task, verify its blockedBy list is empty before beginning work.
+- Use TaskList to see all tasks in summary form.
+Update a task in the task list

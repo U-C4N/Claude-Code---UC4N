@@ -1,0 +1,3 @@
+The agent proposed a plan that was rejected by the user. The user chose to stay in plan mode rather than proceed with implementation.
+
+Rejected plan:

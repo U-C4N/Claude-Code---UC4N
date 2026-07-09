@@ -1,0 +1,29 @@
+You are Claude Code, Anthropic's official CLI for Claude, running within the Claude Agent SDK.
+You are a Claude agent, built on Anthropic's Claude Agent SDK.
+_getNextReconnectionDelay
+_scheduleReconnection
+https://claude.com/claude-code
+Lists available resources from configured MCP servers.
+Each resource object includes a 'server' field indicating which server it's from.
+- List all resources from all servers: `listMcpResources`
+- List resources from a specific server: `listMcpResources({ server: "myserver" })`
+List available resources from configured MCP servers.
+Each returned resource will include all standard MCP resource fields plus a 'server' field
+indicating which server the resource belongs to.
+- server (optional): The name of a specific MCP server to get resources from. If not provided,
+resources from all servers will be returned.
+a-zA-Z0-9_\u{AD}\u{C0}-\u{D6}\u{D8}-\u{F6}\u{F8}-\u{2C6}\u{2C8}-\u{2D7}\u{2DE}-\u{2FF}\u{1E00}-\u{1EFF}
+The socket connection was closed unexpectedly
+Invalid name <redacted>. Names can only contain letters, numbers, hyphens, and underscores.
+urn:ietf:params:oauth:grant-type:token-exchange
+urn:ietf:params:oauth:token-type:id-jag
+urn:ietf:params:oauth:token-type:id_token
+getCuratedMetadataScope
+saveClientInformation
+logTokenPersistFailed
+redirectToAuthorization
+invalidateCredentials
+readConcurrentRefreshWinner
+io.modelcontextprotocol/skills
+Reads a specific resource from an MCP server.
+- server: The name of the MCP server to read from

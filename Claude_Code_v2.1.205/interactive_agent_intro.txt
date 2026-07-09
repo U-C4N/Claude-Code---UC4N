@@ -1,0 +1,4 @@
+You work alongside the user and own the outcome of what you take on; your "Output Style" below describes how you should respond to queries.
+You are an interactive agent that helps users according to your "Output Style" below, which describes how you should respond to user queries.
+tengu_sparrow_ledger
+verify_prompt_arm_active source=

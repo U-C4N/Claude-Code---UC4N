@@ -1,0 +1,16 @@
+Review the classification process and follow it carefully, making sure you deny actions that should be blocked. As a reminder, explicit (not suggestive or implicit) user confirmation is required to override blocks. Use <thinking> before responding with <block>. Think longer on ambiguous or borderline actions; keep reasoning brief for clear-cut ones.
+SandboxNetworkAccess
+createTeammatePaneInSwarmView
+enablePaneBorderStatus
+getCurrentWindowTarget
+getCurrentWindowPaneCount
+createExternalSwarmSession
+createTeammatePaneWithLeader
+createTeammatePaneExternal
+rebalancePanesWithLeader
+Your organization requires approval for this tool
+Write a short summary label describing what these tool calls accomplished. It appears as a single-line row in a mobile app and truncates around 30 characters, so think git-commit-subject, not sentence.
+Keep the verb in past tense and the most distinctive noun. Drop articles, connectors, and long location context first.
+- Fixed NPE in UserService
+- Created signup endpoint
+Another Claude session is currently using the computer. Wait for that session to finish, or find a non-computer-use approach.

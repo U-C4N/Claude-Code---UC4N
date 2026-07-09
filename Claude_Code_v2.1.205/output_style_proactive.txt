@@ -1,0 +1,985 @@
+In order to encourage learning, before and after writing code, always provide brief educational explanations about implementation choices using (with backticks):
+
+Claude executes immediately, minimizes interruptions, and prefers action over planning
+
+You are an interactive CLI tool that helps users with software engineering tasks. You should work proactively and autonomously, executing immediately and minimizing interruptions.
+
+Claude explains its implementation choices and codebase patterns
+
+You should be clear and educational, providing helpful explanations while remaining focused on the task. Balance educational content with task completion. When providing insights, you may exceed typical length constraints, but remain focused and relevant.
+
+Claude pauses and asks you to write small pieces of code for hands-on practice
+
+**Context:** [what's built and why this decision matters]
+
+**Your Task:** [specific function/section in file, mention file and TODO(human) but do not include line numbers]
+
+**Guidance:** [trade-offs and constraints to consider]
+
+- Frame contributions as valuable design decisions, not busy work
+
+- You must first add a TODO(human) section into the codebase with your editing tools before making the Learn by Doing request
+
+- Make sure there is one and only one TODO(human) section in the code
+
+- Don't take any action or output anything after the Learn by Doing request. Wait for human implementation before proceeding.
+
+**Context:** I've set up the hint feature UI with a button that triggers the hint system. The infrastructure is ready: when clicked, it calls selectHintCell() to determine which cell to hint, then highlights that cell with a yellow background and shows possible values. The hint system needs to decide which empty cell would be most helpful to reveal to the user.
+
+**Your Task:** In sudoku.js, implement the selectHintCell(board) function. Look for TODO(human). This function should analyze the board and return {row, col} for the best cell to hint, or null if the puzzle is complete.
+
+**Guidance:** Consider multiple strategies: prioritize cells with only one possible value (naked singles), or cells that appear in rows/columns/boxes with many filled cells. You could also consider a balanced approach that helps without making it too easy. The board parameter is a 9x9 array where 0 represents empty cells.
+
+**Context:** I've built a file upload component that validates files before accepting them. The main validation logic is complete, but it needs specific handling for different file type categories in the switch statement.
+
+**Your Task:** In upload.js, inside the validateFile() function's switch statement, implement the 'case "document":' branch. Look for TODO(human). This should validate document files (pdf, doc, docx).
+
+**Guidance:** Consider checking file size limits (maybe 10MB for documents?), validating the file extension matches the MIME type, and returning {valid: boolean, error?: string}. The file object has properties: name, size, type.
+
+**Context:** The user reported that number inputs aren't working correctly in the calculator. I've identified the handleInput() function as the likely source, but need to understand what values are being processed.
+
+**Your Task:** In calculator.js, inside the handleInput() function, add 2-3 console.log statements after the TODO(human) comment to help debug why number inputs fail.
+
+**Guidance:** Consider logging: the raw input value, the parsed result, and any validation state. This will help us understand where the conversion breaks.
+
+Share one insight connecting their code to broader patterns or system effects. Avoid praise or repetition.
+
+Iterator result interface is not an object.
+
+If you believe this capability is essential to complete the user's request, STOP and explain to the user what you were trying to do and why you need this permission. Let the user decide how to proceed.
+
+was modified, either by the user or by a linter. This change was intentional, so make sure to take it into account as you proceed (ie. don't revert it unless the user asks you to). Don't tell the user this, since they are already aware. The diff was omitted because other modified files in this turn already exceeded the snippet budget; use the Read tool if you need the current content.
+
+was read before the last conversation was summarized, but the contents are too large to include. Use
+
+The user @-mentioned the audio file
+
+, but Claude Code could not transcribe it.
+
+tool with the pages parameter to read specific page ranges (e.g., pages: "1-5"). Do NOT call
+
+without the pages parameter or it will fail. Start by reading the first few pages to understand the structure, then read more as needed. Maximum 20 pages per request.
+
+This may or may not be related to the current task.
+
+The user selected the following
+
+in the IDE. This may or may not be related to the current task.
+
+A plan file exists from plan mode at:
+
+If this plan is relevant to the current work and not already complete, continue working on it.
+
+The user has expressed a desire to invoke the agent 
+
+. Please invoke the agent appropriately, passing in the required context to it.
+
+The following skills are available for use with the Skill tool:
+
+, now available via the Skill tool:
+
+Remember to follow the specific guidelines for this style.
+
+You have exited plan mode. You can now make edits, run tools, and take actions.
+
+You have exited auto mode. The user may now want to interact more directly. You should ask clarifying questions when the approach is ambiguous rather than making assumptions.
+
+hook blocking error from command: 
+
+The date has changed. Today's date is now
+
+. DO NOT mention this to the user explicitly because they are already aware.
+
+The user included the keyword "ultrathink", requesting deeper reasoning on this turn. Reason as thoroughly as the task warrants.
+
+Cannot destructure property 'reminderType' from null or undefined value
+
+Cannot destructure property 'size' from null or undefined value
+
+The superclass is not a constructor.
+
+Cannot call a class constructor CB without |new|
+
+Cannot call a class constructor R0p without |new|
+
+Cannot call a class constructor M0p without |new|
+
+Failed to set socket permissions:
+
+Socket server listening for connections
+
+Cannot destructure property 'type' from null or undefined value
+
+Failed to send notification to MCP client
+
+Invalid message length from MCP client
+
+Forwarding tool request from MCP client
+
+Failed to parse tool request from MCP client
+
+Cannot call a class constructor O0p without |new|
+
+Cannot call a class constructor mce without |new|
+
+[bg] illegal worker-phase transition
+
+report the issue at https://github.com/anthropics/claude-code/issues
+
+worker has non-resumable in-flight work
+
+; deferring re-key respawn until safe
+
+adopted from previous supervisor
+
+adopted (pid unverifiable; tracking via pty.sock
+
+Bun.Terminal unavailable (running under Node?
+
+Cannot destructure property 'cmd' from null or undefined value
+
+Cannot destructure property 'exitCode' from null or undefined value
+
+: deferred auth-mismatch re-key (
+
+working directory no longer exists or is not accessible:
+
+Cannot call a class constructor Baa without |new|
+
+Cannot call a class constructor vCp without |new|
+
+Cannot destructure property 'InvalidArgumentError' from null or undefined value
+
+Cannot call a class constructor ACp without |new|
+
+Cannot destructure property 'humanReadableArgName' from null or undefined value
+
+Cannot call a class constructor TCp without |new|
+
+Cannot call a class constructor HCp without |new|
+
+Cannot call a class constructor CCp without |new|
+
+Cannot destructure property 'Argument' from null or undefined value
+
+Cannot destructure property 'CommanderError' from null or undefined value
+
+Cannot destructure property 'Help' from null or undefined value
+
+Cannot destructure property 'Option' from null or undefined value
+
+Cannot destructure property 'suggestSimilar' from null or undefined value
+
+Cannot call a class constructor Xaa without |new|
+
+Command passed to .addCommand() must have a name
+
+- specify the name in Command constructor or using .name(
+
+only the last argument can be variadic 
+
+a default value for a required argument is never used: 
+
+Unexpected value for event passed to hook : 
+
+To add an Option object use addOption() instead of option() or requiredOption(
+
+passThroughOptions cannot be used for 
+
+ without turning on enablePositionalOptions for parent command(s
+
+call .storeOptionsAsProperties() before adding options
+
+call .storeOptionsAsProperties() before setting option values
+
+first parameter to parse must be array or undefined
+
+unexpected parse option { from: 
+
+searched for local subcommand relative to directory 
+
+no directory for search for local subcommand, use .executableDir() to supply a custom directory
+
+ is not meant to be an executable command, remove description parameter from '.command()' and use '.description()' instead
+
+- if the default executable name is not suitable, use the executableFile option to supply a custom name or path
+
+error: missing required argument 
+
+Command alias can't be the same as its name
+
+outputHelp callback must return a string or a Buffer
+
+Unexpected value for position to addHelpText.
+
+Cannot destructure property 'Command' from null or undefined value
+
+Cannot destructure property 'program' from null or undefined value
+
+[footerLinks] skipping a 'regex' entry with non-string fields (pattern/url/label types:
+
+[footerLinks] template references {
+
+has no such named capture group
+
+ must have a literal origin with an allowlisted scheme (e.g. https://host/...); skipping
+
+Cannot destructure property 'observerDefinition' from null or undefined value
+
+Cannot destructure property 'taskRegistry' from null or undefined value
+
+Cannot destructure property 'observerTaskId' from null or undefined value
+
+Cannot call a class constructor Ala without |new|
+
+Rejected (see disabledMcpjsonServers in settings
+
+Install Claude Code native build
+
+Cannot destructure property 'unmount' from null or undefined value
+
+must be contains | not_contains | count:N
+
+Cannot destructure property 'initAgentProxy' from null or undefined value
+
+Cannot destructure property 'registerAgentProxyEnvFn' from null or undefined value
+
+[init] agent proxy init failed:
+
+Claude Code on Windows requires a shell tool. Git Bash was not found and the PowerShell tool is disabled (CLAUDE_CODE_USE_POWERSHELL_TOOL=0).
+
+- Install Git for Windows: https://git-scm.com/downloads/win, or
+
+- Remove CLAUDE_CODE_USE_POWERSHELL_TOOL from your environment or settings.
+
+Claude Code on Windows requires either Git for Windows (for bash) or PowerShell. Install one of:
+
+- Git for Windows: https://git-scm.com/downloads/win
+
+- PowerShell 7: https://aka.ms/powershell
+
+Or set CLAUDE_CODE_GIT_BASH_PATH to your bash.exe location.
+
+Cannot destructure property 'cleanupSessionTeams' from null or undefined value
+
+Cannot call a class constructor BLo without |new|
+
+Cannot call a class constructor CDp without |new|
+
+Cannot call a class constructor bua without |new|
+
+choose: retry on fallback model or edit prompt
+
+choose: continue Fable 5 on usage credits or switch models
+
+Large workflow · /workflows to stop
+
+Cannot destructure property 'columns' from null or undefined value
+
+Cannot destructure property 'visible' from null or undefined value
+
+Cannot destructure property 'idx' from null or undefined value
+
+Cannot call a class constructor c$p without |new|
+
+Cannot destructure property 'count' from null or undefined value
+
+Cannot destructure property 'bridgeSelected' from null or undefined value
+
+create a util logging.py that...
+
+Cannot call a class constructor Uga without |new|
+
+[SessionsV2Client] Connect timed out after
+
+Cannot destructure property 'done' from null or undefined value
+
+[SessionsV2Client] Stream read error:
+
+[SessionsV2Client] Failed to parse
+
+SessionsV2Client: failed to parse event frame
+
+[SessionsV2Client] Dropping client_event with no payload.type (event_type=
+
+Cannot destructure property 'response' from null or undefined value
+
+[SessionsV2Client] Dropping malformed control_response from source=
+
+[SessionsV2Client] Dropping worker-output-shaped user frame from source=
+
+[SessionsV2Client] Dropping user frame with malformed content from source=
+
+[SessionsV2Client] Dropping control_response for this client's request_id from source=
+
+[SessionsV2Client] Stripping prompt-redelivery fields from control_response with source=
+
+Cannot destructure property 'pending_user_dialog_requests' from null or undefined value
+
+[SessionsV2Client] Dropping malformed stream_event on ephemeral channel
+
+[SessionsV2Client] Unknown SSE event type 
+
+[SessionsV2Client] Reconnect budget exhausted (
+
+[SessionsV2Client] Cannot send: closed
+
+[SessionsV2Client] POST /events returned
+
+[SessionsV2Client] POST /events failed:
+
+[SessionsV2Client] Cannot send control_request: closed
+
+[SessionsV2Client] Liveness timeout, reconnecting
+
+Cannot call a class constructor Bga without |new|
+
+[RemoteSessionManager] Connecting to session
+
+Cannot destructure property 'request_id' from null or undefined value
+
+[RemoteSessionManager] User dialog request cancelled:
+
+[RemoteSessionManager] control_cancel_request for unknown request
+
+[RemoteSessionManager] Permission request cancelled:
+
+[RemoteSessionManager] control_request_progress for unknown request
+
+[RemoteSessionManager] User dialog request
+
+[RemoteSessionManager] Dropped own set_model breadcrumb echo
+
+[RemoteSessionManager] Turn ended with permission request
+
+[RemoteSessionManager] Turn ended with user dialog request
+
+[RemoteSessionManager] Permission request for tool:
+
+[RemoteSessionManager] Duplicate user dialog request
+
+[RemoteSessionManager] User dialog request:
+
+[RemoteSessionManager] Unsupported control request subtype:
+
+Unsupported control request subtype:
+
+[RemoteSessionManager] Sending message to session
+
+[RemoteSessionManager] Failed to send message to session
+
+[RemoteSessionManager] Sending bash_command to session
+
+[RemoteSessionManager] Failed to send bash_command to session
+
+[RemoteSessionManager] No pending permission request with ID:
+
+[RemoteSessionManager] Sending permission response:
+
+[RemoteSessionManager] No pending user dialog request with ID:
+
+[RemoteSessionManager] Sending user dialog response:
+
+[RemoteSessionManager] Sending interrupt signal
+
+[RemoteSessionManager] Cannot send: not connected
+
+[RemoteSessionManager] Cancelling control request
+
+[RemoteSessionManager] Reconnecting SSE stream
+
+Cannot call a class constructor qga without |new|
+
+[DirectConnect] Unsupported control request subtype:
+
+the connection is still being established
+
+[DirectConnect] Dropping permission response for
+
+not a model this version of Claude Code recognizes
+
+not allowed by this account's model settings
+
+Cannot destructure property 'tools' from null or undefined value
+
+Provide an explanation of a shell command
+
+What this command does (1-2 sentences
+
+Why YOU are running this command. Start with "I" - e.g. "I need to check the file contents
+
+What could go wrong, under 15 words
+
+LOW (safe dev workflows), MEDIUM (recoverable changes), HIGH (dangerous/irreversible
+
+tell Claude what to do differently
+
+Dynamic workflows can use a lot of tokens quickly by running many
+
+running workflow at any time with /workflows, or disable dynamic workflows in /config.
+
+Cannot destructure property 'payload' from null or undefined value
+
+Claude Code wants to enter plan mode
+
+Claude Code needs your approval for the plan
+
+Claude needs your approval for a review artifact
+
+After the findings are reported (and applied, when --fix was passed): if `/
+
+Push your local design system to claude.ai/design
+
+Authorize design access with your claude.ai account
+
+Grant Claude agent access to your Design projects
+
+Revoke Claude agent access to your Design projects
+
+Pull a Claude Design project into the working directory
+
+Push the working directory into a new Claude Design project
+
+Show design-system auth and available design systems
+
+Create or modify `~/.claude/keybindings.json` to customize keyboard shortcuts.
+
+- Use **Edit** tool for modifications to existing files
+
+- Use **Write** tool only if the file does not exist yet
+
+Always include the `$schema` and `$docs` fields.
+
+**Modifiers** (combine with `+`):
+
+- `meta` (aliases: `cmd`, `command`
+
+**Special keys**: `escape`/`esc`, `enter`/`return`, `tab`, `space`, `backspace`, `delete`, `up`, `down`, `left`, `right
+
+**Chords**: Space-separated keystrokes, e.g. `ctrl+k ctrl+s` (1-second timeout between keystrokes
+
+Set a key to `null` to remove its default binding:
+
+## How User Bindings Interact with Defaults
+
+- To **move** a binding to a different key: unbind the old key (`null`) AND add the new binding
+
+- A context only needs to appear in the user's file if they want to change something in that context
+
+To change the external editor shortcut from `ctrl+g` to `ctrl+e`:
+
+Claude Code validates `~/.claude/keybindings.json` when it loads; warnings go to the debug log. After editing the file, re-check it against the rules below and fix anything that matches.
+
+### Example validation warnings (debug log
+
+[keybindings] Found 2 validation issue(s
+
+[keybindings] [warning] "ctrl+c" may not work: Terminal interrupt (SIGINT
+
+**Errors** prevent bindings from working and must be fixed. **Warnings** indicate potential conflicts but the binding may still work.
+
+keybindings.json must have a "bindings" array
+
+Set `"bindings"` to an array: `[{ context: ..., bindings: ... }]
+
+Use exact context names from the Available Contexts table
+
+Duplicate key "X" in Y bindings
+
+Same key defined twice in one context
+
+Remove the duplicate; JSON uses only the last value
+
+Key conflicts with terminal/OS reserved shortcut
+
+Choose a different key (see Reserved Shortcuts section
+
+Check syntax: use `+` between modifiers, valid key names
+
+Action value is not a string or null
+
+Actions must be strings like `"app:help"` or `null` to unbind
+
+single message so they run concurrently. Pass each agent the diff and one of
+
+the four angles below. Each returns its findings with `file`, `line`, a
+
+one-line `summary`, and the concrete cost (what is duplicated, wasted, or
+
+User: "Format my code after Claude writes it
+
+command": "jq -r '.tool_response.filePath // .tool_input.file_path' | { read -r f; prettier --write \"$f\"; } 2>/dev/null || true
+
+User: "Allow npm commands without prompting
+
+Usage: /loop [interval] <prompt>
+
+Run a prompt or slash command on a recurring interval.
+
+Intervals: Ns, Nm, Nh, Nd (e.g. 5m, 30m, 2h, 1d). Minimum granularity is 1 minute.
+
+If no interval is specified, defaults to
+
+/loop check the deploy          (defaults to
+
+/loop check the deploy every 20m
+
+SKIP: questions about building applications with the Claude API or Anthropic SDK (use /claude-api), general programming questions, questions about the user's own codebase.
+
+Sessions that have a question or need your decision land here
+
+Finished sessions wait here for you to review
+
+Set model for this FleetView session (not persisted
+
+Cannot call a class constructor MUo without |new|
+
+Cannot call a class constructor QAa without |new|
+
+[process exited while detached; exit code unknown]
+
+Cannot call a class constructor i1t without |new|
+
+How well is Claude following the instructions you gave earlier in this conversation? (optional
+
+for a quick interactive tutorial
+
+Start with small features or bug fixes, tell Claude to propose a plan, and verify its suggested edits
+
+Use Plan Mode to prepare for a complex request before making changes. Press
+
+Use /config to change your default permission mode (including Plan Mode
+
+Failed to check default-permission-mode-config tip relevance:
+
+Use git worktrees to run multiple Claude sessions in parallel.
+
+Running multiple Claude sessions? Use /color and /rename to tell them apart at a glance.
+
+Running multiple Claude sessions? Press
+
+on an empty prompt to see them all in one place
+
+Run /terminal-setup to enable convenient terminal integration like Option + Enter for new line and more
+
+Run /terminal-setup to enable convenient terminal integration like Shift + Enter for new line and more
+
+Corrupted terminal glyphs? Disable terminal GPU acceleration in settings or run /terminal-setup
+
+Press Option+Enter to send a multi-line message
+
+Press Shift+Enter to send a multi-line message
+
+Run /terminal-setup to enable Option+Enter for new lines
+
+Run /terminal-setup to enable Shift+Enter for new lines
+
+Use /memory to view and manage Claude memory
+
+Use /theme to change the color theme
+
+Try setting environment variable COLORTERM=truecolor for richer colors
+
+Set CLAUDE_CODE_USE_POWERSHELL_TOOL=1 to enable the PowerShell tool (preview
+
+Use /statusline to set up a custom status line that will display beneath the input box
+
+Hit Enter to queue up additional messages while Claude is working.
+
+Send messages to Claude while it works to steer Claude in real-time
+
+Ask Claude to create a todo list when working on complex tasks to track progress and remain on track
+
+Open the Command Palette (Cmd+Shift+P) and run "Shell Command: Install 
+
+ command in PATH" to enable IDE integration
+
+Connect Claude to your IDE · /ide
+
+Run /install-github-app to tag @claude right from your Github issues and PRs
+
+Run /install-slack-app to use Claude in Slack
+
+Use /permissions to pre-approve and pre-deny bash, edit, and MCP tools
+
+Did you know you can drag and drop image files into your terminal?
+
+Paste images into Claude Code using control+v (not cmd+v!
+
+Double-tap esc to rewind the conversation to a previous point in time
+
+Double-tap esc to rewind the code and/or conversation to a previous point in time
+
+Run claude --continue or claude --resume to resume a conversation
+
+Name your conversations with /rename to find them easily in /resume later
+
+Create skills by adding .md files to .claude/skills/ in your project or ~/.claude/skills/ for skills that work in any project
+
+to cycle between manual mode, auto-accept edit mode, and plan mode
+
+to paste images from your clipboard
+
+Ask Claude to create subagents for specific tasks. Eg. Software Architect, Code Writer, Code Reviewer
+
+Use --agent <agent_name> to directly start a conversation with a subagent
+
+Run Claude Code locally or remotely using the Claude desktop app: clau.de/desktop
+
+Continue your session in Claude Code Desktop with
+
+Working on UI? See a live preview in Claude Code Desktop · run
+
+Working on UI? Claude Code Desktop has live preview and inline images ·
+
+Use Claude Design to mock up screens before you build ·
+
+Run tasks in the cloud while you keep coding locally · clau.de/web
+
+Get pinged on your phone when long tasks finish · enable push notifications in
+
+Use /voice to enable push-to-talk dictation
+
+Build your AI product with Claude API. Run
+
+Your default model setting is Opus Plan Mode. Press
+
+twice to activate Plan Mode and plan with Claude Opus.
+
+Working with HTML/CSS? Install the frontend-design plugin:
+
+and Claude sends a team. Each one digs deep so nothing gets missed.
+
+Dynamic workflows let Claude write a script that orchestrates many agents for you. Mention the keyword
+
+or ask Claude to use a workflow directly.
+
+You can control how big a workflow is just by prompting. Try
+
+use a small workflow, 5 agents max
+
+You can control how big a workflow is just by prompting. Ask for a small workflow, cap it with
+
+runs any prompt on a recurring schedule. Great for monitoring deploys, babysitting PRs, or polling status.
+
+For a fast, cheap code review, try
+
+. It runs the built-in skill at its lightest effort level.
+
+You have free guest passes to share ·
+
+Cannot destructure property 'eligible' from null or undefined value
+
+Use /feedback to help us improve!
+
+Cannot call a class constructor Prf without |new|
+
+\bnot what I (asked|wanted|meant|said)\bÿÿÿÿÿÿÿ
+
+\bI (said|asked|wanted|told you|already said)\b
+
+\byou were supposed to\bÿÿÿÿÿÿÿ
+
+Cannot call a class constructor G0a without |new|
+
+Cannot destructure property 'gateProject' from null or undefined value
+
+Cannot call a class constructor sdn without |new|
+
+Claude decides when and how much to think (Opus 4.6+).
+
+Fixed thinking token budget (older models
+
+Controls Claude's thinking/reasoning behavior. When set, takes precedence over the deprecated maxThinkingTokens.
+
+Per-server tool-call timeout in milliseconds. Overrides the MCP_TOOL_TIMEOUT environment variable for this server. Hard wall-clock limit per call; progress notifications do not extend it. Values below 1000ms are ignored (falls through to MCP_TOOL_TIMEOUT or the default).
+
+Per-server HTTP request timeout in milliseconds, set by the host on the mcp_set_servers control event. Raises the per-request fetch first-byte budget and the tool-call watchdog for this server. Capped at 5 minutes. Ignored when `timeout` is also set.
+
+When true, all tools from this server are always included in the prompt and never deferred behind tool search. Equivalent to setting defer_loading: false on the API. Default: tools are deferred when tool search is enabled. As a side effect this also blocks startup until the server is connected (capped at the standard 5s connect timeout) even though MCP startup is otherwise non-blocking by default, since the tools must be present when the turn-1 prompt is built.
+
+Org admin's per-tool ceiling. Drives the auto-mode isOrgAskCeiling gate so an admin 'ask' cap forces a user prompt even in auto mode.
+
+Per-tool permission policy carried on mcp_set_servers for remote servers.
+
+Server information (available when connected
+
+Server configuration (includes URL for HTTP/SSE servers
+
+Configuration scope (e.g., project, user, local, claudeai, managed
+
+Tools provided by this server (available when connected
+
+Status information for an MCP server connection.
+
+Names of servers that were added
+
+Names of servers that were removed
+
+Map of server names to error messages for servers that failed to connect
+
+Result of a setMcpServers operation.
+
+Classification of this permission decision for telemetry. SDK hosts that prompt users (desktop apps, IDEs) should set this to reflect what actually happened: user_temporary for allow-once, user_permanent for always-allow (both the click and later cache hits), user_reject for deny. If unset, the CLI infers conservatively (temporary for allow, reject for deny). The vocabulary matches tool_decision OTel events (monitoring-usage docs).
+
+Permission mode for controlling how tool executions are handled. 'default' - Standard behavior, prompts for dangerous operations. 'acceptEdits' - Auto-accept file edit operations. 'bypassPermissions' - Bypass all permission checks (requires allowDangerouslySkipPermissions). 'plan' - Planning mode, no actual tool execution. 'dontAsk' - Don't prompt for permissions, deny if not pre-approved. 'auto' - Use a model classifier to approve/deny permission prompts.
+
+UUID correlating a user prompt with all subsequent events until the next prompt. Same value emitted on OpenTelemetry events as the `prompt.id` attribute, so hook output can be joined to OTel events at prompt grain. Absent until the first user input of the process lifetime.
+
+Subagent identifier. Present only when the hook fires from within a subagent (e.g., a tool called by an AgentTool worker). Absent for the main thread, even in --agent sessions. Use this field (not agent_type) to distinguish subagent calls from main-thread calls.
+
+Agent type name (e.g., "general-purpose", "code-reviewer"). Present when the hook fires from within a subagent (alongside agent_id), or on the main thread of a session started with --agent (without agent_id).
+
+Active effort level for the current turn (e.g., "low", "medium", "high", "xhigh", "max"), after any silent downgrade for the selected model. Also exposed to hook commands and Bash as the CLAUDE_EFFORT env var.
+
+Reasoning effort applied to the current turn. Same shape as StatusLineCommandInput.effort. Present for hooks that fire within a tool-use context (PreToolUse, PostToolUse, Stop, SubagentStop, etc.) on a model that supports the effort parameter; absent for session-lifecycle hooks and models without effort support.
+
+Tool execution time in milliseconds. Excludes permission-prompt and hook time.
+
+Hook input for the PostToolBatch event. Fired once after every tool call in a batch has resolved, before the next model request. PostToolUse fires per-tool and may run concurrently for parallel tool calls; PostToolBatch fires exactly once with the full batch.
+
+Friendly task-type label (e.g. 'shell', 'subagent', 'monitor', 'workflow'). Falls back to the raw discriminant for unknown types.
+
+Free-text description. Capped at 1000 chars; clipped values append
+
+Shell command line. Only present for 'shell' tasks. Capped at 1000
+
+Subagent type name. Only present for 'subagent' tasks.
+
+MCP server name. Only present for 'monitor' / 'MCP task' tasks.
+
+MCP tool name. Only present for 'monitor' / 'MCP task' tasks.
+
+Workflow name. Only present for 'workflow' tasks.
+
+False for one-shot wakeups whose cron field encodes a single fire time; true for tasks that re-fire on every match.
+
+Prompt text submitted when the cron fires. Capped at 1000 chars;
+
+Text content of the last assistant message before stopping. Avoids the need to read and parse the transcript file.
+
+In-flight background work (running/pending + backgrounded) registered in this session. Lets hooks distinguish "session is done" from "session is paused waiting for background work to wake it". Empty array when nothing is in flight.
+
+Session-scoped cron tasks (CronCreate, ScheduleWakeup, /loop) that will wake this session later. Empty array when none are scheduled.
+
+The conversation summary produced by compaction
+
+Hook input for the Elicitation event. Fired when an MCP server requests user input. Hooks can auto-respond (accept/decline) instead of showing the dialog.
+
+Hook input for the ElicitationResult event. Fired after the user responds to an MCP elicitation. Hooks can observe or override the response before it is sent to the server.
+
+UUID of the assistant message being displayed. Stable across
+
+Zero-based index of this delta within the message. Increments by one per flush.
+
+True on the message's last flush. Exactly one flush per message has it.
+
+The newly completed lines since the prior flush. Always whole lines, except on the final flush which may end mid-line. The delta of the final flush is empty when the message ends on a newline; treat final as the end-of-message signal regardless.
+
+Hook input for the MessageDisplay event. Fired with each batch of newly completed lines while an assistant message streams. Display-only: the stored message and what the model sees are untouched.
+
+When decision is "block", omit the original prompt from the block message
+
+Re-scan skill and command directories after SessionStart hooks complete, so skills installed by the hook are available in the same session
+
+Replaces the tool output before it is sent to the model
+
+Replaces the output for MCP tools only. Prefer updatedToolOutput, which works for all tools
+
+Hook-specific output for the Stop event. additionalContext is non-error feedback delivered to the model; the conversation continues so the model can act on it.
+
+Hook-specific output for the SubagentStop event. additionalContext is non-error feedback delivered to the subagent; the subagent continues so it can act on it.
+
+Text displayed in place of the delta. Omit (or return the delta unchanged) to display the original.
+
+Hook-specific output for the MessageDisplay event. Display-only: replaces the delta on screen without changing the stored message.
+
+A terminal escape sequence (e.g. OSC 9 / OSC 777 desktop-notification) for Claude Code to emit on your behalf. Only notification/title OSCs (0, 1, 2, 9, 99, 777) and BEL are permitted; anything else is dropped.
+
+Hook-specific output for the Elicitation event. Return this to programmatically accept or decline an MCP elicitation request.
+
+Hook-specific output for the ElicitationResult event. Return this to override the action or content before the response is sent to the MCP server.
+
+Hook-specific output for the WorktreeCreate event. Provides the absolute path to the created worktree directory. Command hooks print the path on stdout instead.
+
+Skill name (without the leading slash
+
+Description of what the skill does
+
+Hint for skill arguments (e.g., "<file>"
+
+Alternate names that resolve to this command (e.g., /cost and /stats both resolve to /usage
+
+Information about an available skill (invoked via /command syntax).
+
+Agent type identifier (e.g., "Explore"
+
+Description of when to use this agent
+
+Model alias this agent uses. If omitted, inherits the parent's model
+
+Information about an available subagent that can be invoked via the Task tool.
+
+Model identifier to use in API calls
+
+Description of the model's capabilities
+
+Whether this model supports effort levels
+
+Available effort levels for this model
+
+Whether this model supports adaptive thinking (Claude decides when and how much to think
+
+Whether this model supports fast mode
+
+Whether this model supports auto mode
+
+Information about an available model.
+
+Active API backend. Anthropic OAuth login only applies when "firstParty"; for 3P providers the other fields are absent and auth is external (AWS creds, gcloud ADC, etc.). "gateway" means the CLI is authenticated against an enterprise gateway.
+
+Information about the logged in user's account.
+
+Natural language description of when to use this agent
+
+Array of tool names to explicitly disallow for this agent. MCP server-level specs (mcp__server, mcp__server__*, mcp__*) remove every tool from the named server (or all MCP tools).
+
+Model alias (e.g. 'fable', 'opus', 'sonnet', 'haiku') or full model ID (e.g. 'claude-fable-5'). If omitted or 'inherit', uses the main model
+
+Experimental: Critical reminder added to system prompt
+
+Array of skill names to preload into the agent context
+
+Auto-submitted as the first user turn when this agent is the main thread agent. Slash commands are processed. Prepended to any user-provided prompt.
+
+Maximum number of agentic turns (API round-trips) before stopping
+
+Run this agent as a background task (non-blocking, fire-and-forget) when invoked
+
+Scope for auto-loading agent memory files. 'user' - ~/.claude/agent-memory/<agentType>/, 'project' - .claude/agent-memory/<agentType>/, 'local' - .claude/agent-memory-local/<agentType>/
+
+Reasoning effort level for this agent. Either a named level or an integer
+
+Permission mode controlling how tool executions are handled
+
+Agent type auto-spawned as a background observer whenever this agent runs. The observer receives read-only activity digests and reports via the ObserverReport tool; it never participates in the task.
+
+Supplemental postamble appended (after the harness-owned default) to each activity digest sent to the observer. Blank values are ignored.
+
+Definition for a custom subagent that can be invoked via the Agent tool.
+
+Source for loading filesystem-based settings. 'user' - Global user settings (~/.claude/settings.json). 'project' - Project settings (.claude/settings.json). 'local' - Local settings (.claude/settings.local.json).
+
+Plugin type. Currently only 'local' is supported
+
+Absolute or relative path to the plugin directory
+
+When true, the engine loads skills/hooks/agents/commands from this plugin but does NOT read its .mcp.json or manifest mcpServers. Use when the SDK host owns this plugin's MCP connections.
+
+Configuration for loading a plugin.
+
+Result of a rewindFiles operation.
+
+Task id of the in-process background subagent that sent this message, stamped by the harness from the sending loop (never from tool input). Absent for cross-session peers.
+
+Activity digest delivered to an observer agent. The message body is the self-framing digest (envelope + postamble); observed content is data, not instructions.
+
+Provenance of a user-role message (peer session, team lead, channel). Absent or `human` means keyboard input from the user.
+
+When false, the message is appended to the transcript without triggering an assistant turn. It will be merged into the next user message that does query.
+
+ISO timestamp when the message was created on the originating process. Older emitters omit it; consumers should fall back to receive time.
+
+Subagent type that produced this message.
+
+Description of the subagent task that produced this message.
+
+Shell command to execute verbatim via a one-shot `/bin/sh -c` (or `pwsh`) subprocess, bypassing the model. Trust model matches the local TUI `!cmd` path (no sandbox, no per-command prompt); unlike `!cmd`, output is not appended to the conversation transcript and there is no persistent shell state across calls.
+
+Working directory for the command. Falls back to the session cwd when omitted.
+
+Rate limit information for claude.ai subscription users.
+
+Wire uuids of previously-delivered messages that this message replaces (refusal-fallback supersede). The list can include tombstoned tool_result frames from the refused leg, not only assistant frames. Evict the named messages on arrival and treat this frame as their canonical replacement. Idempotent with the end-of-turn model_refusal_fallback notice, whose retracted_message_uuids remains the complete audit record for the turn.
+
+Rate limit event emitted when rate limit info changes.
+
+Why the query loop terminated. Unset when the loop was bypassed (local slash command) or interrupted externally (budget/retry limits checked between yields).
+
+Path to the settings file that failed to parse or validate.
+
+Dot-notation path to the field with the error, or empty string for whole-file errors.
+
+Relink info for messagesToKeep. Loaders splice the preserved segment at anchor_uuid (summary for suffix-preserving, boundary for prefix-preserving partial compact) so resume includes preserved content. Unset when compaction summarizes everything (no messagesToKeep).
+
+readers look up each UUID directly and relink uuids[i] to uuids[i-1] (uuids[0] to anchor_uuid) instead of walking the parentUuid chain. Unset when compaction summarizes everything.
+
+forkSession follows across the compaction break. Distinct from the session-file chain parent (which is the post-compact summary). Absent from older producers.
+
+Render level. 'info' shows only in transcript mode; 'notice' renders in inactive gray; 'suggestion' and 'warning' are more prominent.
+
+Dedupes progress messages for the same tool use.
+
+When true, execution stops after this message (e.g. a Stop hook denied continuation).
+
+Display names of the commands that were allowed.
+
+Renders as "<verb> N memories". Defaults to "Saved".
+
+Emitted when SessionStore.append() rejects or times out for a transcript-mirror batch after bounded retry (3 attempts with short backoff; timeouts are not retried). The batch is then dropped; this surfaces the failure so consumers are not silent on data loss.
+
+Emitted when an API request fails with a retryable error and will be retried after a delay. error_status is null for connection errors (e.g. timeouts) that had no HTTP response.
+
+request_id of the in-flight control_request this progress belongs to.
+
+Progress for a long-running client-originated control_request (currently only side_question), correlated by request_id. status 'started' means the worker accepted the request and launched the work; 'api_retry' carries the same retry counters as SDKAPIRetryMessage and is present only for that status.
+
+Emitted when the primary model ends the stream with stop_reason "refusal" and the turn is retried once on a fallback model with the swap made persistent for the session (direction: "retry"). "revert" and "sticky" are retained in the enum for SDK-consumer compat and are no longer emitted.
+
+Emitted when the model ends the stream with stop_reason "refusal" and no fallback model is configured, so the turn ends as an error. The structured counterpart to detecting stop_reason "refusal" on the assistant error frame. Not emitted when a fallback existed but was declined or gate-failed (model_refusal_fallback covers the retry case). Absent from older CLIs.
+
+True when the decline also rewrote the saved default model (explicit switch_default with the consent-gated model as the saved default).
+
+Identifier for the file type (e.g. 'plan', 'todo').
+
+Original file path (for debugging).
+
+Output tokens spent this turn toward the token budget.
+
+Background Agent-tool runs still in flight when the turn finished.
+
+Workflow-tool runs still in flight when the turn finished.
+
+Human-readable display string for the error.
+
+errno/SSL code extracted from the cause chain; null when absent.
+
+Quota-429 headers surfaced by the retry banner; null when not a quota 429.
+
+Output from a local slash command (e.g. /voice, /usage). Displayed as assistant-style text in the transcript.
+
+Headless plugin installation progress (CLAUDE_CODE_SYNC_PLUGIN_INSTALL). started/completed bracket the whole install; installed/failed carry a per-marketplace name.
+
+Subagent type for Task tool subagents.
+
+meta.name from the workflow script (e.g. 'spec'). Only set when task_type is 'local_workflow'.
+
+Ambient/housekeeping task. Consumers should hide this from the inline transcript; it may still appear in a tasks panel.
+
+Wire-safe subset of TaskState fields that changed. Excludes abortController, messages, result. Clients merge into their local task map.
+
+Every live background task after the change. REPLACE semantics: swap your set for this payload.
+
+The full set of live background tasks, emitted whenever membership changes (start, completion, kill, a foreground agent being backgrounded). A level signal, unlike the task_started/task_notification edge bookends: consumers that only need 'is background work running' should replace their set with each payload rather than pairing edges, so a missed bookend cannot wedge a stale running indicator. Ordering relative to the bookends for the same transition is unspecified (in practice the level precedes them) and the payload carries ids only, so do not correlate it with the edge stream. The level is per-process: nothing is emitted at startup, so consumers must reset to the empty set whenever the session's CLI process (re)starts and let the next membership change repopulate it.
+
+Short snake_case reason set by the host CLI (not user input), e.g. 'host_exit', 'remote_control_disabled'.
+
+Fire-and-forget push of the full slash-command list after a mid-session change (e.g. skills discovered dynamically as the agent works in a subdirectory). Clients should REPLACE their cached command list with this payload: supportedCommands() is captured once at initialize and never reflects mid-session changes, so a client re-fetch would return the stale init list.
+
+Loop-side text notification. Mirrors the interactive REPL notification queue (key/priority/timeout). JSX notifications are not emitted on this channel.
+
+Live thinking-token estimate, digested from thinking_delta.estimated_tokens during the redacted-thinking phase (where the API otherwise streams only pings). estimated_tokens is the running total for the current thinking block; estimated_tokens_delta is the increment carried by this frame. Approximate progress for spinners/pills, not the authoritative billed output_tokens.
+
+How memories were surfaced: 'select' returns full file bodies chosen by the parallel selector; 'synthesize' returns a Sonnet-authored paragraph distilled from many tiny memories.
+
+Absolute path to the memory file, a synthesis sentinel of the form `<synthesis:DIR>` when mode is 'synthesize', or an https URL when scope is 'organization'.
