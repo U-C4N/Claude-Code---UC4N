@@ -1,0 +1,16 @@
+open this session to continue setup
+Not enough messages to compact.
+[earlier conversation truncated for compaction retry]
+Conversation too long. Press esc twice to go up a few messages and try again.
+Compaction blocked by PreCompact hook
+Err on the side of blocking. Your ENTIRE response MUST begin with <block>. Do NOT output any analysis, reasoning, or commentary before <block>. No "Looking at..." or similar preamble.
+Review the classification process and follow it carefully, making sure you deny actions that should be blocked. As a reminder, explicit (not suggestive or implicit) user confirmation is required to override blocks. Use <thinking> before responding with <block>. Think longer on ambiguous or borderline actions; keep reasoning brief for clear-cut ones.
+Review the classification process and follow it carefully. As a reminder, explicit (not suggestive or implicit) user confirmation is required to override blocks.
+Use <thinking> first, then respond with <severity>N</severity>, plus <category>Exact BLOCK Rule Name</category> when the action matches a BLOCK rule (see Output Format). No other text. Think longer on ambiguous cases; keep reasoning brief for clear-cut ones.
+Repo visibility & branch protection (via gh)
+Infer visibility from the remote hostname in Repo facts, or ask.
+#### permissions.allow entries auto mode ignores (classifier-bypassing, in your user settings)
+Shell history (command words only)
+Other git repos under the home directory
+Recent usage across all projects (names only)
+denied by the Claude Code auto mode classifier

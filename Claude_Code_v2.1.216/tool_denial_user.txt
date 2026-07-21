@@ -1,0 +1,26 @@
+<system-reminder>This file is already in your context
+Read a file from the local filesystem.
+- Results are returned using cat -n format, with line numbers starting at 1
+- You can optionally specify a line offset and limit (especially handy for long files), but it's recommended to read the whole file by not providing these parameters
+- When you already know which part of the file you need, only read that part. This can be important for larger files.
+- Fast file pattern matching tool that works with any codebase size
+- Supports glob patterns like "**/*.js" or "src/**/*.ts"
+- Returns matching file paths sorted by modification time
+- Use this tool when you need to find files by name patterns
+[Request interrupted by user for tool use]
+The user doesn't want to take this action right now. STOP what you are doing and wait for the user to tell you how to proceed.
+API Error: Request was aborted.
+The previous response failed to produce a valid tool call. Please retry the tool call now.
+Your tool call was malformed and could not be parsed. Please retry.
+[Your previous response had no visible output. Please continue and produce a user-visible response.]
+The PermissionDenied hook indicated you may retry this tool call.
+https://browser-intake-us5-datadoghq.com/api/v2/logs1
+0123456789abcdefghijklmnopqrstuvwxyz
+Write-Output '{"valid":false,"errors":[{"message":"No command provided","errorId":"NoInput"}],"statements":[],"variables":[],"hasStopParsing":false,"originalCommand":""}'
+$Command = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($EncodedCommand))
+$ast = [System.Management.Automation.Language.Parser]::ParseInput(
+$allVariables = [System.Collections.ArrayList]::new()
+function Get-RawCommandElements {
+param([System.Management.Automation.Language.CommandAst]$CmdAst)
+$elems = [System.Collections.ArrayList]::new()
+foreach ($ce in $CmdAst.CommandElements) {

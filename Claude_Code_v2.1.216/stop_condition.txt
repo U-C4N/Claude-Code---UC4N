@@ -1,0 +1,20 @@
+Hooks: Processing agent hook with prompt:
+Hooks: Starting agent query with
+Cannot destructure property 'signal' from null or undefined value
+You are verifying a stop condition in Claude Code. Your task is to verify that the agent completed the given plan.
+hook in Claude Code. Your task is to evaluate the condition described in the user message.
+The conversation transcript is available at:
+You can read this file to analyze the conversation history if needed.
+Use the available tools to inspect the codebase and verify the condition.
+Use as few steps as possible - be efficient and direct.
+When done, return your result using the
+- ok: true if the condition is met
+- ok: false with reason if the condition is not met
+Iterator result interface is not an object.
+Hooks: Agent hook did not complete within 50 turns
+tengu_agent_stop_hook_max_turns
+Hooks: Agent hook did not return structured output
+Hooks: Agent hook condition was not met:
+tengu_agent_stop_hook_blocking
+Agent hook condition was not met:
+Hooks: Agent hook condition was met

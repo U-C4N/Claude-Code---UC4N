@@ -1,0 +1,70 @@
+Include partial message chunks as they arrive (only works with --print and --output-format=stream-json)
+Forward subagent text and thinking blocks as assistant/user messages with parent_tool_use_id set (only works with --print and --output-format=stream-json)
+Emit transcript_mirror frames on stdout (SDK-internal; set by ProcessTransport when sessionStore is configured)
+Input format (only works with --print): "text" (default), or "stream-json" (realtime streaming input)
+--dangerously-skip-permissions
+Bypass all permission checks. Recommended only for sandboxes with no internet access.
+--allow-dangerously-skip-permissions
+Enable bypassing all permission checks as an option, without it being enabled by default. Recommended only for sandboxes with no internet access.
+Thinking mode: enabled (equivalent to adaptive), disabled
+How thinking content appears in the response
+--max-thinking-tokens <tokens>
+[DEPRECATED. Use --thinking instead for newer models] Maximum number of thinking tokens (only works with --print)
+Maximum number of agentic turns in non-interactive mode. This will early exit the conversation after the specified number of turns. (only works with --print)
+Maximum dollar amount to spend on API calls (only works with --print)
+API-side task budget in tokens (output_config.task_budget)
+Re-emit user messages from stdin back on stdout for acknowledgment (only works with --input-format=stream-json and --output-format=stream-json)
+Enable prompt suggestions. In print/SDK mode, emits a prompt_suggestion message after each turn with a predicted next user prompt
+Enable auth status messages in SDK mode
+--allowedTools, --allowed-tools <tools...>
+Comma or space-separated list of tool names to allow (e.g. "Bash(git *) Edit")
+Specify the list of available tools from the built-in set. Use "" to disable all tools, "default" to use all tools, or specify tool names (e.g. "Bash,Edit,Read").
+--disallowedTools, --disallowed-tools <tools...>
+Comma or space-separated list of tool names to deny (e.g. "Bash(git *) Edit")
+Load MCP servers from JSON files or strings (space-separated)
+--permission-prompt-tool <tool>
+MCP tool to use for permission prompts (only works with --print)
+System prompt to use for the session
+Read system prompt from a file
+--append-system-prompt <prompt>
+Append a system prompt to the default system prompt
+--append-system-prompt-file <file>
+Read system prompt from a file and append to the default system prompt
+--append-subagent-system-prompt <prompt>
+Append a system prompt to every Task-tool subagent's system prompt, propagated to nested subagents (only works with --print). Implies CLAUDE_CODE_ENABLE_APPEND_SUBAGENT_PROMPT=1.
+--plan-mode-instructions <instructions>
+Custom workflow body for plan mode. Replaces the default code-implementation phases in the plan-mode system reminder; the read-only enforcement preamble and ExitPlanMode protocol footer are always kept.
+--exclude-dynamic-system-prompt-sections
+Move per-machine sections (cwd, env info, memory paths, git status) from the system prompt into the first user message. Improves cross-user prompt-cache reuse. Only applies with the default system prompt (ignored with --system-prompt).
+Permission mode to use for the session
+Continue the most recent conversation in the current directory
+Resume a conversation by session ID, or open interactive picker with optional search term
+When resuming, create a new session ID instead of reusing the original (use with --resume or --continue)
+Pre-fill the prompt input with text without submitting it
+Signal that this session was launched from a deep link
+Repo slug the deep link ?repo= parameter resolved to the current cwd
+FETCH_HEAD mtime in epoch ms, precomputed by the deep link trampoline
+Base64url-encoded --prefill value (deep-link shell-safe launch paths)
+Base64url-encoded working directory (deep-link shell-safe launch paths)
+Resume a session linked to a PR by PR number/URL, or open interactive picker with optional search term
+Disable session persistence - sessions will not be saved to disk and cannot be resumed (only works with --print)
+--resume-session-at <message id>
+When resuming, only messages up to and including the assistant message with <message.id> (use with --resume in print mode)
+When resuming, immediately query if the loaded transcript ends in a user-role message (set by /background mid-turn so the fork continues the in-flight turn).
+--rewind-files <user-message-id>
+Restore files to state at the specified user message and exit (requires --resume)
+Model for the current session. Provide an alias for the latest model (e.g. 'fable', 'opus', or 'sonnet') or a model's full name (e.g. 'claude-fable-5').
+Effort level for the current session (
+Agent for the current session. Overrides the 'agent' setting.
+Beta headers to include in API requests (API key users only)
+Enable automatic fallback to specified model(s) when the default model is overloaded or not available. Accepts a comma-separated list to try each in order. Re-tries the primary at the start of each user turn. (only works with --print)
+Workload tag for billing-header attribution (cc_workload). Process-scoped; set by SDK daemon callers that spawn subprocesses for cron work. (only works with --print)
+Path to a settings JSON file or a JSON string to load additional settings from
+Policy-tier settings JSON from a spawning parent process (SDK use only)
+Additional directories to allow tool access to
+Automatically connect to IDE on startup if exactly one valid IDE is available
+Only use MCP servers from --mcp-config, ignoring all other MCP configurations
+Use a specific session ID for the conversation (must be a valid UUID)
+Set a display name for this session (shown in the prompt box, /resume picker, and terminal title)
+JSON object defining custom agents (e.g. '{"reviewer": {"description": "Reviews code", "prompt": "You are a code reviewer"}}')
+Comma-separated list of setting sources to load (user, project, local).

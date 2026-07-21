@@ -1,0 +1,60 @@
+You are Claude Code, Anthropic's official CLI for Claude, running within the Claude Agent SDK.
+You are a Claude agent, built on Anthropic's Claude Agent SDK.
+Never push to main/master, force-push, or merge.
+resolution changed since ownership verification
+has files but no repository to verify them against
+unremovable reparse point in the worktree
+enabledWorktreeConfigExtension
+[SCHEDULED TASK - AUTOMATED FIRING OF A CONFIGURED PROMPT]51
+anthropic-ratelimit-unified-representative-claim
+anthropic-ratelimit-unified-overage-statusk51
+anthropic-ratelimit-unified-overage-disabled-reason
+https://support.claude.com/en/articles/12429409-extra-usage-for-paid-claude-plans
+https://claude.ai/settings/usage?from=cc_cli_limit_message
+claude.ai/settings/usage?from=cc_cli_limit_message%
+tengu_usage_overage_included_models
+tengu_rate_limit_promo_notices
+The socket connection was closed unexpectedly
+AWS credentials expired or invalid
+Google Cloud credentials expired or invalid
+Google Cloud authentication failed41
+Not logged in · Please run /loginÑ
+Invalid API key · Fix external API key
+Your ANTHROPIC_API_KEY belongs to a disabled organization · Unset the environment variable to use your subscription instead51
+Your ANTHROPIC_API_KEY belongs to a disabled organization · Update or unset the environment variable
+Your organization has disabled API key authentication · Unset ANTHROPIC_API_KEY to use your claude.ai account instead
+Your organization has disabled API key authentication · Unset ANTHROPIC_API_KEY and run /login to sign in with your claude.ai account
+Your organization has disabled API key authentication · Unset the apiKeyHelper setting and run /login to sign in with your claude.ai account
+Your organization has disabled API key authentication · Run /login to sign in with your claude.ai account
+OAuth token revoked · Please run /login
+Login expired · Please run /login
+Authentication error · This may be a temporary network issue, please try again
+Your apiKeyHelper script is failing · This usually means you need to re-authenticate with your provider · Run /status to see the script's error output
+Repeated 529 Overloaded errors
+Opus is experiencing high load, please use /model to switch to Sonnet
+Fable is experiencing high load, please use /model to switch to Sonnet
+Server is temporarily limiting requests (not your usage limit)
+Your organization has disabled Claude subscription access for Claude Code · Use an Anthropic API key instead, or ask your admin to enable access
+cannot be used as an advisor when the request model is
+Asks the user multiple choice questions to gather information, clarify ambiguity, understand preferences, make decisions or offer them choices.
+Lists available resources from configured MCP servers.
+Each resource object includes a 'server' field indicating which server it's from.
+- List all resources from all servers: `listMcpResources`
+- List resources from a specific server: `listMcpResources({ server: "myserver" })`
+List available resources from configured MCP servers.
+Each returned resource will include all standard MCP resource fields plus a 'server' field
+indicating which server the resource belongs to.
+- server (optional): The name of a specific MCP server to get resources from. If not provided,
+resources from all servers will be returned.
+io.modelcontextprotocol/skills
+List the direct children of a directory resource on an MCP server.
+- server: The name of the MCP server to read from
+- uri: The URI of the directory resource
+Only usable against a server that has declared support for directory listing. The listing is not recursive.
+Reads a specific resource from an MCP server.
+- server: The name of the MCP server to read from
+- uri: The URI of the resource to read
+- Read a resource from a server: `readMcpResource({ server: "myserver", uri: "my-resource-uri" })`
+Reads a specific resource from an MCP server, identified by server name and resource URI.
+- server (required): The name of the MCP server from which to read the resource
+- uri (required): The URI of the resource to read

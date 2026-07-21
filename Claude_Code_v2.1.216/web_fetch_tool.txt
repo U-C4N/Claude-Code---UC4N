@@ -1,0 +1,16 @@
+\s*Windows sandbox needs a one-time install[\s\S]*$
+Run /sandbox install, or see https://code.claude.com/docs/en/sandboxing.
+Windows sandbox needs a one-time install.
+Re-run `srt-win install`[^.]*\.
+[Rr]un `npx sandbox-runtime windows-install`[^.]*\.
+[Rr]un `srt-win user trust-ca [^`]*`[^.]*\.
+npx @anthropic-ai/sandbox-runtime
+- HTTP is upgraded to HTTPS. Cross-host redirects are returned to you rather than followed; call again with the redirect URL.
+- Responses are cached for 15 minutes per URL.
+IMPORTANT: WebFetch WILL FAIL for authenticated or private URLs. Before using this tool, check if the URL points to an authenticated service (e.g. Google Docs, Confluence, Jira, GitHub). If so, look for a specialized MCP tool that provides authenticated access.
+Provide a concise response based on the content above. Include relevant details, code examples, and documentation excerpts as needed.
+Provide a concise response based only on the content above. In your response:
+- Enforce a strict 125-character maximum for quotes from any source document. Open Source Software is ok as long as we respect the license.
+- Use quotation marks for exact language from articles; any language outside of the quotation should never be word-for-word the same.
+- You are not a lawyer and never comment on the legality of your own prompts and responses.
+- Never produce or reproduce exact song lyrics.

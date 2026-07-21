@@ -1,0 +1,25 @@
+Cannot destructure property 'commit' from null or undefined value
+- `git diff HEAD`: !`git diff HEAD`
+- `git branch --show-current`: !`git branch --show-current`
+- `gh pr view --json number`: !`
+gh pr view --json number 2>/dev/null || true
+gh pr view --json number 2>$null; if (-not $?) { "" }
+- NEVER run destructive/irreversible git commands (like push --force, hard reset, etc) unless the user explicitly requests them
+- NEVER skip hooks (--no-verify, --no-gpg-sign, etc) unless the user explicitly requests it
+- NEVER run force push to main/master, warn the user if they request it
+- Do not commit files that likely contain secrets (.env, credentials.json, etc)
+- Never use git commands with the -i flag (like git rebase -i or git add -i) since they require interactive input which is not supported
+Analyze all changes that will be included in the pull request, making sure to look at all relevant commits (NOT just the latest commit, but ALL commits that will be included in the pull request from the git diff
+(use SAFEUSER from context above for the branch name prefix, falling back to whoami if SAFEUSER is empty, e.g., `username/feature-name`)
+2. Create a single commit with an appropriate message
+, ending with the attribution text shown in the example below
+The closing `'@` MUST be at column 0 with no leading whitespace.
+3. Push the branch to the repo's remote (usually `origin`; use the remote this repo is actually configured with)
+4. If a PR already exists for this branch (check the gh pr view output above), update the PR title and body using `gh pr edit` to reflect the current diff
+. Otherwise, create a pull request using `gh pr create` with the multi-line body syntax shown below
+- IMPORTANT: Keep PR titles short (under 70 characters). Use the body for details.
+gh pr create --title "Short, descriptive title" --body "$(cat <<'EOF'
+gh pr create --title "Short, descriptive title" --body @'
+You have the capability to call multiple tools in a single response. You MUST do all of the above in a single message.
+Return the PR URL when you're done, so the user can see it.
+pÌ@ à3<@ @04°3ÀÀ<ÀÄ

@@ -1,0 +1,26 @@
+setInternalSubagentEventReader
+getInternalSubagentEventReader
+memory access blocked by /pause-memory
+Execute autonomously, minimize interruptions, prefer action over planning.J51
+The user doesn't want to proceed with this tool use. The tool use was rejected (eg. if it was a file edit, the new_string was NOT written to the file). STOP what you are doing and wait for the user to tell you how to proceed.l51
+The user doesn't want to proceed with this tool use. The tool use was rejected (eg. if it was a file edit, the new_string was NOT written to the file). To tell you how to proceed, the user said:
+Permission for this tool use was denied. The tool use was rejected (eg. if it was a file edit, the new_string was NOT written to the file). Try a different approach or report the limitation to complete your task.
+Permission for this tool use was denied. The tool use was rejected (eg. if it was a file edit, the new_string was NOT written to the file). The user said:
+The agent proposed a plan that was rejected by the user. The user chose to stay in plan mode rather than proceed with implementation.
+IMPORTANT: You *may* attempt to accomplish this action using other tools that might naturally be used to accomplish this goal, e.g. using head instead of cat. But you *should not* attempt to work around this denial in malicious ways, e.g. do not use your ability to run tests to execute non-test actions. You should only try to work around this restriction in reasonable ways that do not attempt to bypass the intent behind this denial.
+[Tool result missing due to internal error]
+Permission for this action was denied by the Claude Code auto mode classifier. Reason:
+Permission for this action has been denied. Reason: 1
+, so auto mode cannot determine the safety of
+Plan mode is active. The user indicated that they do not want you to execute yet -- you MUST NOT make any edits (with the exception of the plan file mentioned below), run any non-readonly tools (including changing configs or making commits), or otherwise make any changes to the system. This supercedes any other instructions you have received.
+The user sent a new message while you were working:
+A message arrived in the bound thread while you were working:
+Messages arrived in the bound thread while you were working:
+https://http-intake.logs.us5.datadoghq.com/api/v2/logs
+pubea5604404508cdd34afb69e6f42a05bc51
+fcoeoabgfenejglbffodgkkbkcdhcgfn
+https://github.com/anthropics/claude-code/issues/new?labels=bug,claude-in-chrome
+https://downloads.claude.ai/claude-code-releases
+disabled after repeated failures · restart to retry
+Re-run `claude remote-control` to try again
+@anthropic-ai/claude-agent-sdk

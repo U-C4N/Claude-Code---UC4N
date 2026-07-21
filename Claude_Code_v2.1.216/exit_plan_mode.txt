@@ -1,0 +1,13 @@
+Cleanup, altitude, and conventions candidates use the same
+`file`/`line`/`summary` shape; in `failure_scenario`, state the concrete
+cost (what is duplicated, wasted, harder to maintain, or which CLAUDE.md rule
+is broken) instead of a crash. Correctness bugs always outrank cleanup,
+altitude, and conventions findings when the output cap forces a cut.
+moved/extracted code that dropped a guard
+or anchor; second-tier footguns (dataclass default evaluated once, `hash()`
+non-determinism, lock-scope shrink, predicate methods with side effects);
+setup/teardown asymmetry in tests; config defaults flipped.
+Paste this URL back into Claude Code to keep iterating on these findings.»!
+Auto mode could not evaluate this action and is blocking it for safety
+/goal is only available in trusted workspaces. Restart, accept the trust dialog, and try again.
+/goal can't run while hooks are restricted (disableAllHooks or allowManagedHooksOnly is set in settings or by policy).

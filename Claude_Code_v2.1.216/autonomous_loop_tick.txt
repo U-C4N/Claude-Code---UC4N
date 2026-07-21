@@ -1,0 +1,9 @@
+tengu_kairos_loop_persistent_activated
+newly blocked on a decision you won't make alone, you're ending the loop
+newly blocked on a decision you won't make alone, third straight tick with nothing to do, you're ending the loop
+when the loop can't move further without the user, or when something landed that they'd want to act on now:
+# Autonomous loop tick (dynamic pacing)
+Run the autonomous check using the loop instructions established earlier in this conversation. If you cannot find them, treat this as a no-op tick.
+You scheduled this tick via the
+tool (not a recurring cron). To keep the loop alive, call
+again at the end of this turn with `prompt` set to the literal sentinel `

@@ -1,0 +1,28 @@
+https://json-schema.org/draft/2020-12/schema
+application/json, text/event-stream
+Repo PR template (empty if none)
+https://github.com/apps/claude/installations/new
+tengu_sessions_elevated_auth_enforcement
+tengu_sessions_elevated_auth_disable_proactive_enrollment
+Your organization requires Trusted Devices for Remote Control, but enrollment is temporarily disabled. Please try again later, or contact your administrator.
+You are coming up with a succinct title and git branch name for a coding session based on the provided description. The title should be clear, concise, and accurately reflect the content of the coding task.
+You should keep it short and simple, ideally no more than 6 words. Avoid using jargon or overly technical terms unless absolutely necessary. The title should be easy to understand for anyone reading it.
+Use sentence case for the title (capitalize only the first word and proper nouns), not Title Case.
+The branch name should be clear, concise, and accurately reflect the content of the coding task.
+You should keep it short and simple, ideally no more than 4 words. The branch should always start with "claude/" and should be all lower case, with words separated by dashes.
+Return a JSON object with "title" and "branch" fields.
+Example 1: {"title": "Fix login button not working on mobile", "branch": "claude/fix-mobile-login-button"}
+Example 2: {"title": "Update README with installation instructions", "branch": "claude/update-readme"}
+Example 3: {"title": "Improve performance of data processing script", "branch": "claude/improve-data-processing"}
+Here is the session description:
+<description>{description}</description>
+Please generate a title and branch name for this session.
+Another Claude session sent a message
+(?:\./)?(?:(?:npx|bunx|uvx|uv\s+run)\s+)?óê51
+[harness: subagent output matched instruction-shaped pattern(s): &'
+[... skill content truncated for compaction; use Read on the skill path if you need the full text]1
+The permission request for this URL was not answered in time. Ask the user to approve the fetch or include the URL in a message, then try again.ø$
+<!--claude-mermaid-runtime-begin:Î
+<!--claude-mermaid-runtime-end-->
+<!--claude-hljs-runtime-begin:
+<!--claude-hljs-runtime-end-->

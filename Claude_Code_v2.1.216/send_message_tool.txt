@@ -1,0 +1,4 @@
+Send a message to another agent.
+{"to": "researcher", "summary": "assign task 1", "message": "start on task #1"}
+| `"researcher"` | Teammate by name |
+| `"main"` | The main conversation (background subagents only) |
