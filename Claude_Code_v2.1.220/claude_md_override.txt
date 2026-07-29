@@ -1,0 +1,26 @@
+Send a notification to the user via their terminal and, when Remote Control is connected, also push to their mobile device
+Schedule when to resume work in /loop dynamic mode (always pass the `prompt` arg unless stopping). Call before ending the turn to keep the loop alive; call with `stop: true` to end the loop immediately.
+- Stops a running background task by its ID
+- Takes a task_id parameter identifying the task to stop
+- To stop an agent-team teammate, pass its agent ID ("name@team") or bare teammate name as task_id
+- To stop a background agent spawned with a name, pass that name as task_id
+- Returns a success or failure status
+- Use this tool when you need to terminate a long-running task
+Cancel a scheduled cron job by ID
+Your bare assistant text does NOT reach the user. Your comms tools are the only channel to them: every turn must end in a comms-tool call (reply, react, or an explicit no-reply), and "tell the user" below always means a comms-tool call.
+post a one-line "launched X" via your comms tool
+Fetches full schema definitions for deferred tools so they can be called.
+Deferred tools appear by name in <system-reminder> messages.
+address|article|aside|base|basefont|blockquote|body|caption|center|col|colgroup|dd|details|dialog|dir|div|dl|dt|fieldset|figcaption|figure|footer|form|frame|frameset|h[1-6]|head|header|hr|html|iframe|legend|li|link|main|menu|menuitem|meta|nav|noframes|ol|optgroup|option|p|param|search|section|summary|table|tbody|td|tfoot|th|thead|title|tr|track|ul
+^[^_*]*?__[^_*]*?\*[^_*]*?(?=__)|[^*]+(?=[^*])|(?!\*)punct(\*+)(?=[\s]|$)|notPunctSpace(\*+)(?!\*)(?=punctSpace|$)|(?!\*)punctSpace(\*+)(?=notPunctSpace)|[\s](\*+)(?!\*)(?=punct)|(?!\*)punct(\*+)(?!\*)(?=punct)|notPunctSpace(\*+)(?=notPunctSpace)
+# Pinned memories (apply to every conversation)
+Codebase and user instructions are shown below. Be sure to adhere to these instructions. IMPORTANT: These instructions OVERRIDE any default behavior and you MUST follow them exactly as written.#
+/v2/ccr-sessions/-/chat-project
+Autocompact is thrashing: the context refilled to the limit within 3 turns of the previous compact, 3 times in a row. A file being read or a tool output is likely too large for the context window. Try reading in smaller chunks, or use /clear to start fresh.
+renderPreviousOutput_DEPRECATED
+https://claude.com/claude-code
+SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths
+https://code.claude.com/docs/en/claude_code_docs_map.md
+https://platform.claude.com/llms.txt
+https://claude.com/docs/llms.txt
+https://claude.com/docs/claude-tag/overview.md

@@ -17,6 +17,107 @@ Each version lives in its own folder (`Claude_Code_vX.Y.ZZZ/`). The numbered `.m
 | v2.1.199 | `Claude_Code_v2.1.199/` | 27 |
 | v2.1.201 | `Claude_Code_v2.1.201/` | 26 |
 | v2.1.205 | `Claude_Code_v2.1.205/` | 54 |
+| v2.1.216 | `Claude_Code_v2.1.216/` | 53 |
+| v2.1.220 | `Claude_Code_v2.1.220/` | 64 |
+
+---
+
+## Changelog: v2.1.216 → v2.1.220
+
+```
+     ▄████████  ▄████████    ▄█    █▄       ▄████████    ▄█    █▄    
+    ███    ███ ███    ███   ███    ███     ███    ███   ███    ███   
+    ███    █▀  ███    ███   ███    ███     ███    ███   ███    ███   
+    ███        ███    ███  ▄███▄▄▄▄███▄▄  ▄███▄▄▄▄██▀  ▄███▄▄▄▄███▄▄ 
+    ███      ▀███████████ ▀▀███▀▀▀▀███▀  ▀▀███▀▀▀▀▀   ▀▀███▀▀▀▀███▀ 
+    ███    █▄  ███    ███   ███    ███     ███    ███   ███    ███   
+    ███    ███ ███    ███   ███    ███     ███    ███   ███    ███   
+    ████████▀  ███    █▀    ███    █▀      ██████████   ███    █▀    
+                                                                     
+      ██████╗██╗      █████╗ ██╗   ██╗██████╗ ███████╗                
+     ██╔════╝██║     ██╔══██╗██║   ██║██╔══██╗██╔════╝                
+     ██║     ██║     ███████║██║   ██║██║  ██║█████╗                  
+     ██║     ██║     ██╔══██║██║   ██║██║  ██║██╔══╝                  
+     ╚██████╗███████╗██║  ██║╚██████╔╝██████╔╝███████╗                
+      ╚═════╝╚══════╝╚═╝  ╚═╝ ╚═════╝ ╚═════╝ ╚══════╝                
+                                                                      
+           ██████╗ ██████╗ ██████╗ ███████╗                           
+          ██╔════╝██╔═══██╗██╔══██╗██╔════╝                           
+          ██║     ██║   ██║██║  ██║█████╗                             
+          ██║     ██║   ██║██║  ██║██╔══╝                             
+          ╚██████╗╚██████╔╝██████╔╝███████╗                           
+           ╚═════╝ ╚═════╝ ╚═════╝ ╚══════╝                           
+                                                                      
+                ██╗   ██╗██████╗  █████╗ ██╗   ██╗                   
+                ██║   ██║╚════██╗██╔══██╗████╗  ██║                   
+                ██║   ██║ █████╔╝╚██████║██╔██╗ ██║                   
+                ██║   ██║ ╚═══██╗██╔══██║██║╚██╗██║                   
+                ╚██████╔╝██████╔╝██║  ██║██║ ╚████║                   
+                 ╚═════╝ ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═══╝                   
+```
+
+> Binary shrunk 258 MB → 253 MB (-5 MB) despite 11 new sections. 224,458 strings extracted. Major expansion in context management, autonomous loop, and tool prompts.
+
+### 🆕 Added (11 new sections)
+
+| Section | Size | Description |
+|---|---|---|
+| `managed_agents_ruby.txt` | 102.0 KB | Managed Agents Ruby SDK full README (embedded docs) |
+| `managed_agents_events.txt` | 80.5 KB | Managed Agents Events & Steering documentation |
+| `typescript_api_guide.txt` | 32.4 KB | Claude API TypeScript SDK guide |
+| `available_tools_guidance.txt` | 13.3 KB | "Check this list before writing" — tool selection guidance |
+| `advisor_tool_prompt.txt` | 9.8 KB | Advisor tool (stronger reviewer model) full prompt |
+| `plan_mode_reminder.txt` | 7.9 KB | "REMEMBER: You can ONLY explore and plan" — plan mode enforcement |
+| `browser_guidelines.txt` | 7.4 KB | Claude-in-Chrome browser automation guidelines |
+| `mcp_tab_group_tool.txt` | 7.3 KB | MCP tab group management tool |
+| `continue_session_prompt.txt` | 6.3 KB | Session continuation — restricts tool usage during resume |
+| `claude_md_structure.txt` | 4.9 KB | CLAUDE.md workflow structure definition |
+| `screenshot_tool_prompt.txt` | 4.1 KB | Screenshot tool description for Chrome automation |
+
+### 🚀 Major rewrites
+
+- **`context_management.txt`** — 9.8 KB → 37.0 KB (+277%). Full background job session management, multi-session context windowing, compact service architecture.
+- **`web_fetch.txt`** — 4.0 KB → 13.8 KB (+247%). Extended content extraction pipeline and readability processing.
+- **`agents_sdk.txt`** — 4.5 KB → 13.7 KB (+207%). SDK agent identity expanded with sub-agent coordination.
+- **`default_agent_prompt.txt`** — 4.5 KB → 13.7 KB (+202%). Richer tool-specific descriptions.
+- **`autonomous_loop.txt`** — 7.6 KB → 17.2 KB (+126%). Revised escalation logic, enhanced PR maintenance workflow.
+- **`memory_selection.txt`** — 1.3 KB → 8.0 KB (+513%). Massive expansion in memory selection rules.
+- **`tool_denial_user.txt`** — 1.9 KB → 8.3 KB (+343%). Extended user-facing denial messages.
+- **`exit_plan_mode.txt`** — 1.0 KB → 4.1 KB (+330%). Plan mode exit expanded.
+
+### ➖ Significant shrinkage
+
+- **`git_operations.txt`** — 2.1 KB → 0.3 KB (-85%). Git rules trimmed, likely consolidated.
+- **`git_workflow.txt`** — 1.3 KB → 0.3 KB (-76%). Workflow guidance condensed.
+- **`auto_mode_process.txt`** — 1.5 KB → 0.7 KB (-56%). Process flow simplified.
+- **`claude_md_override.txt`** — 4.0 KB → 2.5 KB (-36%). Override rules condensed.
+
+---
+
+## Changelog: v2.1.205 → v2.1.216
+
+> Binary grew 247 MB → 258 MB (+11 MB). 217,961 strings extracted. One section removed, autonomous loop expanded, blast radius completely restructured.
+
+### 🆕 Added
+
+- **New model identity strings: Fable 5, Opus 4.6+, Sonnet 4.6+** — Updated model tier references.
+- **`statusline_agent.txt`** — Expanded 7× for agent status formatting.
+
+### 🚀 Major rewrites
+
+- **`blast_radius.txt`** — 4.4 KB → 16.1 KB (+266%). Now bundles the full system harness: System, Language, Output, Tools, Tone, Care sections in one file.
+- **`autonomous_loop.txt`** — 4.9 KB → 7.8 KB (+58%). New escalation rule for 3 consecutive idle ticks, detailed PR maintenance workflow via GraphQL.
+- **`default_agent_prompt.txt`** — 1.5 KB → 4.7 KB (+219%). Tool-specific descriptions added.
+- **`explore_agent.txt`** — 1.0 KB → 2.5 KB (+153%). Exploration guidelines refined.
+- **`todo_list_usage.txt`** — 2.0 KB → 4.2 KB (+111%). Task tracking rules expanded.
+
+### 🔧 Restructured
+
+- **`context_management.txt`** — 24.2 KB → 10.0 KB (-59%). Restructured, now references background job sessions.
+
+### 🗑️ Removed
+
+- **`creating_pull_requests.txt`** — Pull request creation instructions removed (merged into other sections).
 
 ---
 
@@ -103,16 +204,6 @@ Each version lives in its own folder (`Claude_Code_vX.Y.ZZZ/`). The numbered `.m
 
 - `01_cyber_risk`, `03_system_harness`, `05_executing_actions`, `07_git_operations`, `10_explore_agent`, `19_session_title`, `21_chrome_browser_automation`, `24_tool_prompts`, `28_context_management`: only a few dozen bytes of difference — no meaningful content change.
 - `08_default_agent_prompt`, `12_coordinator_system_prompt` (§2), `02_simple_mode_intro`: the v2.1.195 extraction is cut off mid-sentence; read this as an **extraction truncation**, not a content removal.
-
----
-
-## ⭐ Highlights
-
-1. **Claude Agent SDK identity arrived** — Claude Code now also positions itself as "running within the Agent SDK" / "a Claude agent built on the Agent SDK."
-2. **Autonomous / timer-invoked loop** (`34_autonomous_loop`) — periodic self-invocation without a user.
-3. **New "reversibility & blast radius" policy** — ask before destructive actions by default.
-4. **New model tier: Fable 5** (Opus 4.7+ / Opus 4.6+ + Sonnet 4.6), with an excessive-token warning.
-5. **Auto-mode rule critique matured** — into a 4-dimension evaluation rubric.
 
 ---
 

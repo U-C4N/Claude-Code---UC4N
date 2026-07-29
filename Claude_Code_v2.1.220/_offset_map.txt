@@ -1,0 +1,53 @@
+advisor_tool.txt 87078164
+agents_sdk.txt 87030333
+auto_mode_classifier.txt 90985868
+auto_mode_classifier_intro.txt 88115116
+auto_mode_process.txt 87153020
+autonomous_loop_tick.txt 105766876
+blast_radius.txt 249517891
+capability_statement.txt 130504324
+chrome_browser_important.txt 88098418
+claude_in_chrome.txt 108001724
+claude_md_override.txt 87074132
+commit_messages_pr.txt 125840396
+compact_service.txt 206425236
+context_management.txt 249543940
+custom_workflow_body.txt 165803268
+cyber_risk.txt 88084516
+default_agent_prompt.txt 87030333
+exit_plan_mode.txt 88049172
+explore_agent.txt 108685852
+git_operations.txt 125040724
+hooks.txt 89022204
+injected_context_notice.txt 130647916
+interactive_agent_intro.txt 130499852
+knowledge_mcp_search.txt 88381188
+mcp.txt 87033244
+memory_selection.txt 88112172
+output_style_proactive.txt 110232828
+plan_agent.txt 134052172
+plan_agent_specialist.txt 108698348
+plan_artifact_tool.txt 88832356
+plan_mode_instructions.txt 134054045
+plan_rejected.txt 88112633
+plan_rejected_detail.txt 88115116
+plan_tool.txt 115691504
+plan_vs_memory.txt 100389452
+policy_spec.txt 88087036
+sandbox_failure.txt 125861972
+send_message_tool.txt 123397932
+session_title.txt 87090924
+statusline_agent.txt 96005188
+stop_condition.txt 131995236
+team_communication.txt 88002684
+todo_list_usage.txt 122690516
+todo_reminder.txt 88005236
+tool_denial_guidance.txt 88115116
+tool_denial_user.txt 87009732
+web_fetch.txt 87025672
+web_fetch_tool.txt 103142500
+autonomous_loop.txt NOT_FOUND | `,{encoding:"utf-8",allowSymlink:!n,checkParentDir:n,staging
+git_workflow.txt NOT_FOUND | °)¡þÿÿÿÿ`)¡þÿÿÿÿ¸)¡þÿÿÿÿ@*¡þÿÿÿÿP*¡þÿÿÿÿ
+hook_condition.txt NOT_FOUND | @áúýÿÿÿÿáúýÿÿÿÿHáúýÿÿÿÿXáúýÿÿÿÿháúýÿÿÿÿ
+scratchpad_directory.txt NOT_FOUND | `)}function GYu(e,t){return[`<${_x}>${e}</${_x}>`,`<${q5}>/$
+skills.txt NOT_FOUND | tools, plus MCP tools from configured MCP servers. Workers c

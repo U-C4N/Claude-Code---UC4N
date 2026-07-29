@@ -1,0 +1,20 @@
+has strict: true but its schema is not strict-compatible (
+tengu_structured_output_strict
+[betas] Stripped from tool schemas: [
+] (experimental betas disabled)
+Iterator result interface is not an object.
+tengu_sysprompt_using_tool_based_cache
+Iterator result interface is not an object.
+tengu_sysprompt_boundary_found
+tengu_sysprompt_missing_boundary_marker
+skipGlobalCacheForSystemPrompt
+Iterator result interface is not an object.
+As you answer the user's questions, you can use the following context:
+IMPORTANT: this context may or may not be relevant to your tasks. You should not respond to this context unless it is highly relevant to your task.
+Iterator result interface is not an object.
+Cannot destructure property 'tools' from null or undefined value
+Iterator result interface is not an object.
+Íá3@ n@Ð5@ 5@@5@05@`5@p5÷láô@
+`ÿ»ýÿÿÿÿPþ»ýÿÿÿÿ`þ»ýÿÿÿÿpþ»ýÿÿÿÿð[êýÿÿÿÿxþ»ýÿÿÿÿþ»ýÿÿÿÿ0Èºýÿÿÿÿþ»ýÿÿÿÿ8Èºýÿÿÿÿþ»ýÿÿÿÿ`Äéýÿÿÿÿ þ»ýÿÿÿÿXMêýÿÿÿÿ¨þ»ýÿÿÿÿ¨
+Òýÿÿÿÿ°þ»ýÿÿÿÿÀþ»ýÿÿÿÿÐÏºýÿÿÿÿ
+Cannot destructure property 'prefetchAllMcpResources' from null or undefined value

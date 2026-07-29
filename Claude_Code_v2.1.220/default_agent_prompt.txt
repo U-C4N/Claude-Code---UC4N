@@ -1,0 +1,216 @@
+$Command = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($EncodedCommand))
+$ast = [System.Management.Automation.Language.Parser]::ParseInput(
+$allVariables = [System.Collections.ArrayList]::new()
+function Get-RawCommandElements {
+param([System.Management.Automation.Language.CommandAst]$CmdAst)
+$elems = [System.Collections.ArrayList]::new()
+foreach ($ce in $CmdAst.CommandElements) {
+$ceData = @{ type = $ce.GetType().Name; text = $ce.Extent.Text }
+if ($ce.PSObject.Properties['Value'] -and $null -ne $ce.Value -and $ce.Value -is [string]) {
+if ($ce -is [System.Management.Automation.Language.CommandExpressionAst]) {
+$ceData.expressionType = $ce.Expression.GetType().Name
+$a=$ce.Argument;if($a){$ceData.children=@(@{type=$a.GetType().Name;text=$a.Extent.Text})}
+function Get-RawRedirections {
+$result = [System.Collections.ArrayList]::new()
+foreach ($redir in $Redirections) {
+$redirData = @{ type = $redir.GetType().Name }
+if ($redir -is [System.Management.Automation.Language.FileRedirectionAst]) {
+$redirData.append = [bool]$redir.Append
+$redirData.fromStream = $redir.FromStream.ToString()
+$redirData.locationText = $redir.Location.Extent.Text
+function Get-SecurityPatterns($A) {
+foreach ($n in $A.FindAll({ param($x)
+$x -is [System.Management.Automation.Language.MemberExpressionAst] -or
+$x -is [System.Management.Automation.Language.SubExpressionAst] -or
+$x -is [System.Management.Automation.Language.ArrayExpressionAst] -or
+$x -is [System.Management.Automation.Language.ExpandableStringExpressionAst] -or
+$x -is [System.Management.Automation.Language.ScriptBlockExpressionAst] -or
+$x -is [System.Management.Automation.Language.ParenExpressionAst]
+}, $true)) { switch ($n.GetType().Name) {
+'InvokeMemberExpressionAst' { $p.hasMemberInvocations = $true }
+'MemberExpressionAst' { $p.hasMemberInvocations = $true }
+'SubExpressionAst' { $p.hasSubExpressions = $true }
+'ArrayExpressionAst' { $p.hasSubExpressions = $true }
+'ParenExpressionAst' { $p.hasSubExpressions = $true }
+'ExpandableStringExpressionAst' { $p.hasExpandableStrings = $true }
+'ScriptBlockExpressionAst' { $p.hasScriptBlocks = $true }
+if ($p.Count -gt 0) { return $p }
+$varExprs = $ast.FindAll({ param($node) $node -is [System.Management.Automation.Language.VariableExpressionAst] }, $true)
+path = $v.VariablePath.ToString()
+isSplatted = [bool]$v.Splatted
+$typeLiterals = [System.Collections.ArrayList]::new()
+foreach ($t in $ast.FindAll({ param($n)
+$n -is [System.Management.Automation.Language.TypeExpressionAst] -or
+$n -is [System.Management.Automation.Language.TypeConstraintAst]
+}, $true)) { [void]$typeLiterals.Add($t.TypeName.FullName) }
+$norm = $tok.Text -replace '[\u2013\u2014\u2015]','-' -replace '[`''""\u2018-\u201f]',''
+$hasStopParsing = $true; break
+$statements = [System.Collections.ArrayList]::new()
+foreach ($p in $ast.FindAll({param($n) $n -is [System.Management.Automation.Language.PipelineBaseAst]}, $true)) {
+if ($p.PSObject.Properties['Background'] -and $p.Background) { $script:hasBg = $true; break }
+function Process-BlockStatements {
+foreach ($stmt in $Block.Statements) {
+if ($stmt -is [System.Management.Automation.Language.PipelineAst]) {
+$elements = [System.Collections.ArrayList]::new()
+foreach ($element in $stmt.PipelineElements) {
+type = $element.GetType().Name
+if ($element -is [System.Management.Automation.Language.CommandAst]) {
+$elemData.commandElements = @(Get-RawCommandElements -CmdAst $element)
+$elemData.redirections = @(Get-RawRedirections -Redirections $element.Redirections)
+} elseif ($element -is [System.Management.Automation.Language.CommandExpressionAst]) {
+$elemData.expressionType = $element.Expression.GetType().Name
+$elemData.redirections = @(Get-RawRedirections -Redirections $element.Redirections)
+[void]$elements.Add($elemData)
+$statement.elements = @($elements)
+$allNestedCmds = $stmt.FindAll(
+{ param($node) $node -is [System.Management.Automation.Language.CommandAst] },
+$nestedCmds = [System.Collections.ArrayList]::new()
+foreach ($cmd in $allNestedCmds) {
+if ($cmd.Parent -eq $stmt) { continue }
+commandElements = @(Get-RawCommandElements -CmdAst $cmd)
+redirections = @(Get-RawRedirections -Redirections $cmd.Redirections)
+[void]$nestedCmds.Add($nested)
+if ($nestedCmds.Count -gt 0) {
+$statement.nestedCommands = @($nestedCmds)
+$r = $stmt.FindAll({param($n) $n -is [System.Management.Automation.Language.FileRedirectionAst]}, $true)
+$rr = @(Get-RawRedirections -Redirections $r)
+$statement.redirections = if ($statement.redirections) { @($statement.redirections) + $rr } else { $rr }
+$nestedCmdAsts = $stmt.FindAll(
+{ param($node) $node -is [System.Management.Automation.Language.CommandAst] },
+$nested = [System.Collections.ArrayList]::new()
+foreach ($cmd in $nestedCmdAsts) {
+commandElements = @(Get-RawCommandElements -CmdAst $cmd)
+redirections = @(Get-RawRedirections -Redirections $cmd.Redirections)
+$statement.nestedCommands = @($nested)
+$r = $stmt.FindAll({param($n) $n -is [System.Management.Automation.Language.FileRedirectionAst]}, $true)
+if ($r.Count -gt 0) { $statement.redirections = @(Get-RawRedirections -Redirections $r) }
+$sp = Get-SecurityPatterns $stmt
+if ($sp) { $statement.securityPatterns = $sp }
+[void]$statements.Add($statement)
+foreach ($trap in $Block.Traps) {
+$nestedCmdAsts = $trap.FindAll(
+{ param($node) $node -is [System.Management.Automation.Language.CommandAst] },
+$nestedCmds = [System.Collections.ArrayList]::new()
+foreach ($cmd in $nestedCmdAsts) {
+commandElements = @(Get-RawCommandElements -CmdAst $cmd)
+redirections = @(Get-RawRedirections -Redirections $cmd.Redirections)
+[void]$nestedCmds.Add($nested)
+if ($nestedCmds.Count -gt 0) {
+$statement.nestedCommands = @($nestedCmds)
+$r = $trap.FindAll({param($n) $n -is [System.Management.Automation.Language.FileRedirectionAst]}, $true)
+if ($r.Count -gt 0) { $statement.redirections = @(Get-RawRedirections -Redirections $r) }
+$sp = Get-SecurityPatterns $trap
+if ($sp) { $statement.securityPatterns = $sp }
+[void]$statements.Add($statement)
+Process-BlockStatements -Block $ast.BeginBlock
+Process-BlockStatements -Block $ast.ProcessBlock
+Process-BlockStatements -Block $ast.EndBlock
+Process-BlockStatements -Block $ast.CleanBlock
+Process-BlockStatements -Block $ast.DynamicParamBlock
+$pn = [System.Collections.ArrayList]::new()
+foreach ($c in $pb.FindAll({param($n) $n -is [System.Management.Automation.Language.CommandAst]}, $true)) {
+[void]$pn.Add(@{type='CommandAst';text=$c.Extent.Text;commandElements=@(Get-RawCommandElements -CmdAst $c);redirections=@(Get-RawRedirections -Redirections $c.Redirections)})
+$pr = $pb.FindAll({param($n) $n -is [System.Management.Automation.Language.FileRedirectionAst]}, $true)
+$ps = Get-SecurityPatterns $pb
+if ($pn.Count -gt 0 -or $pr.Count -gt 0 -or $ps) {
+$st = @{type='ParamBlockAst';text=$pb.Extent.Text}
+if ($pn.Count -gt 0) { $st.nestedCommands = @($pn) }
+if ($pr.Count -gt 0) { $st.redirections = @(Get-RawRedirections -Redirections $pr) }
+if ($ps) { $st.securityPatterns = $ps }
+$hasUsingStatements = $ast.UsingStatements -and $ast.UsingStatements.Count -gt 0
+$hasScriptRequirements = $ast.ScriptRequirements -ne $null
+valid = ($parseErrors.Count -eq 0)
+errors = @($parseErrors | ForEach-Object {
+hasStopParsing = $hasStopParsing
+typeLiterals = @($typeLiterals)
+hasUsingStatements = [bool]$hasUsingStatements
+hasScriptRequirements = [bool]$hasScriptRequirements
+hasBackgroundJob = [bool]$script:hasBg
+$output | ConvertTo-Json -Depth 10 -Compress
+try { $PSDefaultParameterValues['Out-File:Encoding'] = 'utf8' } catch {}; if ($ExecutionContext.SessionState.LanguageMode -eq 'FullLanguage') { try { $OutputEncoding = [System.Text.UTF8Encoding]::new() } catch {}; if ($null -ne $PSStyle) { try { $PSStyle.OutputRendering = 'PlainText' } catch {} } };
+;var __w=require('worker_threads');__w.parentPort.on('message',function(m){onmessage({data:m})}),postMessage=function(m,t){__w.parentPort.postMessage(m,t)},close=process.exit;self=global
+abcdefghijklmnopqrstuvwxyz0123456789_-
+(eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+)
+- Fetches content from a specified URL and processes it using an AI model
+- Takes a URL and a prompt as input
+- Fetches the URL content, converts HTML to markdown
+- Processes the content with the prompt using a small, fast model
+- Returns the model's response about the content
+- Use this tool when you need to retrieve and analyze web content
+- IMPORTANT: If an MCP-provided web fetch tool is available, prefer using that tool instead of this one, as it may have fewer restrictions.
+- The URL must be a fully-formed valid URL
+- HTTP URLs will be automatically upgraded to HTTPS
+- The prompt should describe what information you want to extract from the page
+- This tool is read-only and does not modify any files
+- Results may be summarized if the content is very large
+- Includes a self-cleaning 15-minute cache for faster responses when repeatedly accessing the same URL
+- When a URL redirects to a different host, the tool will inform you and provide the redirect URL in a special format. You should then make a new WebFetch request with the redirect URL to fetch the content.
+- For GitHub URLs, prefer using the gh CLI via Bash instead (e.g., gh pr view, gh issue view, gh api).
+ripgrep not found on PATH. Install it (brew install ripgrep / apt install ripgrep / winget install BurntSushi.ripgrep.MSVC) or use the native claude binary which embeds it.
+sandbox configuration unavailable{
+[Old tool result content cleared]
+windowsConsoleSupportsVirtualTerminalSequences
+macCmdClickArrivesWithoutSgrModifierBit
+[Console]::InputEncoding = [Text.Encoding]::UTF8; Set-Clipboard -Value ([Console]::In.ReadToEnd())
+[Console]::OutputEncoding = [Text.Encoding]::UTF8; Get-Clipboard -Raw
+You are Claude Code, Anthropic's official CLI for Claude.
+You are Claude Code, Anthropic's official CLI for Claude, running within the Claude Agent SDK.
+You are a Claude agent, built on Anthropic's Claude Agent SDK.
+Never push to main/master, force-push, or merge.
+resolution changed since ownership verification
+has files but no repository to verify them against
+unremovable reparse point in the worktree
+enabledWorktreeConfigExtension
+[SCHEDULED TASK - AUTOMATED FIRING OF A CONFIGURED PROMPT]
+anthropic-ratelimit-unified-representative-claim
+anthropic-ratelimit-unified-overage-status
+anthropic-ratelimit-unified-overage-disabled-reason
+https://support.claude.com/en/articles/12429409-extra-usage-for-paid-claude-plansC
+https://claude.ai/settings/usage?from=cc_cli_limit_message
+claude.ai/settings/usage?from=cc_cli_limit_message
+https://support.claude.com/en/articles/12429409
+tengu_usage_overage_included_models
+tengu_rate_limit_promo_notices
+The socket connection was closed unexpectedly
+AWS credentials expired or invalid
+Google Cloud credentials expired or invalid
+Google Cloud authentication failed
+Not logged in · Please run /login
+Invalid API key · Fix external API key
+Your ANTHROPIC_API_KEY belongs to a disabled organization · Unset the environment variable to use your subscription instead
+Your ANTHROPIC_API_KEY belongs to a disabled organization · Update or unset the environment variable
+Your organization has disabled API key authentication · Unset ANTHROPIC_API_KEY to use your claude.ai account instead
+Your organization has disabled API key authentication · Unset ANTHROPIC_API_KEY and run /login to sign in with your claude.ai account
+Your organization has disabled API key authentication · Unset the apiKeyHelper setting and run /login to sign in with your claude.ai account
+Your organization has disabled API key authentication · Run /login to sign in with your claude.ai accountb
+OAuth token revoked · Please run /login
+Login expired · Please run /loginc
+Authentication error · This may be a temporary network issue, please try again
+Your apiKeyHelper script is failing · This usually means you need to re-authenticate with your provider · Run /status to see the script's error output
+Repeated 529 Overloaded errors
+Opus is experiencing high load, please use /model to switch to Sonnet
+Fable is experiencing high load, please use /model to switch to Sonnet
+Server is temporarily limiting requests (not your usage limit)
+Your organization has disabled Claude subscription access for Claude Code · Use an Anthropic API key instead, or ask your admin to enable access
+cannot be used as an advisor when the request model is
+Asks the user multiple choice questions to gather information, clarify ambiguity, understand preferences, make decisions or offer them choices.
+Lists available resources from configured MCP servers.
+Each resource object includes a 'server' field indicating which server it's from.
+- List all resources from all servers: `listMcpResources`
+- List resources from a specific server: `listMcpResources({ server: "myserver" })`
+List available resources from configured MCP servers.
+Each returned resource will include all standard MCP resource fields plus a 'server' field
+indicating which server the resource belongs to.
+- server (optional): The name of a specific MCP server to get resources from. If not provided,
+resources from all servers will be returned.
+List the direct children of a directory resource on an MCP server.
+- server: The name of the MCP server to read from
+- uri: The URI of the directory resource
+Only usable against a server that has declared support for directory listing. The listing is not recursive.
+Reads a specific resource from an MCP server.
+- server: The name of the MCP server to read from
+- uri: The URI of the resource to read
+- Read a resource from a server: `readMcpResource({ server: "myserver", uri: "my-resource-uri" })`
+Reads a specific resource from an MCP server, identified by server name and resource URI.
+- server (required): The name of the MCP server from which to read the resource
+- uri (required): The URI of the resource to read

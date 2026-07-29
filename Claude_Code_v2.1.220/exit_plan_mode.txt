@@ -1,0 +1,42 @@
+Send a message to another agent
+This session is outbound-only. Enable Remote Control locally to allow inbound control.
+Send one or more files to another Claude Code session
+'watch' opens a live-update subscription to the artifact at `url` so this session is notified when another session republishes it; 'unwatch' stops that subscription; 'status' lists this session's artifact watches (pass `url` to check one). Watches live only as long as this session.
+other people's artifact titles and links will be read into the conversation
+__artifactConsentAskCanReachUser
+Upload the ONBOARDING.md in the current directory and return a share link teammates can open in Claude Code. Call this after the user has confirmed the final content.
+When called with the default mode='check': if a local ONBOARDING.md is present, uploads it to the most-recently-updated org guide (or creates one if none exist) and returns a fresh link. If no local file is present, returns the existing link without uploading (status: has_existing).
+Flag unnecessary complexity the diff adds: redundant or derivable state,
+copy-paste with slight variation, deep nesting, dead code left behind. Name
+the simpler form that does the same job.
+Cleanup, altitude, and conventions candidates use the same
+`file`/`line`/`summary` shape; in `failure_scenario`, state the concrete
+cost (what is duplicated, wasted, harder to maintain, or which CLAUDE.md rule
+is broken) instead of a crash. Correctness bugs always outrank cleanup,
+altitude, and conventions findings when the output cap forces a cut.
+moved/extracted code that dropped a guard
+or anchor; second-tier footguns (dataclass default evaluated once, `hash()`
+non-determinism, lock-scope shrink, predicate methods with side effects);
+setup/teardown asymmetry in tests; config defaults flipped.
+Paste this URL back into Claude Code to keep iterating on these findings.
+Auto mode could not evaluate this action and is blocking it for safety
+Enterprise policy requires sandboxing, but this command would not be sandboxed on Windows: either the sandbox is unavailable, or the command matches a sandbox exclusion pattern only in part. Compound commands and commands with shell metacharacters must run sandboxed even when a statement matches an exclusion. Shell command execution is blocked by policy.
+Repo PR template (empty if none)
+Not enough messages to compact.
+[earlier conversation truncated for compaction retry]
+Conversation too long. Press esc twice to go up a few messages and try again.
+Compaction blocked by PreCompact hook
+Err on the side of blocking. Your ENTIRE response MUST begin with <block>. Do NOT output any analysis, reasoning, or commentary before <block>. No "Looking at..." or similar preamble.
+Review the classification process and follow it carefully, making sure you deny actions that should be blocked. As a reminder, explicit (not suggestive or implicit) user confirmation is required to override blocks. Use <thinking> before responding with <block>. Think longer on ambiguous or borderline actions; keep reasoning brief for clear-cut ones.
+Review the classification process and follow it carefully. As a reminder, explicit (not suggestive or implicit) user confirmation is required to override blocks.
+Use <thinking> first, then respond with <severity>N</severity>, plus <category>Exact BLOCK Rule Name</category> when the action matches a BLOCK rule (see Output Format). No other text. Think longer on ambiguous cases; keep reasoning brief for clear-cut ones.
+Repo visibility & branch protection (via gh)
+Infer visibility from the remote hostname in Repo facts, or ask.
+#### permissions.allow entries auto mode ignores (classifier-bypassing, in your user settings)
+Shell history (command words only)
+Other git repos under the home directory
+Recent usage across all projects (names only)
+denied by the Claude Code auto mode classifier
+/api/claude_code/notification/preferences"
+Usage: /design consent | /design revoke
+Your organization requires remote managed settings to load, but they could not be loaded. Run `claude auth login` to re-authenticate, check your network connection, or contact your administrator.

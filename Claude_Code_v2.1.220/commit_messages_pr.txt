@@ -1,0 +1,28 @@
+PR Attribution: appState.attribution exists:
+PR Attribution: fileStates count:
+Cannot destructure property 'promptCount' from null or undefined value
+Iterator result interface is not an object.
+PR Attribution: claudePercent:
+PR Attribution: returning default (no data)
+PR Attribution: returning summary:
+tengu_pr_writing_guidance_rendered
+If the repo has a PR template (
+> block in the context above is non-empty
+# Writing commit messages and PR descriptions
+Write for a reader with zero context who was not part of this session:
+- Say what the change is in plain words before any mechanism or implementation detail
+- One idea per sentence; one fact per bullet; no nested clauses or stacked parentheticals
+- Define project- or team-specific shorthand the first time it appears
+- Short beats complete: after one pass the reader should know what the change does and what to check
+For PR descriptions additionally:
+<1-2 plain sentences: what this change does and why>
+<1-2 lines: what you verified and how (commands run, behavior observed); note anything unverified>
+[Bulleted markdown checklist of TODOs for testing the pull request...]
+This tool runs Git Bash (POSIX sh), not cmd.exe or PowerShell. Use Unix shell syntax: `/dev/null` not `NUL`, forward slashes, `$VAR` not `%VAR%` or `$env:VAR`.
+You can use the `run_in_background` parameter to run the command in the background. Only use this if you don't need the result immediately and are OK being notified when the command completes later. You do not need to check the output right away - you'll be notified when it finishes. You do not need to use '&' at the end of the command when using this parameter.
+Cannot destructure property 'commit' from null or undefined value
+- End git commit messages with:
+- Run a git status command to see all untracked files. IMPORTANT: Never use the -uall flag as it can cause memory issues on large repos.
+- Run a git diff command to see both staged and unstaged changes that will be committed.
+- Run a git log command to see recent commit messages, so that you can follow this repository's commit message style.
+2. Analyze all staged changes (both previously staged and newly added) and draft a commit message:

@@ -1,0 +1,24 @@
+Cannot destructure property 'configObject' from null or undefined value
+"__proto__" is a reserved MCP server name and was not loaded
+Iterator result interface is not an object.
+Valid types are: stdio, sse, http (or streamable-http), ws, sdk
+" has a "url" but no "type"; add "type": "http" (or "sse" / "ws") to this entry
+" is a reserved MCP server name and was not loaded
+" is reserved for internal use
+Leading or trailing whitespace in:
+Remove the whitespace from these values in the "
+Cannot destructure property 'expanded' from null or undefined value
+Missing environment variables:
+Set the following environment variables:
+expanded to an empty string. Set the referenced environment variable, or update the server's config and reconnect.
+¸¤òþÿÿÿÿX»òþÿÿÿÿ`ÓóþÿÿÿÿøÒóþÿÿÿÿ òþÿÿÿÿ`ÓóþÿÿÿÿpÓóþÿÿÿÿ òþÿÿÿÿ
+Rename the top-level "servers" key to "mcpServers" in
+Cannot destructure property 'filePath' from null or undefined value
+): not a regular file or exceeds
+MCP config is not a regular file or exceeds
+Check that the path is a plain JSON file (not a device, FIFO, or symlink to one)
+Check that the file path is correct
+Check file permissions and ensure the file exists
+MCP config is not a valid JSON
+Fix the JSON syntax errors in the file
+Àðä@ ÃàKpT@ àK@p<`

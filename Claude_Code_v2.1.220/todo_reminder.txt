@@ -1,0 +1,39 @@
+http://www.w3.org/1998/Math/MathMLL»6
+<style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}</style>
+the artifact you're updating was deleted, or you no longer have write access to it
+notifications/claude/channel/permission
+notifications/claude/channel/permission_request
+Date.now() / new Date() are unavailable in workflow scripts (breaks resume). Stamp results after the workflow returns, or pass timestamps via args.
+Math.random() is unavailable in workflow scripts (breaks resume). For N independent samples, include the index in the agent label or prompt.
+script contains control characters that would be hidden in the approval dialog
+Shell command or script. Each stdout line is an event; exit ends the watch.
+command contains control characters that would be hidden in the approval dialog
+# Agent Teammate Communication
+IMPORTANT: You are running as an agent in a team. To communicate with anyone on your team, use the SendMessage tool with `to: "<name>"` to send messages to specific teammates.
+Just writing a response in text is not visible to others on your team - you MUST use the SendMessage tool.
+The user interacts primarily with the team lead. Your work is coordinated through the task system and teammate messaging.
+Render a clickable role-picker chip row during Cowork onboarding so the user can pick their role and get a matching plugin installed.
+The message for the user. Supports markdown formatting.
+PreToolUse hook did not respond before its timeout (host client may be unreachable). The tool call was not executed; other configured hooks may not have completed.
+PreToolUse hook failed with an unexpected error. The tool call was not executed; other configured hooks may not have completed.
+enforce_web_search_mcp_isolation
+Report code-review findings as a typed list so the host UI can render them. Use this only when the active code-review instructions tell you to report findings with this tool; otherwise follow whatever output format those instructions specify. When reporting a review's results, call it once with the verified findings ranked most-severe first (empty array if nothing survived verification) and do not also print the findings as text. When re-reporting after applying fixes (only if the apply instructions ask for it), set `outcome` on each finding to what actually happened.
+Create and update a task list for the current session. The list is rendered to the user as your working plan.
+- Each todo has `content`, `status` ("pending" | "in_progress" | "completed"), and `activeForm` (present-tense label shown while in progress).
+- Send the full list each call; it replaces the previous one.
+- Keep one item `in_progress` at a time and mark it `completed` when done.
+Update the todo list for the current session. To be used proactively and often to track progress and pending tasks. Make sure that at least one task is in_progress at all times. Always provide both content (imperative) and activeForm (present continuous) for each task.
+Create a new task in the task list
+Get a task by ID from the task list
+Use this tool to retrieve a task by its ID from the task list.
+- When you need the full description and context before starting work on a task
+- To understand task dependencies (what it blocks, what blocks it)
+- After being assigned a task, to get complete requirements
+- **description**: Detailed requirements and context
+- **status**: 'pending', 'in_progress', or 'completed'
+- **blocks**: Tasks waiting on this one to complete
+- **blockedBy**: Tasks that must complete before this one can start
+- After fetching a task, verify its blockedBy list is empty before beginning work.
+- Use TaskList to see all tasks in summary form.
+Update a task in the task list
+List all tasks in the task list

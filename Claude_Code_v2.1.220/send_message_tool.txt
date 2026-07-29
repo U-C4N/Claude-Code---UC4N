@@ -1,0 +1,11 @@
+no longer exists; falling back to parent cwd
+Send a message to another agent.
+{"to": "researcher", "summary": "assign task 1", "message": "start on task #1"}
+| `"researcher"` | Teammate by name |
+| `"main"` | The main conversation (background subagents only) |
+Cannot destructure property 'namespace' from null or undefined value
+Iterator result interface is not an object.
+Cannot destructure property 'display_tool_name' from null or undefined value
+`5@àmÀ@ 04°ä0@ /L
+The container was restarted. The following background tasks were running and are now stopped:
+Re-create them if still needed.

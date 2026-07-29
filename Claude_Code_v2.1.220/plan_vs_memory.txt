@@ -1,0 +1,49 @@
+Key escapes team memory directory: "
+Key escapes team memory directory via symlink: "
+Write each memory to its own file in the chosen directory (private or team, per the type's scope guidance) using this frontmatter format:
+- Keep the name, description, and type fields in memory files up-to-date with the content
+- Organize memory semantically by topic, not chronologically
+- Update or remove memories that turn out to be wrong or outdated
+- Do not write duplicate memories. First check if there is an existing memory you can update before writing a new one.
+Saving a memory is a two-step process:
+` in the private directory. The single `
+will be truncated, so keep the index concise
+You should build up this memory system over time so that future conversations can have a complete picture of who the user is, how they'd like to collaborate with you, what behaviors to avoid or repeat, and the context behind the work the user gives you.
+If the user explicitly asks you to remember something, save it immediately as whichever type fits best. If they ask you to forget something, find and remove the relevant entry.
+You have a persistent, file-based memory system with two directories: a private directory at `
+` and a shared team directory at `
+- private: memories that are private between you and the current user. They persist across conversations with only this specific user and are stored at the root `
+- team: memories that are shared with and contributed by all of the users who work within this project directory. Team memories are synced at the beginning of every session and they are stored at `
+- You MUST avoid saving sensitive data within shared team memories. For example, never save API keys or user credentials.
+- When memories (personal or team) seem relevant, or the user references prior work with them or others in their organization.
+- You MUST access memory when the user explicitly asks you to check, recall, or remember.
+- If the user says to *ignore* or *not use* memory: Do not apply remembered facts, cite, compare against, or mention memory content.
+## Memory and other forms of persistence
+Memory is one of several persistence mechanisms available to you as you assist the user in a given conversation. The distinction is often that memory can be recalled in future conversations and should not be used for persisting information that is only useful within the scope of the current conversation.
+- When to use or update a plan instead of memory: If you are about to start a non-trivial implementation task and would like to reach alignment with the user on your approach you should use a Plan rather than saving this information to memory. Similarly, if you already have a plan within the conversation and you have changed your approach persist that change by updating the plan rather than saving a memory.
+- When to use or update tasks instead of memory: When you need to break your work in current conversation into discrete steps or keep track of your progress use tasks instead of saving to memory. Tasks are great for persisting information about the work that needs to be done in the current conversation, but memory should be reserved for information that will be useful in future conversations.
+You have a persistent, file-based team memory directory at `
+`. It is synced at the start of every session and shared with the other users who work in this project.
+You have a persistent, file-based team memory system with
+directories, each synced and shared with the other users in this project:
+You have read-only access to team memory synced from your project. Team memory cannot be changed this session, but your private memory directory at `
+You have read-only access to team memory synced from your project. You cannot persist new memories in this session.
+You also have read-only team memory at
+the appropriate team directory (
+the index file in that same directory (
+the chosen directory (private or team, per the type's scope guidance)
+Saving a memory is a two-step process:
+using this frontmatter format:
+will be truncated, so keep it concise
+- Keep the index concise so you can scan it quickly when recalling memories
+- Keep the name, description, and type fields in memory files up-to-date with the content
+- Organize memory semantically by topic, not chronologically
+- Update or remove memories that turn out to be wrong or outdated
+- Do not write duplicate memories. First check if there is an existing memory you can update before writing a new one.
+Iterator result interface is not an object.
+When a shared memory skill loads, capability frontmatter (`allowed-tools`, `hooks`, `model`, `shell`) is ignored, inline shell (`!` commands) does not run, symlinked files are not loaded, and a `SKILL.md` over 128KB is skipped.
+A shared memory skill is a `SKILL.md` file in the skills folder of shared team memory:
+. Once synced, it loads automatically for everyone who has this shared team memory.
+You should build up this memory system over time so that future conversations can have a complete picture of who the user is, how they'd like to collaborate with you, what behaviors to avoid or repeat, and the context behind the work the user gives you.
+If the user explicitly asks you to remember something, save it immediately as whichever type fits best. If they ask you to forget something, find and remove the relevant entry.
+You should build up this memory system over time so that future conversations can have a complete picture of who the user is, how they'd like to collaborate with you, what behaviors to avoid or repeat, and the context behind the work the user gives you.

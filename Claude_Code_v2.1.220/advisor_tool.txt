@@ -1,0 +1,48 @@
+Send a notification to the user via their terminal and, when Remote Control is connected, also push to their mobile device
+Schedule when to resume work in /loop dynamic mode (always pass the `prompt` arg unless stopping). Call before ending the turn to keep the loop alive; call with `stop: true` to end the loop immediately.
+- Stops a running background task by its ID
+- Takes a task_id parameter identifying the task to stop
+- To stop an agent-team teammate, pass its agent ID ("name@team") or bare teammate name as task_id
+- To stop a background agent spawned with a name, pass that name as task_id
+- Returns a success or failure status
+- Use this tool when you need to terminate a long-running task
+Cancel a scheduled cron job by ID
+Your bare assistant text does NOT reach the user. Your comms tools are the only channel to them: every turn must end in a comms-tool call (reply, react, or an explicit no-reply), and "tell the user" below always means a comms-tool call.
+post a one-line "launched X" via your comms tool
+Fetches full schema definitions for deferred tools so they can be called.
+Deferred tools appear by name in <system-reminder> messages.
+address|article|aside|base|basefont|blockquote|body|caption|center|col|colgroup|dd|details|dialog|dir|div|dl|dt|fieldset|figcaption|figure|footer|form|frame|frameset|h[1-6]|head|header|hr|html|iframe|legend|li|link|main|menu|menuitem|meta|nav|noframes|ol|optgroup|option|p|param|search|section|summary|table|tbody|td|tfoot|th|thead|title|tr|track|ul
+^[^_*]*?__[^_*]*?\*[^_*]*?(?=__)|[^*]+(?=[^*])|(?!\*)punct(\*+)(?=[\s]|$)|notPunctSpace(\*+)(?!\*)(?=punctSpace|$)|(?!\*)punctSpace(\*+)(?=notPunctSpace)|[\s](\*+)(?!\*)(?=punct)|(?!\*)punct(\*+)(?!\*)(?=punct)|notPunctSpace(\*+)(?=notPunctSpace)
+# Pinned memories (apply to every conversation)
+Codebase and user instructions are shown below. Be sure to adhere to these instructions. IMPORTANT: These instructions OVERRIDE any default behavior and you MUST follow them exactly as written.#
+/v2/ccr-sessions/-/chat-project
+Autocompact is thrashing: the context refilled to the limit within 3 turns of the previous compact, 3 times in a row. A file being read or a tool output is likely too large for the context window. Try reading in smaller chunks, or use /clear to start fresh.
+renderPreviousOutput_DEPRECATED
+https://claude.com/claude-code
+SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths
+https://code.claude.com/docs/en/claude_code_docs_map.md
+https://platform.claude.com/llms.txt
+https://claude.com/docs/llms.txt
+https://claude.com/docs/claude-tag/overview.md
+[shell command execution disabled by policy]
+https://downloads.claude.ai/claude-code-releases/plugins/claude-plugins-official
+marketplaces/claude-plugins-official/
+Invalid name <redacted>. Names can only contain letters, numbers, hyphens, and underscores.
+io.modelcontextprotocol/skills
+Blocked by enterprise managed policy
+Disabled by disableClaudeAiConnectors setting
+https://json-schema.org/draft/2020-12/schema
+*,*::before,*::after{box-sizing:border-box}
+body{min-height:100vh;background:#FAF9F5;color:#141413;font:15px/1.5 ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;display:flex;align-items:center;justify-content:center;padding:48px 24px}
+main{width:100%;max-width:560px}
+.status{display:inline-flex;align-items:center;gap:8px;padding:4px 10px 4px 8px;border-radius:999px;background:rgba(85,138,66,.10);color:#345C28;font-size:12.5px;font-weight:500;letter-spacing:-.005em;margin-bottom:20px}
+.status::before{content:"";width:6px;height:6px;border-radius:50%;background:#558A42;box-shadow:0 0 0 3px rgba(85,138,66,.18)}
+.status.err{background:rgba(166,50,68,.08);color:#671D28}
+.status.err::before{background:#A63244;box-shadow:0 0 0 3px rgba(166,50,68,.15)}
+h1{font-family:ui-serif,Charter,"Iowan Old Style",Georgia,serif;font-weight:400;font-size:32px;line-height:1.15;letter-spacing:-.02em;margin:0 0 10px;text-wrap:balance}
+.sub{margin:0;color:#4D4C48;font-size:15px;line-height:1.55;max-width:52ch}
+.detail{margin-top:20px;background:#FFF;border:.5px solid rgba(31,30,29,.15);border-left:3px solid #A63244;border-radius:10px;padding:14px 16px;font-size:14px;line-height:1.5;color:#3D3D3A;word-break:break-word}
+@media (max-width:520px){h1{font-size:26px}body{padding:32px 18px}}
+urn:ietf:params:oauth:grant-type:token-exchange
+urn:ietf:params:oauth:token-type:id-jag
+urn:ietf:params:oauth:token-type:id_tokenÿ

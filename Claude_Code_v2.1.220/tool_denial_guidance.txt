@@ -1,0 +1,66 @@
+- NODE_ENV=production npm start => none
+- FOO=bar BAZ=qux ls -la => FOO=bar BAZ=qux ls
+- PYTHONPATH=/tmp python3 script.py arg1 arg2 => PYTHONPATH=/tmp python3
+The user has allowed certain command prefixes to be run, and will otherwise be asked to approve or deny the command.
+Your task is to determine the command prefix for the following command.
+The prefix must be a string prefix of the full command.
+IMPORTANT: Bash commands may run multiple commands that are chained together.
+For safety, if the command seems to contain command injection, you must return "command_injection_detected".
+(This will help protect the user: if they think that they're allowlisting command A,
+but the AI coding agent sends a malicious command that technically has the same prefix as command A,
+then the safety system will see that you said "command_injection_detected" and ask the user for manual confirmation.)
+Note that not every command has a prefix. If a command has no prefix, return "none".
+ONLY return the prefix. Do not return any other text, markdown markers, or other content or formatting.
+Your organization requires approval for this toolâ$
+**IMPORTANT: If the Chrome browser tools are deferred (must be loaded via ToolSearch before use), load them with ToolSearch before calling them, and batch every tool you expect to need into ONE ToolSearch call (the select query accepts a comma-separated list). Do NOT load tools one at a time; each separate ToolSearch call wastes a full round-trip.**
+Start a browser task whose tools are not yet loaded with a single call loading the core set:
+ToolSearch with query "select:mcp__claude-in-chrome__tabs_context_mcp,mcp__claude-in-chrome__navigate,mcp__claude-in-chrome__computer,mcp__claude-in-chrome__read_page,mcp__claude-in-chrome__tabs_create_mcp"
+Add task-specific tools to the same call when the task obviously needs them: read_console_messages / read_network_requests for debugging, form_input for forms, gif_creator for recordings, javascript_tool for page scripting. Only issue a second ToolSearch if the task later needs a tool you did not anticipate.
+You are selecting memories that will be useful to Claude Code as it processes a user's query. The first message lists the available memory files with their filenames and descriptions; subsequent messages each contain one user query.
+Return a list of filenames for the memories that will clearly be useful to Claude Code as it processes the user's query (up to 5). Only include memories that you are certain will be helpful based on their name and description.
+- If you are unsure if a memory will be useful in processing the user's query, then do not include it in your list. Be selective and discerning.
+- If there are no memories in the list that would clearly be useful, feel free to return an empty list.
+- Be especially conservative with user-profile and project-overview memories ([user], [project]). These describe the user's ongoing focus, not what every question is about. A profile saying "works on DB performance" is NOT relevant to a question that merely contains the word "performance" unless the question is actually about that DB work. Match on what the question IS ABOUT, not on surface keyword overlap with who the user is.
+- Do not re-select memories you already returned for an earlier query in this conversation.
+setInternalSubagentEventReader
+getInternalSubagentEventReader
+memory access blocked by /pause-memory
+Execute autonomously, minimize interruptions, prefer action over planning.
+The user doesn't want to proceed with this tool use. The tool use was rejected (eg. if it was a file edit, the new_string was NOT written to the file). STOP what you are doing and wait for the user to tell you how to proceed.
+The user doesn't want to proceed with this tool use. The tool use was rejected (eg. if it was a file edit, the new_string was NOT written to the file). To tell you how to proceed, the user said:
+Permission for this tool use was denied. The tool use was rejected (eg. if it was a file edit, the new_string was NOT written to the file). Try a different approach or report the limitation to complete your task.
+Permission for this tool use was denied. The tool use was rejected (eg. if it was a file edit, the new_string was NOT written to the file). The user said:
+The agent proposed a plan that was rejected by the user. The user chose to stay in plan mode rather than proceed with implementation.
+IMPORTANT: You *may* attempt to accomplish this action using other tools that might naturally be used to accomplish this goal, e.g. using head instead of cat. But you *should not* attempt to work around this denial in malicious ways, e.g. do not use your ability to run tests to execute non-test actions. You should only try to work around this restriction in reasonable ways that do not attempt to bypass the intent behind this denial.
+[Tool result missing due to internal error]
+Permission for this action was denied by the Claude Code auto mode classifier. Reason:
+Permission for this action has been denied. Reason:
+, so auto mode cannot determine the safety of
+Plan mode is active. The user indicated that they do not want you to execute yet -- you MUST NOT make any edits (with the exception of the plan file mentioned below), run any non-readonly tools (including changing configs or making commits), or otherwise make any changes to the system. This supercedes any other instructions you have received.
+The user sent a new message while you were working:
+A message arrived in the bound thread while you were working:
+Messages arrived in the bound thread while you were working:
+Remote Control is only available when using Claude via api.anthropic.com.q%
+unset it (or run in a shell without it) to use Remote Control.
+unset them (or run in a shell without them) to use Remote Control.
+https://http-intake.logs.us5.datadoghq.com/api/v2/logs
+pubea5604404508cdd34afb69e6f42a05bc
+fcoeoabgfenejglbffodgkkbkcdhcgfn
+https://github.com/anthropics/claude-code/issues/new?labels=bug,claude-in-chrome
+https://downloads.claude.ai/claude-code-releases
+disabled after repeated failures · restart to retry
+Re-run `claude remote-control` to try again
+@anthropic-ai/claude-agent-sdk
+_createRegisteredResourceTemplate
+To reattach to a cloud session, pass its id: `claude --cloud <session-id>` (find IDs at claude.ai/code).ÿÿÿÿÿÿÿ
+buildBridgeReattachEnvFromState
+Continue from where you left off. Note: this session was automatically restarted after its process exited unexpectedly; the user has not sent a new message since the restart. Re-verify anything time-sensitive (branch state, running processes, prior partial work) before continuing.
+terminal.integrated.mouseWheelScrollSensitivity
+terminal.integrated.gpuAcceleration
+\[(?:Pasted text|Image|Audio|\.\.\.Truncated text) #\d+(?: \+\d+ lines)?\.*\]
+exit-handoff agent flush timeout
+https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md
+https://raw.githubusercontent.com/anthropics/claude-code/refs/heads/main/CHANGELOG.md
+urn:ietf:params:oauth:grant-type:device_code
+gcloud auth application-default login
+https://anthropic.com/claude-code/plugin.schema.json
