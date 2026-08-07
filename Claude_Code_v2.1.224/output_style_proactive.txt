@@ -1,0 +1,51 @@
+Cannot destructure property 'servers' from null or undefined value
+Iterator result interface is not an object.
+Iterator result interface is not an object.
+env name 
+header name 
+headers.
+Cannot destructure property 'configObject' from null or undefined value
+"__proto__" is a reserved MCP server name and was not loaded
+reserved_name
+Iterator result interface is not an object.
+" for server "
+Valid types are: stdio, sse, http (or streamable-http), ws, sdk
+unknown_type
+" has a "url" but no "type"; add "type": "http" (or "sse" / "ws") to this entry
+url_missing_type
+invalid_config
+" is a reserved MCP server name and was not loaded
+" is reserved for internal use
+Leading or trailing whitespace in: 
+Remove the whitespace from these values in the "
+Cannot destructure property 'expanded' from null or undefined value
+Missing environment variables: 
+Set the following environment variables: 
+ expanded to an empty string. Set the referenced environment variable, or update the server's config and reconnect.
+url_invalid
+hostCarrier
+mcpServers.
+skipReason
+Rename the top-level "servers" key to "mcpServers" in 
+your MCP config
+Cannot destructure property 'filePath' from null or undefined value
+MCP config skipped for 
+ (scope=
+): not a regular file or exceeds 
+ byte limit
+mcp_config_parse
+mcp_config_shape_gate
+MCP config is not a regular file or exceeds 
+ bytes: 
+Check that the path is a plain JSON file (not a device, FIFO, or symlink to one)
+MCP config file not found: 
+Check that the file path is correct
+MCP config read error for 
+mcp_config_read_failed
+Failed to read file: 
+Check file permissions and ensure the file exists
+MCP config is not valid JSON: 
+, length=
+mcp_config_invalid_json
+MCP config is not a valid JSON
+Fix the JSON syntax errors in the file

@@ -1,0 +1,100 @@
+stuck on a startup dialog
+open this session to continue setup
+.prompt-draft
+No-Verification-Needed
+getPipeSegments
+withoutOutputRedirections
+getOutputRedirections
+getTreeSitterAnalysis
+__SED_MULTIPLE_I_FLAGS__
+[lLhqjzZt]*
+Repo PR template (empty if none)
+untrusted_repo_pr_template
+Communication: Output text directly (NOT echo/printf)
+BACKSLASH
+QUESTION
+[... skill content truncated for compaction; use Read on the skill path if you need the full text]
+Not enough messages to compact.
+[earlier conversation truncated for compaction retry]
+Conversation too long. Press esc twice to go up a few messages and try again.
+Compaction blocked by PreCompact hook
+Autocompact buffer
+Compact buffer
+$defaults
+<settings_deny_rules>
+Another Claude session sent a message
+A peer session sent a message while you were working:
+ After completing your current task, decide whether/how to respond (reply via SendMessage to the `from=` address).
+This is from another Claude session, not your user. After completing your current task, decide whether/how to respond.
+The coordinator sent a message
+Err on the side of blocking. Your ENTIRE response MUST begin with <block>. Do NOT output any analysis, reasoning, or commentary before <block>. No "Looking at..." or similar preamble.
+Review the classification process and follow it carefully, making sure you deny actions that should be blocked. As a reminder, explicit (not suggestive or implicit) user confirmation is required to override blocks. Use <thinking> before responding with <block>. Think longer on ambiguous or borderline actions; keep reasoning brief for clear-cut ones.
+Review the classification process and follow it carefully. As a reminder, explicit (not suggestive or implicit) user confirmation is required to override blocks.
+Use <thinking> first, then respond with <severity>N</severity>, plus <category>Exact BLOCK Rule Name</category> when the action matches a BLOCK rule (see Output Format). No other text. Think longer on ambiguous cases; keep reasoning brief for clear-cut ones.
+unprobed
+SandboxNetworkAccess
+Repo visibility & branch protection (via gh)
+not queryable here
+Infer visibility from the remote hostname in Repo facts, or ask.
+#### permissions.allow entries auto mode ignores (classifier-bypassing, in your user settings)
+Shell history (command words only)
+Other git repos under the home directory
+Recent usage across all projects (names only)
+denied by the Claude Code auto mode classifier
+loadFromFileList
+loadFromFileListAsync
+buildAsync
+buildIndex
+resetArrays
+indexPath
+PROVENANCE_REQUIRED
+The permission request for this URL was not answered in time. Ask the user to approve the fetch or include the URL in a message, then try again.
+CLAUDE_CODE_AGENT_VIEW_RELAUNCH
+isAvailable
+isRunningInside
+createTeammatePaneInSwarmView
+sendCommandToPane
+setPaneBorderColor
+setPaneTitle
+enablePaneBorderStatus
+killPane
+getCurrentPaneId
+getCurrentWindowTarget
+getCurrentWindowPaneCount
+createExternalSwarmSession
+createTeammatePaneWithLeader
+createTeammatePaneExternal
+rebalancePanesWithLeader
+rebalancePanesTiled
+`claude import` is not yet available in this build. Run `claude` and use /mcp or edit ~/.claude/settings.json directly.
+paste-cache
+startOAuthFlow
+waitForAuthorizationCode
+formatTokens
+.design_oauth_refresh.lock
+Usage: /design consent | /design revoke
+tengu_sessions_elevated_auth_enforcement
+require_trusted_devices
+tengu_sessions_elevated_auth_disable_proactive_enrollment
+Your organization requires Trusted Devices for Remote Control, but enrollment is temporarily disabled. Please try again later, or contact your administrator.
+subscription-switch
+gateway TLS certificate does not match the pinned fingerprint
+X-Amz-Algorithm
+X-Amz-Credential
+X-Amz-Date
+X-Amz-SignedHeaders
+X-Amz-Expires
+X-Amz-Signature
+X-Amz-Security-Token
+authorization
+AWS4-HMAC-SHA256-PAYLOAD
+aws4_request
+signEvent
+signMessage
+signString
+signRequest
+createCanonicalRequest
+createStringToSign
+getCanonicalPath
+getSignature
+getSigningKey

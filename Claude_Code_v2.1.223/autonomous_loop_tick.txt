@@ -1,0 +1,19 @@
+tengu_kairos_loop_persistent
+tengu_kairos_loop_persistent_activated
+newly blocked on a decision you won't make alone, you're ending the loop
+newly blocked on a decision you won't make alone, third straight tick with nothing to do, you're ending the loop
+ when the loop can't move further without the user, or when something landed that they'd want to act on now: 
+ from this tick.
+# Autonomous loop tick (dynamic pacing)
+Run the autonomous check using the loop instructions established earlier in this conversation. If you cannot find them, treat this as a no-op tick.
+You scheduled this tick via the 
+ tool (not a recurring cron). To keep the loop alive, call 
+ again at the end of this turn with `prompt` set to the literal sentinel `
+tengu_kairos_loop_prompt
+ from this tick.
+ tool (not a recurring cron). To keep the loop alive, call 
+ again at the end of this turn with `prompt` set to the literal sentinel `
+ again at the end of this turn with `prompt` set to the literal sentinel `
+> WARNING: loop.md was truncated to 
+ bytes. Keep the task list concise.
+Iterator result interface is not an object.

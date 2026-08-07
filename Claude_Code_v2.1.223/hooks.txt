@@ -1,0 +1,351 @@
+brief summary of what was fixed and what was skipped (or confirm the code was
+already clean). State clearly in your summary that this was a single-pass
+review done without the ${ti} tool, not the full 4-agent
+fan-out, so whoever reads it isn't misled about what actually ran.
+`});function eQE(){return`# Skillify {{userDescriptionBlock}}
+You are capturing this session's repeatable process as a reusable skill.
+Review the conversation above \u2014 it is your source material. Pay particular attention to the user's messages (how they steered and corrected the process) and the tools/commands that were actually used.
+## Your Task
+### Step 1: Analyze the Session
+Before asking any questions, analyze the session to identify:
+- What repeatable process was performed
+- What the inputs/parameters were
+- The distinct steps (in order)
+- The success artifacts/criteria (e.g. not just "writing code," but "an open PR with CI fully passing") for each step
+- Where the user corrected or steered you
+- What tools and permissions were needed
+- What agents were used
+- What the goals and success artifacts were
+### Step 2: Interview the User
+You will use the AskUserQuestion to understand what the user wants to automate. Important notes:
+- Use AskUserQuestion for ALL questions! Never ask questions via plain text.
+- For each round, iterate as much as needed until the user is happy.
+- The user always has a freeform "Other" option to type edits or feedback -- do NOT add your own "Needs tweaking" or "I'll provide edits" option. Just offer the substantive choices.
+**Round 1: High level confirmation**
+- Suggest a name and description for the skill based on your analysis. Ask the user to confirm or rename.
+- Suggest high-level goal(s) and specific success criteria for the skill.
+**Round 2: More details**
+- Present the high-level steps you identified as a numbered list. Tell the user you will dig into the detail in the next round.
+- If you think the skill will require arguments, suggest arguments based on what you observed. Make sure you understand what someone would need to provide.
+- If it's not clear, ask if this skill should run inline (in the current conversation) or forked (as a sub-agent with its own context). Forked is better for self-contained tasks that don't need mid-process user input; inline is better when the user wants to steer mid-process.
+- Ask where the skill should be saved. Suggest a default based on context (repo-specific workflows \u2192 repo, cross-repo personal workflows \u2192 user). Options:
+  - **This repo** (\`.claude/skills/<name>/SKILL.md\`) \u2014 for workflows specific to this project
+  - **Personal** (\`~/.claude/skills/<name>/SKILL.md\`) \u2014 follows you across all repos
+**Round 3: Breaking down each step**
+For each major step, if it's not glaringly obvious, ask:
+- What does this step produce that later steps need? (data, artifacts, IDs)
+- What proves that this step succeeded, and that we can move on?
+- Should the user be asked to confirm before proceeding? (especially for irreversible actions like merging, sending messages, or destructive operations)
+- Are any steps independent and could run in parallel? (e.g., posting to Slack and monitoring CI at the same time)
+- How should the skill be executed? (e.g. always use a Task agent to conduct code review, or invoke an agent team for a set of concurrent steps)
+- What are the hard constraints or hard preferences? Things that must or must not happen?
+You may do multiple rounds of AskUserQuestion here, one round per step, especially if there are more than 3 steps or many clarification questions. Iterate as much as needed.
+IMPORTANT: Pay special attention to places where the user corrected you during the session, to help inform your design.
+**Round 4: Final questions**
+- Confirm when this skill should be invoked, and suggest/confirm trigger phrases too. (e.g. For a cherrypick workflow you could say: Use when the user wants to cherry-pick a PR to a release branch. Examples: 'cherry-pick to release', 'CP this PR', 'hotfix.')
+- You can also ask for any other gotchas or things to watch out for, if it's still unclear.
+Stop interviewing once you have enough information. IMPORTANT: Don't over-ask for simple processes!
+### Step 3: Write the SKILL.md
+Create the skill directory and file at the location the user chose in Round 2.
+Use this format:
+description: {{one-line description}}
+allowed-tools:
+  {{list of tool permission patterns observed during session}}
+when_to_use: {{detailed description of when Claude should automatically invoke this skill, including trigger phrases and example user messages}}
+argument-hint: "{{hint showing argument placeholders}}"
+arguments:
+  {{list of argument names}}
+context: {{inline or fork -- omit for inline}}
+# {{Skill Title}}
+Description of skill
+## Inputs
+- \`$arg_name\`: Description of this input
+Clearly stated goal for this workflow. Best if you have clearly defined artifacts or criteria for completion.
+## Steps
+What to do in this step. Be specific and actionable. Include commands when appropriate.
+**Success criteria**: ALWAYS include this! This shows that the step is done and we can move on. Can be a list.
+IMPORTANT: see the next section below for the per-step annotations you can optionally include for each step.
+**Per-step annotations**:
+- **Success criteria** is REQUIRED on every step. This helps the model understand what the user expects from their workflow, and when it should have the confidence to move on.
+- **Execution**: \`Direct\` (default), \`Task agent\` (straightforward subagents), \`Teammate\` (agent with true parallelism and inter-agent communication), or \`[human]\` (user does it). Only needs specifying if not Direct.
+- **Artifacts**: Data this step produces that later steps need (e.g., PR number, commit SHA). Only include if later steps depend on it.
+- **Human checkpoint**: When to pause and ask the user before proceeding. Include for irreversible actions (merging, sending messages), error judgment (merge conflicts), or output review.
+- **Rules**: Hard rules for the workflow. User corrections during the reference session can be especially useful here.
+**Step structure tips:**
+- Steps that can run concurrently use sub-numbers: 3a, 3b
+- Steps requiring the user to act get \`[human]\` in the title
+- Keep simple skills simple -- a 2-step skill doesn't need annotations on every step
+**Frontmatter rules:**
+- \`allowed-tools\`: Minimum permissions needed (use patterns like \`Bash(gh *)\` not \`Bash\`)
+- \`context\`: Only set \`context: fork\` for self-contained skills that don't need mid-process user input.
+- \`when_to_use\` is CRITICAL -- tells the model when to auto-invoke. Start with "Use when..." and include trigger phrases. Example: "Use when the user wants to cherry-pick a PR to a release branch. Examples: 'cherry-pick to release', 'CP this PR', 'hotfix'."
+- \`arguments\` and \`argument-hint\`: Only include if the skill takes parameters. Use \`$name\` in the body for substitution.
+### Step 4: Confirm and Save
+Before writing the file, output the complete SKILL.md content as a yaml code block in your response so the user can review it with proper syntax highlighting. Then ask for confirmation using AskUserQuestion with a simple question like "Does this SKILL.md look good to save?" \u2014 do NOT use the body field, keep the question concise.
+After writing, tell the user:
+- Where the skill was saved
+- How to invoke it: \`/{{skill-name}} [arguments]\`
+- That they can edit the SKILL.md directly to refine it
+`}function xKm(){return}var kKm=v(()=>{C_()});function HKm(){return}var tQE="# /stuck \u2014 diagnose frozen/slow Claude Code sessions\n\nThe user thinks another Claude Code session on this machine is frozen, stuck, or very slow. Investigate and post a report to #claude-code-feedback.\n\n## What to look for\n\nScan for other Claude Code processes (excluding the current one \u2014 PID is in `process.pid` but for shell commands just exclude the PID you see running this prompt). Process names are typically `claude` (installed) or `cli` (native dev build).\n\nSigns of a stuck session:\n- **High CPU (\u226590%) sustained** \u2014 likely an infinite loop. Sample twice, 1-2s apart, to confirm it's not a transient spike.\n- **Process state `D` (uninterruptible sleep)** \u2014 often an I/O hang. The `state` column in `ps` output; first character matters (ignore modifiers like `+`, `s`, `<`).\n- **Process state `T` (stopped)** \u2014 user probably hit Ctrl+Z by accident.\n- **Process state `Z` (zombie)** \u2014 parent isn't reaping.\n- **Very high RSS (\u22654GB)** \u2014 possible memory leak making the session sluggish.\n- **Stuck child process** \u2014 a hung `git`, `node`, or shell subprocess can freeze the parent. Check `pgrep -lP <pid>` for each session.\n\n## Investigation steps\n\n1. **List all Claude Code processes** (macOS/Linux):\n   ```\n   ps -axo pid=,pcpu=,rss=,etime=,state=,comm=,command= | grep -E '(claude|cli)' | grep -v grep\n   ```\n   Filter to rows where `comm` is `claude` or (`cli` AND the command path contains \"claude\").\n\n2. **For anything suspicious**, gather more context:\n   - Child processes: `pgrep -lP <pid>`\n   - If high CPU: sample again after 1-2s to confirm it's sustained\n   - If a child looks hung (e.g., a git command), note its full command line with `ps -p <child_pid> -o command=`\n   - Check the session's debug log if you can infer the session ID: `~/.claude/debug/<session-id>.txt` (the last few hundred lines often show what it was doing before hanging)\n\n3. **Consider a stack dump** for a truly frozen process (advanced, optional):\n   - macOS: `sample <pid> 3` gives a 3-second native stack sample\n   - This is big \u2014 only grab it if the process is clearly hung and you want to know *why*\n\n## Report\n\n**Only post to Slack if you actually found something stuck.** If every session looks healthy, tell the user that directly \u2014 do not post an all-clear to the channel.\n\nIf you did find a stuck/slow session, post to **#claude-code-feedback** (channel ID: `C07VBSHV7EV`) using the Slack MCP tool. Use ToolSearch to find `slack_send_message` if it's not already loaded.\n\n**Use a two-message structure** to keep the channel scannable:\n\n1. **Top-level message** \u2014 one short line: hostname, Claude Code version, and a terse symptom (e.g. \"session PID 12345 pegged at 100% CPU for 10min\" or \"git subprocess hung in D state\"). No code blocks, no details.\n2. **Thread reply** \u2014 the full diagnostic dump. Pass the top-level message's `ts` as `thread_ts`. Include:\n   - PID, CPU%, RSS, state, uptime, command line, child processes\n   - Your diagnosis of what's likely wrong\n   - Relevant debug log tail or `sample` output if you captured it\n\nIf Slack MCP isn't available, format the report as a message the user can copy-paste into #claude-code-feedback (and let them know to thread the details themselves).\n\n## Notes\n- Don't kill or signal any processes \u2014 this is diagnostic only.\n- If the user gave an argument (e.g., a specific PID or symptom), focus there first.\n";var IKm=v(()=>{C_()});function DKm(){yu({name:"update-config",menuDescription:"Change settings: hooks, permissions, environment variables",description:'Use this skill to configure the Claude Code harness via settings.json. Automated behaviors ("from now on when X", "each time X", "whenever X", "before/after X") require hooks configured in settings.json - the harness executes these, not Claude, so memory/preferences cannot fulfill them. Also use for: permissions ("allow X", "add permission", "move permission to"), env vars ("set X=Y"), hook troubleshooting, or any changes to settings.json/settings.local.json files. Examples: "allow npm commands", "add bq permission to global settings", "move permission to user settings", "set DEBUG=true", "when claude stops show X". For simple settings like theme/model, suggest the /config command.',allowedTools:["Read"],userInvocable:!0,async getPromptForCommand(e){if(e.startsWith("[hooks-only]")){let n=e.slice(12).trim(),o=RKm+`
+## Full Settings JSON Schema
+## User Request
+Choose the appropriate file based on scope:
+| File | Scope | Git | Use For |
+| \`~/.claude/settings.json\` | Global | N/A | Personal preferences for all projects |
+| \`.claude/settings.json\` | Project | Commit | Team-wide hooks, permissions, plugins |
+| \`.claude/settings.local.json\` | Project | Gitignore | Personal overrides for this project |
+Settings load in order: user \u2192 project \u2192 local (later overrides earlier).
+## Settings Schema Reference
+### Permissions
+  "permissions": {
+    "defaultMode": "default" | "plan" | "acceptEdits" | "dontAsk",
+    "additionalDirectories": ["/extra/dir"]
+**Permission Rule Syntax:**
+- Exact match: \`"Bash(npm run test)"\`
+- Tool only: \`"Read"\` - allows all Read operations
+### Environment Variables
+    "MY_API_KEY": "value"
+### Model & Agent
+  "model": "sonnet",  // or "fable", "opus", "haiku", full model ID
+  "agent": "agent-name",
+  "alwaysThinkingEnabled": true
+### Attribution (Commits & PRs)
+  "attribution": {
+    "commit": "Custom commit trailer text",
+    "pr": "Custom PR description text"
+Set \`commit\` or \`pr\` to empty string \`""\` to hide that attribution.
+### MCP Server Management
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": ["server1", "server2"],
+  "disabledMcpjsonServers": ["blocked-server"]
+### Plugins
+  "enabledPlugins": {
+    "formatter@anthropic-tools": true
+Plugin syntax: \`plugin-name@source\` where source is \`claude-code-marketplace\`, \`claude-plugins-official\`, or \`builtin\`.
+### Other Settings
+- \`language\`: Preferred response language (e.g., "japanese")
+- \`cleanupPeriodDays\`: Days to keep transcripts before automatic cleanup (default: 30; minimum 1)
+- \`respectGitignore\`: Whether to respect .gitignore (default: true)
+- \`spinnerTipsEnabled\`: Show tips in spinner
+- \`spinnerTipsOverride\`: Override spinner tips (\`{ "excludeDefault": true, "tips": ["Custom tip"] }\`)
+- \`syntaxHighlightingDisabled\`: Disable diff highlighting
+`,RKm=`## Hooks Configuration
+Hooks run commands at specific points in Claude Code's lifecycle.
+### Hook Structure
+    "EVENT_NAME": [
+        "matcher": "ToolName|OtherTool",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "your-command-here",
+            "timeout": 60,
+            "statusMessage": "Running..."
+          }
+        ]
+### Hook Events
+| Event | Matcher | Purpose |
+| PermissionRequest | Tool name | Run before permission prompt |
+| PreToolUse | Tool name | Run before tool, can block |
+| PostToolUse | Tool name | Run after successful tool |
+| PostToolUseFailure | Tool name | Run after tool fails |
+| Notification | Notification type | Run on notifications |
+| Stop | - | Run when Claude stops (including clear, resume, compact) |
+| PreCompact | "manual"/"auto" | Before compaction |
+| PostCompact | "manual"/"auto" | After compaction (receives summary) |
+| UserPromptSubmit | - | When user submits |
+| SessionStart | - | When session starts |
+### Hook Types
+**1. Command Hook** - Runs a shell command:
+**2. Prompt Hook** - Evaluates a condition with LLM:
+{ "type": "prompt", "prompt": "Is this safe? $ARGUMENTS" }
+Only available for tool events: PreToolUse, PostToolUse, PermissionRequest.
+**3. Agent Hook** - Runs an agent with tools:
+{ "type": "agent", "prompt": "Verify tests pass: $ARGUMENTS" }
+Only available for tool events: PreToolUse, PostToolUse, PermissionRequest.
+### Hook Input (stdin JSON)
+  "tool_response": { "success": true }  // PostToolUse only
+### Hook JSON Output
+Hooks can return JSON to control behavior:
+  "systemMessage": "Warning shown to user in UI",
+  "continue": false,
+  "stopReason": "Message shown when blocking",
+  "suppressOutput": false,
+  "decision": "block",
+  "reason": "Explanation for decision",
+  "hookSpecificOutput": {
+    "hookEventName": "PostToolUse",
+    "additionalContext": "Context injected back to model"
+- \`systemMessage\` - Display a message to the user (all hooks)
+- \`continue\` - Set to \`false\` to block/stop (default: true)
+- \`stopReason\` - Message shown when \`continue\` is false
+- \`suppressOutput\` - Hide stdout from transcript (default: false)
+- \`decision\` - "block" for PostToolUse/Stop/UserPromptSubmit hooks (deprecated for PreToolUse, use hookSpecificOutput.permissionDecision instead)
+- \`reason\` - Explanation for decision
+- \`hookSpecificOutput\` - Event-specific output (must include \`hookEventName\`):
+  - \`additionalContext\` - Text injected into model context
+  - \`permissionDecision\` - "allow", "deny", or "ask" (PreToolUse only)
+  - \`permissionDecisionReason\` - Reason for the permission decision (PreToolUse only)
+  - \`updatedInput\` - Modified tool input (PreToolUse only)
+### Common Patterns
+**Auto-format after writes:**
+    "PostToolUse": [{
+      "matcher": "Write|Edit",
+      "hooks": [{
+        "type": "command",
+        "command": "jq -r '.tool_response.filePath // .tool_input.file_path' | { read -r f; prettier --write \\"$f\\"; } 2>/dev/null || true"
+      }]
+**Log all bash commands:**
+    "PreToolUse": [{
+      "matcher": "Bash",
+      "hooks": [{
+        "type": "command",
+        "command": "jq -r '.tool_input.command' >> ~/.claude/bash-log.txt"
+      }]
+**Stop hook that displays message to user:**
+Command must output JSON with \`systemMessage\` field:
+# Example command that outputs: {"systemMessage": "Session complete!"}
+echo '{"systemMessage": "Session complete!"}'
+**Run tests after code changes:**
+    "PostToolUse": [{
+      "matcher": "Write|Edit",
+      "hooks": [{
+        "type": "command",
+        "command": "jq -r '.tool_input.file_path // .tool_response.filePath' | grep -E '\\\\.(ts|js)$' && npm test || true"
+      }]
+`,PKm=`## Constructing a Hook (with verification)
+Given an event, matcher, target file, and desired behavior, follow this flow. Each step catches a different failure class \u2014 a hook that silently does nothing is worse than no hook.
+1. **Dedup check.** Read the target file. If a hook already exists on the same event+matcher, show the existing command and ask: keep it, replace it, or add alongside.
+2. **Construct the command for THIS project \u2014 don't assume.** The hook receives JSON on stdin. Build a command that:
+   - Extracts any needed payload safely \u2014 use \`jq -r\` into a quoted variable or \`{ read -r f; ... "$f"; }\`, NOT unquoted \`| xargs\` (splits on spaces)
+   - Invokes the underlying tool the way this project runs it (npx/bunx/yarn/pnpm? Makefile target? globally-installed?)
+   - Skips inputs the tool doesn't handle (formatters often have \`--ignore-unknown\`; if not, guard by extension)
+   - Stays RAW for now \u2014 no \`|| true\`, no stderr suppression. You'll wrap it after the pipe-test passes.
+3. **Pipe-test the raw command.** Synthesize the stdin payload the hook will receive and pipe it directly:
+   - \`Pre|PostToolUse\` on \`Write|Edit\`: \`echo '{"tool_name":"Edit","tool_input":{"file_path":"<a real file from this repo>"}}' | <cmd>\`
+   - \`Stop\`/\`UserPromptSubmit\`/\`SessionStart\`: most commands don't read stdin, so \`echo '{}' | <cmd>\` suffices
+   Check exit code AND side effect (file actually formatted, test actually ran). If it fails you get a real error \u2014 fix (wrong package manager? tool not installed? jq path wrong?) and retest. Once it works, wrap with \`2>/dev/null || true\` (unless the user wants a blocking check).
+4. **Write the JSON.** Merge into the target file (schema shape in the "Hook Structure" section above). If this creates \`.claude/settings.local.json\` for the first time, add it to .gitignore \u2014 the Write tool doesn't auto-gitignore it.
+5. **Validate syntax + schema in one shot:**
+   Exit 0 + prints your command = correct. Exit 4 = matcher doesn't match. Exit 5 = malformed JSON or wrong nesting. A broken settings.json silently disables ALL settings from that file \u2014 fix any pre-existing malformation too.
+6. **Prove the hook fires** \u2014 only for \`Pre|PostToolUse\` on a matcher you can trigger in-turn (\`Write|Edit\` via Edit, \`Bash\` via Bash). \`Stop\`/\`UserPromptSubmit\`/\`SessionStart\` fire outside this turn \u2014 skip to step 7.
+   For a **formatter** on \`PostToolUse\`/\`Write|Edit\`: introduce a detectable violation via Edit (two consecutive blank lines, bad indentation, missing semicolon \u2014 something this formatter corrects; NOT trailing whitespace, Edit strips that before writing), re-read, confirm the hook **fixed** it. For **anything else**: temporarily prefix the command in settings.json with \`echo "$(date) hook fired" >> /tmp/claude-hook-check.txt; \`, trigger the matching tool (Edit for \`Write|Edit\`, a harmless \`true\` for \`Bash\`), read the sentinel file.
+   **Always clean up** \u2014 revert the violation, strip the sentinel prefix \u2014 whether the proof passed or failed.
+   **If proof fails but pipe-test passed and \`jq -e\` passed**: the settings watcher isn't watching \`.claude/\` \u2014 it only watches directories that had a settings file when this session started. The hook is written correctly. Tell the user to open \`/hooks\` once (reloads config) or restart \u2014 you can't do this yourself; \`/hooks\` is a user UI menu and opening it ends this turn.
+7. **Handoff.** Tell the user the hook is live (or needs \`/hooks\`/restart per the watcher caveat). Point them at \`/hooks\` to review, edit, or disable it later. The UI only shows "Ran N hooks" if a hook errors or is slow \u2014 silent success is invisible by design.
+Modify Claude Code configuration by updating settings.json files.
+## When Hooks Are Required (Not Memory)
+If the user wants something to happen automatically in response to an EVENT, they need a **hook** configured in settings.json. Memory/preferences cannot trigger automated actions.
+**These require hooks:**
+- "Before compacting, ask me what to preserve" \u2192 PreCompact hook
+- "After writing files, run prettier" \u2192 PostToolUse hook with Write|Edit matcher
+- "When I run bash commands, log them" \u2192 PreToolUse hook with Bash matcher
+- "Always run tests after code changes" \u2192 PostToolUse hook
+**Hook events:** PreToolUse, PostToolUse, PreCompact, PostCompact, Stop, Notification, SessionStart
+## CRITICAL: Read Before Write
+**Always read the existing settings file before making changes.** Merge new settings with existing ones - never replace the entire file.
+## CRITICAL: Use AskUserQuestion for Ambiguity
+When the user's request is ambiguous, use AskUserQuestion to clarify:
+- Which settings file to modify (user/project/local)
+- Whether to add to existing arrays or replace them
+- Specific values when multiple options exist
+## Decision: /config command vs Direct Edit
+**Suggest the \`/config\` slash command** for these simple settings:
+- \`language\`, \`alwaysThinkingEnabled\`
+- \`permissions.defaultMode\`
+**Edit settings.json directly** for:
+- Hooks (PreToolUse, PostToolUse, etc.)
+- Complex permission rules (allow/deny arrays)
+- Environment variables
+- MCP server configuration
+- Plugin configuration
+## Workflow
+1. **Clarify intent** - Ask if the request is ambiguous
+2. **Read existing file** - Use Read tool on the target settings file
+3. **Merge carefully** - Preserve existing settings, especially arrays
+4. **Edit file** - Use Edit tool (if file doesn't exist, ask user to create it first)
+5. **Confirm** - Tell user what was changed
+## Merging Arrays (Important!)
+When adding to permission arrays or hook arrays, **merge with existing**, don't replace:
+**WRONG** (replaces existing permissions):
+**RIGHT** (preserves existing + adds new):
+  "permissions": {
+    "allow": [
+      "Bash(git *)",      // existing
+      "Edit(.claude)",    // existing
+      "Bash(npm *)"       // new
+## Example Workflows
+### Adding a Hook
+User: "Format my code after Claude writes it"
+1. **Clarify**: Which formatter? (prettier, gofmt, etc.)
+2. **Read**: \`.claude/settings.json\` (or create if missing)
+3. **Merge**: Add to existing hooks, don't replace
+    "PostToolUse": [{
+      "matcher": "Write|Edit",
+      "hooks": [{
+        "type": "command",
+        "command": "jq -r '.tool_response.filePath // .tool_input.file_path' | { read -r f; prettier --write \\"$f\\"; } 2>/dev/null || true"
+      }]
+### Adding Permissions
+User: "Allow npm commands without prompting"
+1. **Read**: Existing permissions
+2. **Merge**: Add \`Bash(npm *)\` to allow array
+3. **Result**: Combined with existing allows
+### Environment Variables
+User: "Set DEBUG=true"
+1. **Decide**: User settings (global) or project settings?
+2. **Read**: Target file
+3. **Merge**: Add to env object
+## Common Mistakes to Avoid
+1. **Replacing instead of merging** - Always preserve existing settings
+2. **Wrong file** - Ask user if scope is unclear
+3. **Invalid JSON** - Validate syntax after changes
+4. **Forgetting to read first** - Always read before write
+## Troubleshooting Hooks
+If a hook isn't running:
+1. **Check the settings file** - Read ~/.claude/settings.json or .claude/settings.json
+2. **Verify JSON syntax** - Invalid JSON silently fails
+3. **Check the matcher** - Does it match the tool name? (e.g., "Bash", "Write", "Edit")
+4. **Check hook type** - Is it "command", "prompt", or "agent"?
+5. **Test the command** - Run the hook command manually to see if it works
+6. **Use --debug** - Run \`claude --debug\` to see hook execution logs
+`});var OKm=`# Verifying a CLI change\r
+The handle is direct invocation. The evidence is stdout/stderr/exit code.\r
+## Pattern\r
+1. Build (if the CLI needs building)\r
+2. Run with arguments that exercise the changed code\r
+3. Capture output and exit code\r
+4. Compare to expected\r
+CLIs are usually the simplest to verify \u2014 no lifecycle, no ports.\r
+## Worked example\r
+**Diff:** adds a \`--json\` flag to the \`status\` subcommand. New flag\r
+parsing in \`cmd/status.go\`, new output branch.\r
+**Claim (commit msg):** "machine-readable status output."\r
+**Inference:** \`tool status --json\` now exists, emits valid JSON with\r
+the same fields the human output shows. \`tool status\` without the flag\r
+is unchanged.\r
+2. \`tool status\` \u2192 human output, same as before (non-regression)\r
+3. \`tool status --json\` \u2192 valid JSON, parseable\r
+4. JSON fields match human output fields\r
+go build -o /tmp/tool ./cmd/tool\r
+/tmp/tool status\r
+/tmp/tool status --json\r
+/tmp/tool status --json | jq -e .status\r
+# (jq -e exits nonzero if the path is null/false \u2014 cheap validity check)\r
+**Verdict:** PASS \u2014 flag works, JSON is valid, fields line up.\r
+## What FAIL looks like\r
+- \`unknown flag: --json\` \u2192 not wired up, or you're running a stale build\r
+- Output isn't valid JSON (\`jq\` errors) \u2192 serialization bug\r
+- \`tool status\` (no flag) changed \u2192 regression; the diff touched more\r
+  than it should\r
+- JSON has different field names than expected \u2192 claim/code mismatch,\r
+  might be fine, note it\r
+## Reading from stdin, destructive commands\r
+If the CLI reads stdin \u2192 pipe in test data.\r
+If it writes files / hits a network / deletes things \u2192 point it at a\r
+tmp dir / a mock / a dry-run flag. If there's no safe mode and the\r
+diff touches the destructive path, say so and verify what you can\r
+around it.\r
+`;var LKm=()=>{};var $Km=`# Verifying a server/API change\r
+The handle is \`curl\` (or equivalent). The evidence is the response.\r
+## Pattern\r
+1. Start the server (background, with a readiness poll \u2014 see below)\r

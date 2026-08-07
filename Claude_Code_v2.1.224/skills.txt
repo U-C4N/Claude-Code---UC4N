@@ -1,0 +1,16 @@
+tengu_walnut_sconce
+CLAUDE_CODE_COORDINATOR_MODE
+tengu_harbor_kite
+Cannot destructure property 'isScratchpadEnabled' from null or undefined value
+Cannot destructure property 'isPluginSkillToolAdvertised' from null or undefined value
+coordinator
+tengu_coordinator_mode_switched
+coordinator_session_mode_match
+Entered coordinator mode to match resumed session.
+Exited coordinator mode to match resumed session.
+Workers spawned via the 
+ tool have access to these tools:
+Workers also have access to MCP tools from connected MCP servers: 
+Scratchpad directory: 
+workerToolsContext
+searchHint

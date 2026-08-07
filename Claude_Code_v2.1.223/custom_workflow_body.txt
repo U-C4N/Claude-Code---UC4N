@@ -1,0 +1,156 @@
+run_commander_initialized
+preAction
+Claude Code - starts an interactive session by default, use -p/--print for non-interactive output
+[prompt]
+Your prompt
+Display help for command
+Enable debug mode with optional category filtering (e.g., "api,hooks" or "!1p,!file")
+(deprecated) Enable debug mode (to stderr)
+--debug-file <path>
+Write debug logs to a specific file path (implicitly enables debug mode)
+--verbose
+Override verbose mode setting from config
+Print response and exit (useful for pipes). Note: The workspace trust dialog is skipped when Claude is run in non-interactive mode (via -p, or when stdout is not a TTY, e.g. piped or redirected output). Only use this in directories you trust. Settings files that fail validation are silently ignored in this mode (no error dialog is shown).
+Minimal mode: skip hooks, LSP, plugin sync, attribution, auto-memory, background prefetches, keychain reads, and CLAUDE.md auto-discovery. Sets CLAUDE_CODE_SIMPLE=1. Anthropic auth is strictly ANTHROPIC_API_KEY or apiKeyHelper via --settings (OAuth and keychain are never read). 3P providers (Bedrock/Vertex/Foundry) use their own credentials. Skills still resolve via /skill-name. Explicitly provide context via: --system-prompt[-file], --append-system-prompt[-file], --add-dir (CLAUDE.md dirs), --mcp-config, --settings, --agents, --plugin-dir.
+--safe-mode
+Run Setup hooks with init trigger, then continue
+--init-only
+Run Setup and SessionStart:startup hooks, then exit
+--maintenance
+Run Setup hooks with maintenance trigger, then continue
+--output-format <format>
+Output format (only works with --print): "text" (default), "json" (single result), or "stream-json" (realtime streaming)
+stream-json
+stream-json
+--json-schema <schema>
+JSON Schema for structured output validation. Example: {"type":"object","properties":{"name":{"type":"string"}},"required":["name"]}
+--include-hook-events
+Include all hook lifecycle events in the output stream (only works with --output-format=stream-json)
+--include-partial-messages
+Include partial message chunks as they arrive (only works with --print and --output-format=stream-json)
+--forward-subagent-text
+Forward subagent text and thinking blocks as assistant/user messages with parent_tool_use_id set (only works with --print and --output-format=stream-json)
+--session-mirror
+Emit transcript_mirror frames on stdout (SDK-internal; set by ProcessTransport when sessionStore is configured)
+--input-format <format>
+Input format (only works with --print): "text" (default), or "stream-json" (realtime streaming input)
+stream-json
+--dangerously-skip-permissions
+Bypass all permission checks. Recommended only for sandboxes with no internet access.
+--allow-dangerously-skip-permissions
+Enable bypassing all permission checks as an option, without it being enabled by default. Recommended only for sandboxes with no internet access.
+--thinking <mode>
+Thinking mode: enabled (equivalent to adaptive), disabled
+adaptive
+disabled
+adaptive
+disabled
+--thinking-display <display>
+How thinking content appears in the response
+summarized
+summarized
+--max-thinking-tokens <tokens>
+[DEPRECATED. Use --thinking instead for newer models] Maximum number of thinking tokens (only works with --print)
+--max-turns <turns>
+Maximum number of agentic turns in non-interactive mode. This will early exit the conversation after the specified number of turns. (only works with --print)
+--max-budget-usd <amount>
+Maximum dollar amount to spend on API calls (only works with --print)
+--task-budget <tokens>
+API-side task budget in tokens (output_config.task_budget)
+--replay-user-messages
+Re-emit user messages from stdin back on stdout for acknowledgment (only works with --input-format=stream-json and --output-format=stream-json)
+--prompt-suggestions [value]
+Enable prompt suggestions. In print/SDK mode, emits a prompt_suggestion message after each turn with a predicted next user prompt
+--enable-auth-status
+Enable auth status messages in SDK mode
+--allowedTools, --allowed-tools <tools...>
+Comma or space-separated list of tool names to allow (e.g. "Bash(git *) Edit")
+Specify the list of available tools from the built-in set. Use "" to disable all tools, "default" to use all tools, or specify tool names (e.g. "Bash,Edit,Read").
+--disallowedTools, --disallowed-tools <tools...>
+Comma or space-separated list of tool names to deny (e.g. "Bash(git *) Edit")
+Load MCP servers from JSON files or strings (space-separated)
+--permission-prompt-tool <tool>
+MCP tool to use for permission prompts (only works with --print)
+--system-prompt <prompt>
+System prompt to use for the session
+--system-prompt-file <file>
+Read system prompt from a file
+--append-system-prompt <prompt>
+Append a system prompt to the default system prompt
+--append-system-prompt-file <file>
+Read system prompt from a file and append to the default system prompt
+--append-subagent-system-prompt <prompt>
+Append a system prompt to every Task-tool subagent's system prompt, propagated to nested subagents (only works with --print). Implies CLAUDE_CODE_ENABLE_APPEND_SUBAGENT_PROMPT=1.
+--plan-mode-instructions <instructions>
+Custom workflow body for plan mode. Replaces the default code-implementation phases in the plan-mode system reminder; the read-only enforcement preamble and ExitPlanMode protocol footer are always kept.
+--exclude-dynamic-system-prompt-sections
+Move per-machine sections (cwd, env info, memory paths, git status) from the system prompt into the first user message. Improves cross-user prompt-cache reuse. Only applies with the default system prompt (ignored with --system-prompt).
+--permission-mode <mode>
+Permission mode to use for the session
+-c, --continue
+Continue the most recent conversation in the current directory
+Resume a conversation by session ID, or open interactive picker with optional search term
+--fork-session
+When resuming, create a new session ID instead of reusing the original (use with --resume or --continue)
+--prefill <text>
+Pre-fill the prompt input with text without submitting it
+--deep-link-origin
+Signal that this session was launched from a deep link
+--deep-link-repo <slug>
+Repo slug the deep link ?repo= parameter resolved to the current cwd
+--deep-link-last-fetch <ms>
+FETCH_HEAD mtime in epoch ms, precomputed by the deep link trampoline
+Base64url-encoded --prefill value (deep-link shell-safe launch paths)
+Base64url-encoded working directory (deep-link shell-safe launch paths)
+--from-pr [value]
+Resume a session linked to a PR by PR number/URL, or open interactive picker with optional search term
+--no-session-persistence
+Disable session persistence - sessions will not be saved to disk and cannot be resumed (only works with --print)
+--resume-session-at <message id>
+--resume-drops-turn <message id>
+With --resume-session-at in print mode: declare the prompt uuid of the turn the truncating resume intends to discard; the resume is refused if the discarded range contains anything not attributable to that turn (absorbed queued messages, task notifications, content from other turns). Ignored outside print mode, like --resume-session-at.
+--reply-on-resume
+When resuming, immediately query if the loaded transcript ends in a user-role message (set by /background mid-turn so the fork continues the in-flight turn).
+--rewind-files <user-message-id>
+Restore files to state at the specified user message and exit (requires --resume)
+--model <model>
+Model for the current session. Provide an alias for the latest model (e.g. 'fable', 'opus', or 'sonnet') or a model's full name (e.g. 'claude-fable-5').
+--effort <level>
+Effort level for the current session (
+--agent <agent>
+Agent for the current session. Overrides the 'agent' setting.
+Beta headers to include in API requests (API key users only)
+--fallback-model <model>
+Enable automatic fallback to specified model(s) when the default model is overloaded or not available. Accepts a comma-separated list to try each in order. Re-tries the primary at the start of each user turn. (only works with --print)
+--workload <tag>
+Workload tag for billing-header attribution (cc_workload). Process-scoped; set by SDK daemon callers that spawn subprocesses for cron work. (only works with --print)
+--settings <file-or-json>
+Path to a settings JSON file or a JSON string to load additional settings from
+--managed-settings <json>
+Policy-tier settings JSON from a spawning parent process (SDK use only)
+Additional directories to allow tool access to
+Automatically connect to IDE on startup if exactly one valid IDE is available
+--strict-mcp-config
+Only use MCP servers from --mcp-config, ignoring all other MCP configurations
+--session-id <uuid>
+Use a specific session ID for the conversation (must be a valid UUID)
+Set a display name for this session (shown in the prompt box, /resume picker, and terminal title)
+--agents <json>
+JSON object defining custom agents (e.g. '{"reviewer": {"description": "Reviews code", "prompt": "You are a code reviewer"}}')
+--setting-sources <sources>
+Comma-separated list of setting sources to load (user, project, local).
+--plugin-dir <path>
+Load a plugin from a directory or .zip for this session only (repeatable: --plugin-dir A --plugin-dir B.zip)
+--plugin-dir-no-mcp <path>
+Like --plugin-dir but the engine will not read this plugin's .mcp.json (caller owns its MCP connections)
+--plugin-url <url>
+Fetch a plugin .zip from a URL for this session only (repeatable: --plugin-url A --plugin-url B)
+--disable-slash-commands
+Disable all skills
+--chrome
+Enable Claude in Chrome integration
+--no-chrome
+Disable Claude in Chrome integration
+File resources to download at startup. Format: file_id:relative_path (e.g., --file file_abc:doc.txt file_def:img.png)
+report the issue at https://github.com/anthropics/claude-code/issues
+@anthropic-ai/claude-code

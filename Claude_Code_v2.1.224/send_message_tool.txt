@@ -1,0 +1,21 @@
+systemPromptTokens
+systemPromptSections
+redirectedContextTokens
+Iterator result interface is not an object.
+Iterator result interface is not an object.
+Cannot destructure property 'content' from null or undefined value
+Cannot destructure property 'file' from null or undefined value
+Iterator result interface is not an object.
+memoryFileDetails
+claudeMdTokens
+Cannot destructure property 'isToolSearchEnabled' from null or undefined value
+Cannot destructure property 'isDeferredTool' from null or undefined value
+analyzeBuiltIn
+assistant
+tool_use
+Iterator result interface is not an object.
+builtInToolTokens
+deferredBuiltinDetails
+deferredBuiltinTokens
+systemToolDetails
+isLoaded8

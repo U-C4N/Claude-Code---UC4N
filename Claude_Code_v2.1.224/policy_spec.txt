@@ -1,0 +1,194 @@
+    .collapsible-arrow { font-size: 12px; color: #94a3b8; transition: transform 0.2s; }
+    .collapsible-content { display: none; padding-top: 16px; }
+    .collapsible-content.open { display: block; }
+    .collapsible-header.open .collapsible-arrow { transform: rotate(90deg); }
+    @media (max-width: 640px) { .charts-row { grid-template-columns: 1fr; } .stats-row { justify-content: center; } }
+  <div class="container">
+    <h1>Claude Code Insights</h1>
+    <p class="subtitle">${e.total_messages.toLocaleString()} messages across ${e.total_sessions} sessions${e.total_sessions_scanned&&e.total_sessions_scanned>e.total_sessions?` (${e.total_sessions_scanned.toLocaleString()} total)`:""} | ${e.date_range.start} to ${e.date_range.end}</p>
+    <nav class="nav-toc">
+      <a href="#section-work">What You Work On</a>
+      <a href="#section-usage">How You Use CC</a>
+      <a href="#section-wins">Impressive Things</a>
+      <a href="#section-friction">Where Things Go Wrong</a>
+      <a href="#section-features">Features to Try</a>
+      <a href="#section-patterns">New Usage Patterns</a>
+      <a href="#section-horizon">On the Horizon</a>
+      <a href="#section-feedback">Team Feedback</a>
+    <div class="stats-row">
+      <div class="stat"><div class="stat-value">${e.total_messages.toLocaleString()}</div><div class="stat-label">Messages</div></div>
+      <div class="stat"><div class="stat-value">+${e.total_lines_added.toLocaleString()}/-${e.total_lines_removed.toLocaleString()}</div><div class="stat-label">Lines</div></div>
+      <div class="stat"><div class="stat-value">${e.total_files_modified}</div><div class="stat-label">Files</div></div>
+      <div class="stat"><div class="stat-value">${e.days_active}</div><div class="stat-label">Days</div></div>
+      <div class="stat"><div class="stat-value">${e.messages_per_day}</div><div class="stat-label">Msgs/Day</div></div>
+    <div class="charts-row">
+      <div class="chart-card">
+        <div class="chart-title">What You Wanted</div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Top Tools Used</div>
+      </div>
+    <div class="charts-row">
+      <div class="chart-card">
+        <div class="chart-title">Languages</div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Session Types</div>
+      </div>
+    <!-- Response Time Distribution -->
+    <div class="chart-card" style="margin: 24px 0;">
+      <div class="chart-title">User Response Time Distribution</div>
+      ${J1b(e.user_response_times)}
+        Median: ${e.median_response_time.toFixed(1)}s &bull; Average: ${e.avg_response_time.toFixed(1)}s
+      </div>
+    <!-- Multi-clauding Section (matching Python reference) -->
+    <div class="chart-card" style="margin: 24px 0;">
+      <div class="chart-title">Multi-Clauding (Parallel Sessions)</div>
+      ${e.multi_clauding.overlap_events===0?`
+          No parallel session usage detected. You typically work with one Claude Code session at a time.
+        </p>
+        <div style="display: flex; gap: 24px; margin: 12px 0;">
+          <div style="text-align: center;">
+            <div style="font-size: 24px; font-weight: 700; color: #7c3aed;">${e.multi_clauding.overlap_events}</div>
+            <div style="font-size: 11px; color: #64748b; text-transform: uppercase;">Overlap Events</div>
+          </div>
+          <div style="text-align: center;">
+            <div style="font-size: 24px; font-weight: 700; color: #7c3aed;">${e.multi_clauding.sessions_involved}</div>
+            <div style="font-size: 11px; color: #64748b; text-transform: uppercase;">Sessions Involved</div>
+          </div>
+          <div style="text-align: center;">
+            <div style="font-size: 11px; color: #64748b; text-transform: uppercase;">Of Messages</div>
+          </div>
+        </div>
+          You run multiple Claude Code sessions simultaneously. Multi-clauding is detected when sessions
+          overlap in time, suggesting parallel workflows.
+        </p>
+      `}
+    <!-- Time of Day & Tool Errors -->
+    <div class="charts-row">
+      <div class="chart-card">
+        <div class="chart-title" style="display: flex; align-items: center; gap: 12px;">
+          User Messages by Time of Day
+          <select id="timezone-select" style="font-size: 12px; padding: 4px 8px; border-radius: 4px; border: 1px solid #e2e8f0;">
+            <option value="0">PT (UTC-8)</option>
+            <option value="3">ET (UTC-5)</option>
+            <option value="8">London (UTC)</option>
+            <option value="9">CET (UTC+1)</option>
+            <option value="17">Tokyo (UTC+9)</option>
+            <option value="custom">Custom offset...</option>
+          </select>
+          <input type="number" id="custom-offset" placeholder="UTC offset" style="display: none; width: 80px; font-size: 12px; padding: 4px; border-radius: 4px; border: 1px solid #e2e8f0;">
+        </div>
+        ${Q1b(e.message_hours)}
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Tool Errors Encountered</div>
+        ${Object.keys(e.tool_error_categories).length>0?Rtt(e.tool_error_categories,"#dc2626"):'<p class="empty">No tool errors</p>'}
+      </div>
+    <div class="charts-row">
+      <div class="chart-card">
+        <div class="chart-title">What Helped Most (Claude's Capabilities)</div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Outcomes</div>
+      </div>
+    <div class="charts-row">
+      <div class="chart-card">
+        <div class="chart-title">Primary Friction Types</div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Inferred Satisfaction (model-estimated)</div>
+      </div>
+</html>`}function tNb(e,t,r,n){let o=typeof{ISSUES_EXPLAINER:"report the issue at https://github.com/anthropics/claude-code/issues",PACKAGE_URL:"@anthropic-ai/claude-code",README_URL:"https://code.claude.com/docs/en/overview",VERSION:"2.1.224",FEEDBACK_CHANNEL:"https://github.com/anthropics/claude-code/issues",BUILD_TIME:"2026-08-06T01:05:53Z",GIT_SHA:"8a2a469b68f918917492973f3b16bd1682b9f82c",DD_SOURCEMAP_GROUP:"win32"}<"u"?{ISSUES_EXPLAINER:"report the issue at https://github.com/anthropics/claude-code/issues",PACKAGE_URL:"@anthropic-ai/claude-code",README_URL:"https://code.claude.com/docs/en/overview",VERSION:"2.1.224",FEEDBACK_CHANNEL:"https://github.com/anthropics/claude-code/issues",BUILD_TIME:"2026-08-06T01:05:53Z",GIT_SHA:"8a2a469b68f918917492973f3b16bd1682b9f82c",DD_SOURCEMAP_GROUP:"win32"}.VERSION:"unknown",i=n?.hosts.filter((a)=>a.sessionCount>0).map((a)=>a.name),s={total:r.size,goal_categories:{},outcomes:{},satisfaction:{},friction:{}};for(let a of r.values()){for(let[l,c]of iRr(a.goal_categories))if(c>0)s.goal_categories[l]=(s.goal_categories[l]||0)+c;s.outcomes[a.outcome]=(s.outcomes[a.outcome]||0)+1;for(let[l,c]of iRr(a.user_satisfaction_counts))if(c>0)s.satisfaction[l]=(s.satisfaction[l]||0)+c;for(let[l,c]of iRr(a.friction_counts))if(c>0)s.friction[l]=(s.friction[l]||0)+c}return{metadata:{username:process.env.SAFEUSER||process.env.USER||"unknown",generated_at:new Date().toISOString(),claude_code_version:o,date_range:e.date_range,session_count:e.total_sessions,...i&&i.length>0&&{remote_hosts_collected:i}},aggregated_data:e,insights:t,facets_summary:s}}async function rNb(e){if(e){let i=[],s;do{let l=await e.listEntries({namespace:"transcript"},s?{cursor:s}:void 0);if(!l.ok)return[];for(let c of l.value.items)if(c.kind==="scope"&&c.scope.namespace==="transcript"&&c.scope.projectKey!==void 0)i.push(c.scope.projectKey);s=l.value.cursor}while(s);let a=[];for(let l=0;l<i.length;l++){let c=i[l],u;do{let d=await e.listEntries({namespace:"transcript",projectKey:c},u?{cursor:u}:void 0);if(!d.ok)break;for(let p of d.value.items){if(p.kind!=="key"||p.key.namespace!=="transcript")continue;if(p.key.agentId!==void 0)continue;let f=RM(p.key.sessionId);if(!f)continue;a.push({sessionId:f,key:p.key,mtime:p.mtimeMs,size:p.size})}u=d.value.cursor}while(u);if(l%10===9)await new Promise((d)=>setImmediate(d))}return a.sort((l,c)=>c.mtime-l.mtime),a}let t=Wz(),r;try{r=await N_e.readdir(t,{withFileTypes:!0})}catch{return[]}let n=r.filter((i)=>i.isDirectory()).map((i)=>LCe.join(t,i.name)),o=[];for(let i=0;i<n.length;i++){let s=await Hqt(n[i]);for(let[a,l]of s)o.push({sessionId:a,path:l.path,mtime:l.mtime,size:l.size});if(i%10===9)await new Promise((a)=>setImmediate(a))}return o.sort((i,s)=>s.mtime-i.mtime),o}async function P1p(e){let t,r=await rNb(e?.storageV5),n=r.length,o=50,i=200,s=[],a=[],l=0,c=0;for(let K=0;K<r.length;K+=o){let j=r.slice(K,K+o),B=await Promise.all(j.map(async($)=>({sessionInfo:$,cached:await W1b($.sessionId)})));for(let{sessionInfo:$,cached:V}of B)if(V&&(V.transcript_mtime===void 0||V.transcript_mtime>=$.mtime))s.push(V);else if(!V){if(l<i)a.push({sessionInfo:$,cached:V}),l++}else if(c<i)a.push({sessionInfo:$,cached:V}),c++;else s.push(V)}let u=new Map,d=(K)=>{for(let j of K.messages.slice(0,5))if(j.type==="user"&&j.message){let B=j.message.content;if(typeof B==="string"){if(B.includes("RESPOND WITH ONLY A VALID JSON OBJECT")||B.includes("record_facets"))return!0}}return!1},p=10;for(let K=0;K<a.length;K+=p){let j=a.slice(K,K+p),B=await Promise.all(j.map(async({sessionInfo:V,cached:Q})=>{try{return{sessionInfo:V,cached:Q,logs:e?.storageV5&&V.key?await yCn(`${V.sessionId}.jsonl`,void 0,{backend:e.storageV5,key:V.key}):await yCn(V.path??"")}}catch{return{sessionInfo:V,cached:Q,logs:[]}}})),$=new Map;for(let{sessionInfo:V,cached:Q,logs:G}of B){let z=!1;for(let Y of G){if(d(Y)||Number.isNaN(Y.created.getTime())||Number.isNaN(Y.modified.getTime()))continue;let te=vfa(Y);if(te.transcript_mtime=V.mtime,s.push(te),z=!0,Efa(te,$.get(te.session_id)))$.set(te.session_id,te);u.set(te.session_id,Y)}if(!z&&Q)s.push(Q)}await Promise.all([...$.values()].map((V)=>G1b(V)))}let f=new Map;for(let K of s)if(Efa(K,f.get(K.session_id)))f.set(K.session_id,K);let m=new Set(f.keys());s=[...f.values()];for(let K of u.keys())if(!m.has(K))u.delete(K);s.sort((K,j)=>j.start_time.localeCompare(K.start_time));let h=(K)=>{if(K.user_message_count<2)return!1;if(K.duration_minutes<1)return!1;return!0},g=s.filter(h),_=new Map,b=[],S=50,E=await Promise.all(g.map(async(K)=>({sessionId:K.session_id,cached:await z1b(K.session_id)})));for(let{sessionId:K,cached:j}of E)if(j)_.set(K,j);else{let B=u.get(K);if(B&&b.length<S)b.push({log:B,sessionId:K})}let A=50;for(let K=0;K<b.length;K+=A){let j=b.slice(K,K+A),B=await Promise.all(j.map(async({log:V,sessionId:Q})=>{let G=await V1b(V,Q);return{sessionId:Q,newFacets:G}})),$=[];for(let{sessionId:V,newFacets:Q}of B)if(Q)_.set(V,Q),$.push(Q);await Promise.all($.map((V)=>j1b(V)))}let T=(K)=>{let j=_.get(K);if(!j)return!1;let B=j.goal_categories,$=nNb(B).filter((V)=>(B[V]??0)>0);return $.length===1&&$[0]==="warmup_minimal"},C=g.filter((K)=>!T(K.session_id)),k=new Map;for(let[K,j]of _)if(!T(K))k.set(K,j);let x=I1p(C,k);x.total_sessions_scanned=n;let I=await K1b(x,_),P=eNb(x,I);try{await N_e.mkdir(gCn(),{recursive:!0})}catch{}let M=new Date,L=(K)=>String(K).padStart(2,"0"),D=`${M.getFullYear()}-${L(M.getMonth()+1)}-${L(M.getDate())}-${L(M.getHours())}${L(M.getMinutes())}${L(M.getSeconds())}`,U=LCe.join(gCn(),`report-${D}.html`),q=LCe.join(gCn(),"report.html");return await N_e.writeFile(U,P,{encoding:"utf-8",mode:384}),await N_e.writeFile(q,P,{encoding:"utf-8",mode:384}),{insights:I,htmlPath:U,data:x,remoteStats:t,facets:k}}function iRr(e){return e?Object.entries(e):[]}function nNb(e){return e?Object.keys(e):[]}function D1p({insightsJson:e,reportUrl:t,htmlPath:r,facetsDir:n,header:o,summaryText:i}){return`The user just ran /insights to generate a usage report analyzing their Claude Code sessions.
+Here is the full insights data:
+Report URL: ${t}
+HTML file: ${r}
+Facets directory: ${n}
+At-a-glance summary (for your context only \u2014 the user has not seen any output yet):
+Output the text between <message> tags verbatim as your entire response. Do not omit any line:
+<message>
+Your shareable insights report is ready:
+Want to dig into any section or try one of the suggestions?
+</message>`}function M1p(e){if(!e||typeof e!=="object")return!1;let t=e;return typeof t.underlying_goal==="string"&&typeof t.outcome==="string"&&typeof t.brief_summary==="string"&&t.goal_categories!==null&&typeof t.goal_categories==="object"&&t.user_satisfaction_counts!==null&&typeof t.user_satisfaction_counts==="object"&&t.friction_counts!==null&&typeof t.friction_counts==="object"}var N_e,LCe,I1b,P1b,D1b,L1b=`Analyze this Claude Code session and extract structured facets.
+CRITICAL GUIDELINES:
+1. **goal_categories**: Count ONLY what the USER explicitly asked for.
+   - DO NOT count Claude's autonomous codebase exploration
+   - DO NOT count work Claude decided to do on its own
+2. **user_satisfaction_counts**: Base ONLY on explicit user signals.
+   - "thanks", "looks good", "that works" \u2192 satisfied
+   - "ok, now let's..." (continuing without complaint) \u2192 likely_satisfied
+   - "that's not right", "try again" \u2192 dissatisfied
+   - "this is broken", "I give up" \u2192 frustrated
+3. **friction_counts**: Be specific about what went wrong.
+   - misunderstood_request: Claude interpreted incorrectly
+   - wrong_approach: Right goal, wrong solution method
+   - buggy_code: Code didn't work correctly
+   - user_rejected_action: User said no/stop to a tool call
+   - excessive_changes: Over-engineered or changed too much
+4. If very short or just warmup, use warmup_minimal for goal_category
+SESSION:
+`,O1b,U1b=`Summarize this portion of a Claude Code session transcript. Focus on:
+1. What the user asked for
+2. What Claude did (tools used, files modified)
+3. Any friction or issues
+4. The outcome
+Keep it concise - 3-5 sentences. Preserve specific details like file names, error messages, and user feedback.
+TRANSCRIPT CHUNK:
+RESPOND WITH ONLY A VALID JSON OBJECT:
+    {"name": "Area name", "session_count": N, "description": "2-3 sentences about what was worked on and how Claude Code was used."}
+Include 4-5 areas. Skip internal CC operations.`,maxTokens:8192},{name:"interaction_style",prompt:`Analyze this Claude Code usage data and describe the user's interaction style.
+RESPOND WITH ONLY A VALID JSON OBJECT:
+  "narrative": "2-3 paragraphs analyzing HOW the user interacts with Claude Code. Use second person 'you'. Describe patterns: iterate quickly vs detailed upfront specs? Interrupt often or let Claude run? Include specific examples. Use **bold** for key insights.",
+  "key_pattern": "One sentence summary of most distinctive interaction style"
+}`,maxTokens:8192},{name:"what_works",prompt:`Analyze this Claude Code usage data and identify what's working well for this user. Use second person ("you").
+RESPOND WITH ONLY A VALID JSON OBJECT:
+  "intro": "1 sentence of context",
+  "impressive_workflows": [
+    {"title": "Short title (3-6 words)", "description": "2-3 sentences describing the impressive workflow or approach. Use 'you' not 'the user'."}
+Include 3 impressive workflows.`,maxTokens:8192},{name:"friction_analysis",prompt:`Analyze this Claude Code usage data and identify friction points for this user. Use second person ("you").
+RESPOND WITH ONLY A VALID JSON OBJECT:
+  "intro": "1 sentence summarizing friction patterns",
+  "categories": [
+    {"category": "Concrete category name", "description": "1-2 sentences explaining this category and what could be done differently. Use 'you' not 'the user'.", "examples": ["Specific example with consequence", "Another example"]}
+Include 3 friction categories with 2 examples each.`,maxTokens:8192},{name:"suggestions",prompt:`Analyze this Claude Code usage data and suggest improvements.
+## CC FEATURES REFERENCE (pick from these for features_to_try):
+1. **MCP Servers**: Connect Claude to external tools, databases, and APIs via Model Context Protocol.
+   - How to use: Run \`claude mcp add <server-name> -- <command>\`
+   - Good for: database queries, Slack integration, GitHub issue lookup, connecting to internal APIs
+2. **Custom Skills**: Reusable prompts you define as markdown files that run with a single /command.
+   - How to use: Create \`.claude/skills/commit/SKILL.md\` with instructions. Then type \`/commit\` to run it.
+   - Good for: repetitive workflows - /commit, /review, /test, /deploy, /pr, or complex multi-step workflows
+3. **Hooks**: Shell commands that auto-run at specific lifecycle events.
+   - How to use: Add to \`.claude/settings.json\` under "hooks" key.
+   - Good for: auto-formatting code, running type checks, enforcing conventions
+4. **Headless Mode**: Run Claude non-interactively from scripts and CI/CD.
+   - How to use: \`claude -p "fix lint errors" --allowedTools "Edit,Read,Bash"\`
+   - Good for: CI/CD integration, batch code fixes, automated reviews
+5. **Task Agents**: Claude spawns focused subagents for complex exploration or parallel work.
+   - How to use: Claude auto-invokes when helpful, or ask "use an agent to explore X"
+   - Good for: codebase exploration, understanding complex systems
+RESPOND WITH ONLY A VALID JSON OBJECT:
+  "claude_md_additions": [
+    {"addition": "A specific line or block to add to CLAUDE.md based on workflow patterns. E.g., 'Always run tests after modifying auth-related files'", "why": "1 sentence explaining why this would help based on actual sessions", "prompt_scaffold": "Instructions for where to add this in CLAUDE.md. E.g., 'Add under ## Testing section'"}
+  "features_to_try": [
+    {"feature": "Feature name from CC FEATURES REFERENCE above", "one_liner": "What it does", "why_for_you": "Why this would help YOU based on your sessions", "example_code": "Actual command or config to copy"}
+  "usage_patterns": [
+    {"title": "Short title", "suggestion": "1-2 sentence summary", "detail": "3-4 sentences explaining how this applies to YOUR work", "copyable_prompt": "A specific prompt to copy and try"}
+IMPORTANT for claude_md_additions: PRIORITIZE instructions that appear MULTIPLE TIMES in the user data. If user told Claude the same thing in 2+ sessions (e.g., 'always run tests', 'use TypeScript'), that's a PRIME candidate - they shouldn't have to repeat themselves.
+IMPORTANT for features_to_try: Pick 2-3 from the CC FEATURES REFERENCE above. Include 2-3 items for each category.`,maxTokens:8192},{name:"on_the_horizon",prompt:`Analyze this Claude Code usage data and identify future opportunities.
+RESPOND WITH ONLY A VALID JSON OBJECT:
+  "intro": "1 sentence about evolving AI-assisted development",
+  "opportunities": [
+    {"title": "Short title (4-8 words)", "whats_possible": "2-3 ambitious sentences about autonomous workflows", "how_to_try": "1-2 sentences mentioning relevant tooling", "copyable_prompt": "Detailed prompt to try"}
+Include 3 opportunities. Think BIG - autonomous workflows, parallel agents, iterating against tests.`,maxTokens:8192},...[],{name:"fun_ending",prompt:`Analyze this Claude Code usage data and find a memorable moment.
+RESPOND WITH ONLY A VALID JSON OBJECT:
+  "headline": "A memorable QUALITATIVE moment from the transcripts - not a statistic. Something human, funny, or surprising.",
+  "detail": "Brief context about when/where this happened"
+Find something genuinely interesting or amusing from the session summaries.`,maxTokens:8192}];Y1b=["frustrated","dissatisfied","likely_satisfied","satisfied","happy","unsure"],X1b=["not_achieved","partially_achieved","mostly_achieved","fully_achieved","unclear_from_transcript"];oNb={type:"prompt",name:"insights",description:"Generate a report analyzing your Claude Code sessions",contentLength:0,progressMessage:"analyzing your sessions",source:"builtin",async getPromptForCommand(e){let t=!1,r=[],n=!1,{insights:o,htmlPath:i,data:s,remoteStats:a}=await P1p({collectRemote:t}),l=`file://${i}`,u=[s.total_sessions_scanned&&s.total_sessions_scanned>s.total_sessions?`${s.total_sessions_scanned.toLocaleString()} sessions total \xB7 ${s.total_sessions} analyzed`:`${s.total_sessions} sessions`,`${s.total_messages.toLocaleString()} messages`,`${Math.round(s.total_duration_hours)}h`,`${s.git_commits} commits`].join(" \xB7 "),d="",p=o.at_a_glance,f=p?`## At a Glance
+${p.whats_working?`**What's working:** ${p.whats_working} See _Impressive Things You Did_.`:""}
+${p.whats_hindering?`**What's hindering you:** ${p.whats_hindering} See _Where Things Go Wrong_.`:""}
+${p.quick_wins?`**Quick wins to try:** ${p.quick_wins} See _Features to Try_.`:""}
+${p.ambitious_workflows?`**Ambitious workflows:** ${p.ambitious_workflows} See _On the Horizon_.`:""}`:"_No insights generated_",m=`# Claude Code Insights
+${s.date_range.start} to ${s.date_range.end}
+`;return[{type:"text",text:D1p({insightsJson:Re(o,null,2),reportUrl:l,htmlPath:i,facetsDir:rQo(),header:m,summaryText:f})}]}};iNb=oNb});var wfa={};ut(wfa,{invalidateWorkflowCache:()=>W7o,getWorkflowCommands:()=>sNb,createWorkflowCommand:()=>N1p});function N1p(e){return{type:"prompt",name:e.name,description:e.description,hasUserSpecifiedDescription:!0,whenToUse:e.whenToUse,progressMessage:"running dynamic workflow",contentLength:e.script.length,source:e.source==="built-in"?"bundled":e.source,loadedFrom:e.source==="built-in"?"bundled":e.source==="plugin"?"plugin":"skills",...e.source==="plugin"&&{pluginInfo:{pluginManifest:e.pluginManifest,repository:e.plugin}},kind:"workflow",disableModelInvocation:typeof e.disableModelInvocation==="function"?e.disableModelInvocation():e.disableModelInvocation,async getPromptForCommand(t){let r=e.phases?`
+${e.description}${e.whenToUse?`

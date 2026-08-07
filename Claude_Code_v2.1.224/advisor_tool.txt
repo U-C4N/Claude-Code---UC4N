@@ -1,0 +1,52 @@
+PushNotification
+<routine_summary>
+Send a notification to the user via their terminal and, when Remote Control is connected, also push to their mobile device
+ScheduleWakeup
+<<autonomous-loop>>
+<<autonomous-loop-dynamic>>
+Schedule when to resume work in /loop dynamic mode (always pass the `prompt` arg unless stopping). Call before ending the turn to keep the loop alive; call with `stop: true` to end the loop immediately.
+TaskList
+TaskStop
+- Stops a running background task by its ID
+- Takes a task_id parameter identifying the task to stop
+- To stop an agent-team teammate, pass its agent ID ("name@team") or bare teammate name as task_id
+- To stop a background agent spawned with a name, pass that name as task_id
+- Returns a success or failure status
+- Use this tool when you need to terminate a long-running task
+__autonomous_preamble__
+EnterWorktree
+SendUserFile
+Send one or more files to the user
+tengu_hazel_trellis
+TaskOutput
+ConnectGitHub
+propose_skills
+WebSearch
+SendMessage
+TaskUpdate
+StructuredOutput
+ExitWorktree
+Workflow
+code-review
+SearchPlugins
+SearchSkills
+SuggestPluginInstall
+SuggestSkills
+ListPlugins
+ListSkills
+ListAgents
+ListPeers
+only in reply, after it messages you first
+CronCreate
+CronDelete
+CronList
+Cancel a scheduled cron job by ID
+List scheduled cron jobs
+WaitForMcpServers
+RefreshMcpTools
+Artifact
+Artifacts need a claude.ai login, and this remote session authenticates through the machine that launched it, which is not signed in to claude.ai. Sign in to claude.ai on that machine (/login, "Claude account with subscription"), then reconnect this session.
+Artifacts need a claude.ai login, but this session authenticates with a credential injected by its host environment, which takes precedence and cannot be changed here. Start a session that is signed in to claude.ai to publish or read artifacts.
+EndConversation
+tengu_umber_kestrel
+Your bare assistant text does NOT reach the user. Your comms tools are the only channel to them: every turn must end in a comms-tool call (reply, react, or an explicit no-reply), and "tell the user" below always means a comms-tool call.

@@ -1,0 +1,28 @@
+CLAUDE_CODE_COORDINATOR_MODE
+Cannot destructure property 'isScratchpadEnabled' from null or undefined value
+Cannot destructure property 'isPluginSkillToolAdvertised' from null or undefined value
+coordinator
+tengu_coordinator_mode_switched
+coordinator_session_mode_match
+Entered coordinator mode to match resumed session.
+Exited coordinator mode to match resumed session.
+Workers spawned via the 
+ tool have access to these tools:
+Workers also have access to MCP tools from connected MCP servers: 
+Scratchpad directory: 
+workerToolsContext
+searchHint
+Workers have access to 
+ tools, plus MCP tools from configured MCP servers.
+ Workers can fan out further via 
+Workers have access to standard tools, MCP tools from configured MCP servers, and project skills via the Skill tool. Delegate skill invocations (e.g. /commit, /verify) to workers.
+** (if available) - Run a multi-step subagent pipeline; prefer it over hand-orchestrating 
+ calls when a matching workflow exists
+Every message you send is to the user.
+briefly tell the user what you launched
+coordinator_mode_start
+** - Spawn a new worker
+** - Continue an existing worker (send a follow-up to its `to` agent ID)
+** - Stop a running worker
+** (cross-session, if 
+` to discover them; reach one via `

@@ -1,0 +1,209 @@
+- Minimum cacheable prefix is model-dependent. Shorter prefixes silently won't cache even with a marker \u2014 no error, just \`cache_creation_input_tokens: 0\`:\r
+| Model | Minimum |\r
+| Opus 4.7, Mythos Preview, Haiku 3.5 | 2048 tokens |\r
+**The minimum is not monotonic across generations** \u2014 512 on the newest models, but 4096 on Opus 4.6/4.5 and Haiku 4.5. A 3K-token prompt caches on {{OPUS_NAME}}, Opus 4.8, and Sonnet 4.5, and silently won't on Opus 4.6 or Haiku 4.5. {{OPUS_NAME}} halves the Opus 4.8 minimum (1024 \u2192 512), so prompts previously too short to cache now create entries with no code change.\r
+These minimums apply on **every** platform where the model is available \u2014 the old Amazon Bedrock override for {{FABLE_NAME}} was removed, and no per-platform exception remains.\r
+**Economics:** Cache reads cost ~0.1\xD7 base input price. Cache writes cost **1.25\xD7 for 5-minute TTL, 2\xD7 for 1-hour TTL**. Break-even depends on TTL: with 5-minute TTL, two requests break even (1.25\xD7 + 0.1\xD7 = 1.35\xD7 vs 2\xD7 uncached); with 1-hour TTL, you need at least three requests (2\xD7 + 0.2\xD7 = 2.2\xD7 vs 3\xD7 uncached). The 1-hour TTL keeps entries alive across gaps in bursty traffic, but the doubled write cost means it needs more reads to pay off.\r
+## Verifying cache hits\r
+The response \`usage\` object reports cache activity:\r
+| Field | Meaning |\r
+| \`cache_creation_input_tokens\` | Tokens written to cache this request (you paid the ~1.25\xD7 write premium) |\r
+| \`cache_read_input_tokens\` | Tokens served from cache this request (you paid ~0.1\xD7) |\r
+| \`input_tokens\` | Tokens processed at full price (not cached) |\r
+If \`cache_read_input_tokens\` is zero across repeated requests with identical prefixes, a silent invalidator is at work \u2014 diff the rendered prompt bytes between two requests to find it.\r
+**\`input_tokens\` is the uncached remainder only.** Total prompt size = \`input_tokens + cache_creation_input_tokens + cache_read_input_tokens\`. If your agent ran for hours but \`input_tokens\` shows 4K, the rest was served from cache \u2014 check the sum, not the single field.\r
+Language-specific access: \`response.usage.cache_read_input_tokens\` (Python/TS/Ruby), \`$message->usage->cacheReadInputTokens\` (PHP), \`resp.Usage.CacheReadInputTokens\` (Go/C#), \`.usage().cacheReadInputTokens()\` (Java).\r
+## Invalidation hierarchy\r
+Not every parameter change invalidates everything. The API has three cache tiers, and changes only invalidate their own tier and below:\r
+| Change | Tools cache | System cache | Messages cache |\r
+Implication: you can change \`tool_choice\` per-request or toggle \`thinking\` without losing the tools+system cache. Don't over-worry about these \u2014 only tool-definition and model changes force a full rebuild.\r
+**Two of these rows have a cache-preserving escape hatch**, each by moving the change out of the top-level request and into a system message inside \`messages[]\`, after the cached prefix. **Availability differs per row** \u2014 the two are not gated together:\r
+| Top-level change that invalidates | Cache-preserving form | Available on |\r
+| Tool definitions (add/remove) | \`tool_addition\` / \`tool_removal\` blocks \u2014 see \`shared/tool-use-concepts.md\` \xA7 Mid-conversation tool changes | {{OPUS_NAME}} onward, behind \`mid-conversation-tool-changes-2026-07-01\` |\r
+| System prompt content | A \`{"role": "system", "content": "\u2026"}\` message \u2014 see \xA7 Mid-conversation system messages above | {{OPUS_NAME}}, {{PREV_OPUS_NAME}}, {{FABLE_NAME}}, {{MYTHOS_NAME}} \u2014 **already available today**, no beta header |\r
+Model switch has no escape hatch: caches are model-scoped. Keep the main loop on one model and spawn a subagent for cheaper sub-tasks (see \`agent-design.md\` \xA7 Caching for Agents).\r
+## 20-block lookback window\r
+Each breakpoint walks backward **at most 20 content blocks** to find a prior cache entry. If a single turn adds more than 20 blocks (common in agentic loops with many tool_use/tool_result pairs), the next request's breakpoint won't find the previous cache and silently misses.\r
+Fix: place an intermediate breakpoint every ~15 blocks in long turns, or put the marker on a block that's within 20 of the previous turn's last cached block.\r
+## Concurrent-request timing\r
+A cache entry becomes readable only after the first response **begins streaming**. N parallel requests with identical prefixes all pay full price \u2014 none can read what the others are still writing.\r
+For fan-out patterns: send 1 request, await the first streamed token (not the full response), then fire the remaining N\u22121. They'll read the cache the first one just wrote.\r
+## Pre-warming the cache\r
+To eliminate the cache-miss latency on the *first* real request, send a **\`max_tokens: 0\`** request at startup (or on an interval). The API runs prefill \u2014 writing the cache at your \`cache_control\` breakpoint \u2014 and returns immediately with \`content: []\`, \`stop_reason: "max_tokens"\`, and a populated \`usage\` block (zero output tokens billed; normal cache-write charge on \`cache_creation_input_tokens\`).\r
+**When to pre-warm** \u2014 pre-warming trades a cache-write charge *now* for lower TTFT on the *next* real request. It's worth it when all three hold: (a) first-request latency is user-visible (chat/voice/interactive \u2014 not background jobs), (b) the shared prefix is large enough that a cold write is noticeably slow, and (c) there's a moment *before* traffic to fire it \u2014 app startup, worker boot, post-deploy, start of a scheduled window.\r
+| Skip pre-warming when\u2026 | Because |\r
+| Traffic is continuous (requests \u2264 TTL apart) | The first real request warms the cache and every subsequent one hits it; a separate warm call is a pure extra write |\r
+| The prefix is small or below the cacheable minimum | The cold-write penalty is negligible |\r
+| The prefix varies per request/user | Nothing shared to pre-warm |\r
+| You'd pre-warm many distinct prefixes speculatively | Each is a ~1.25\xD7 write; cost can exceed the latency you save |\r
+**Scheduled re-warms:** only needed when traffic has gaps longer than the TTL. If real requests arrive more often than every 5 minutes, they keep the cache warm on their own \u2014 don't add an interval re-warm. For bursty traffic with long idle gaps, either re-warm just under the TTL or switch to \`ttl: "1h"\` and re-warm less often.\r
+client.messages.create(\r
+    max_tokens=0,\r
+    system=[{\r
+        "type": "text",\r
+        "text": SYSTEM_PROMPT,\r
+        "cache_control": {"type": "ephemeral"},\r
+**Breakpoint placement:** put \`cache_control\` on the **last block shared with the real request** (the system prompt or tool definitions) \u2014 **not** on the placeholder user message, and **not** via top-level automatic caching (which would key the cache to the placeholder). The placeholder can be any non-whitespace string; it's read during prefill but never answered.\r
+**Rejected combinations:** \`max_tokens: 0\` is an \`invalid_request_error\` with \`stream: true\`, \`thinking.type: "enabled"\`, \`output_config.format\`, \`tool_choice\` of \`{"type":"tool"}\` or \`{"type":"any"}\`, or inside a Message Batches request.\r
+**TTL still applies** \u2014 re-warm at least every 5 minutes for the default cache, or use the 1-hour TTL. This replaces the older \`max_tokens: 1\` workaround (no single-token reply to discard, no output tokens billed, intent is unambiguous).\r
+Use the \`count_tokens\` endpoint (\`POST /v1/messages/count_tokens\`) for accurate\r
+token counts against Claude models. Token counts are **model-specific** \u2014 pass\r
+the same model ID you'll use for inference.\r
+**Do not use \`tiktoken\`.** It's OpenAI's tokenizer. It undercounts Claude\r
+tokens by ~15\u201320% on typical text, and by much more on code or non-English\r
+input. Any estimate from \`tiktoken\`, \`gpt-tokenizer\`, or similar is wrong for\r
+Claude.\r
+## Count a file or string\r
+from anthropic import Anthropic\r
+client = Anthropic()\r
+resp = client.messages.count_tokens(\r
+print(resp.input_tokens)\r
+TypeScript: \`await client.messages.countTokens({model, messages})\` \u2192\r
+\`.input_tokens\`. See \`{lang}/claude-api/README.md\` for other SDKs.\r
+ant messages count-tokens --model {{OPUS_ID}} \\\r
+  --transform input_tokens -r\r
+## Diffing a file across two versions\r
+The endpoint is stateless \u2014 count each version separately and subtract:\r
+from anthropic import Anthropic\r
+import subprocess\r
+client = Anthropic()\r
+def count(text: str) -> int:\r
+    return client.messages.count_tokens(\r
+        messages=[{"role": "user", "content": text}],\r
+    ).input_tokens\r
+before = subprocess.check_output(["git", "show", "HEAD:CLAUDE.md"], text=True)\r
+after = open("CLAUDE.md").read()\r
+print(count(after) - count(before))\r
+Full docs: see the Token Counting entry in \`shared/live-sources.md\`.\r
+`;var suh=()=>{};var cuh=`# Tool Use Concepts\r
+This file covers the conceptual foundations of tool use with the Claude API. For language-specific code examples, see the \`python/\`, \`typescript/\`, or other language folders. For decision heuristics on which tools to expose, how to manage context in long-running agents, and caching strategy, see \`agent-design.md\`.\r
+## User-Defined Tools\r
+### Tool Definition Structure\r
+> **Note:** When using the Tool Runner (beta), tool schemas are generated automatically from your function signatures (Python), Zod schemas (TypeScript), annotated classes (Java), \`jsonschema\` struct tags (Go), or \`BaseTool\` subclasses (Ruby). The raw JSON schema format below is for the manual approach \u2014 including PHP's \`BetaRunnableTool\`, which wraps a run closure around a hand-written schema \u2014 or SDKs without tool runner support.\r
+Each tool requires a name, description, and JSON Schema for its inputs:\r
+  "description": "Get current weather for a location",\r
+  "input_schema": {\r
+    "properties": {\r
+      "location": {\r
+        "type": "string",\r
+        "description": "City and state, e.g., San Francisco, CA"\r
+      "unit": {\r
+        "type": "string",\r
+        "enum": ["celsius", "fahrenheit"],\r
+        "description": "Temperature unit"\r
+      }\r
+    "required": ["location"]\r
+**Best practices for tool definitions:**\r
+- Use clear, descriptive names (e.g., \`get_weather\`, \`search_database\`, \`send_email\`)\r
+- Write detailed descriptions \u2014 Claude uses these to decide when to use the tool. Be **prescriptive about *when* to call it**, not just what it does (e.g. "Call this when the user asks about current prices or recent events"). On recent Opus models, which reach for tools more conservatively, trigger conditions in the description give measurable lift in should-call rate.\r
+- Include descriptions for each property\r
+- Use \`enum\` for parameters with a fixed set of values\r
+- Mark truly required parameters in \`required\`; make others optional with defaults\r
+### Tool Choice Options\r
+Control when Claude uses tools:\r
+| Value                             | Behavior                                      |\r
+| \`{"type": "auto"}\`                | Claude decides whether to use tools (default) |\r
+| \`{"type": "any"}\`                 | Claude must use at least one tool             |\r
+| \`{"type": "tool", "name": "..."}\` | Claude must use the specified tool            |\r
+| \`{"type": "none"}\`                | Claude cannot use tools                       |\r
+Any \`tool_choice\` value can also include \`"disable_parallel_tool_use": true\` to force Claude to use at most one tool per response. By default, Claude may request multiple tool calls in a single response.\r
+### Tool Runner vs Manual Loop\r
+**Tool Runner (Recommended):** The SDK's tool runner handles the agentic loop automatically \u2014 it calls the API, detects tool use requests, executes your tool functions, feeds results back to Claude, and repeats until Claude stops calling tools. Available in Python, TypeScript, Java, Go, Ruby, PHP, and C# SDKs (beta). The Python SDK also provides MCP conversion helpers (\`anthropic.lib.tools.mcp\`) to convert MCP tools, prompts, and resources for use with the tool runner \u2014 see \`python/claude-api/tool-use.md\` for details. **Default to the tool runner** for any custom-tool agent.\r
+**The tool runner is not a black box \u2014 "I need control" is rarely a reason to drop to the manual loop.** Each iteration yields the assistant message *before* the tools run and lets you intervene, so most "fine-grained control" needs are covered without hand-writing the loop:\r
+- **Human-in-the-loop approval / gating** \u2014 gate in the tool's run function (return a "user declined" result instead of executing), or inspect the tool call in the yielded message and override the pending request with \`set_messages_params()\` / \`setMessagesParams()\` / \`append_messages()\` / \`pushMessages()\` to allow or deny *before* the tool executes. The runner runs your function automatically only if you don't intervene.\r
+- **Error interception** \u2014 inspect the tool result before it returns to Claude (\`generate_tool_call_response()\` / \`generateToolResponse()\`); stop early or handle it yourself.\r
+- **Result modification** \u2014 mutate the tool result before it goes back (e.g. add \`cache_control\` for prompt caching, or transform the output).\r
+- **Per-turn retries / param changes** \u2014 e.g. bump \`max_tokens\` and re-run a truncated turn; bound the whole loop with \`max_iterations\`.\r
+- **Streaming and automatic compaction** are both supported.\r
+These hooks are SDK helper features, not separate API parameters \u2014 for the exact method names and worked examples, WebFetch the per-language SDK repo listed in \`shared/live-sources.md\` \u2192 *Claude API SDK Repositories* (the tool-runner helpers live in each repo's \`tools.md\` / \`helpers.md\`). The bundled \`python/claude-api/tool-use.md\` and \`typescript/claude-api/tool-use.md\` show the basic tool-runner setup.\r
+**Don't drop to a manual loop because of these misconceptions:**\r
+- The tool runner does not require Zod/Pydantic \u2014 \`betaTool()\` (TS) and \`@beta_tool\` (Python) accept raw JSON Schema; other SDKs use plain structs/maps/classes.\r
+- The runner makes detecting the final turn *easier*, not harder \u2014 iteration ends when Claude stops calling tools, and the last yielded message is the final response. Most SDKs also offer a one-shot variant (\`runner.until_done()\` / \`runner.runUntilDone()\` / \`RunToCompletion()\`).\r
+- Confirmation/approval gates work with the runner (see Security below).\r
+**Manual Agentic Loop:** Reach for this only when you want to own the *entire* loop \u2014 you need control the runner does not expose (e.g., a custom transport, request shapes the SDK cannot build, per-token streaming on SDKs whose runner does not support it), you'd rather not take the beta dependency, or your control flow doesn't fit the runner's per-turn hooks (e.g. interleaving unrelated work mid-loop). Approval gates, logging, interception, result modification, and conditional execution do **not** require it \u2014 the tool runner covers those (above). Loop until \`stop_reason == "end_turn"\`, always append the full \`response.content\` to preserve tool_use blocks, and ensure each \`tool_result\` includes the matching \`tool_use_id\`.\r
+**Stop reasons for server-side tools:** When using server-side tools (code execution, web search, etc.), the API runs a server-side sampling loop. If this loop reaches its default limit of 10 iterations, the response will have \`stop_reason: "pause_turn"\`. To continue, re-send the user message and assistant response and make another API request \u2014 the server will resume where it left off. Do NOT add an extra user message like "Continue." \u2014 the API detects the trailing \`server_tool_use\` block and knows to resume automatically.\r
+# Handle pause_turn in your agentic loop\r
+if response.stop_reason == "pause_turn":\r
+    messages = [\r
+        {"role": "user", "content": user_query},\r
+        {"role": "assistant", "content": response.content},\r
+    # Make another API request \u2014 server resumes automatically\r
+    response = client.messages.create(\r
+        model="{{OPUS_ID}}", messages=messages, tools=tools\r
+**Note:** the SDK tool runners do not auto-resume \`pause_turn\` (as of \`@anthropic-ai/sdk\` 0.110.0 / \`anthropic\` 0.116.0) \u2014 a paused turn ends the runner and is returned as the final message, with no error. In TypeScript you can resume inside the iteration body (push the paused assistant turn back onto the runner); in Python the runner cannot be resumed mid-loop \u2014 restart a new runner with the paused turn appended, or handle \`pause_turn\` in a manual loop. See each language's \`tool-use.md\` for the pattern.\r
+Set a \`max_continuations\` limit (e.g., 5) to prevent infinite loops. For the full guide, see: \`https://platform.claude.com/docs/en/build-with-claude/handling-stop-reasons\`\r
+> **Security:** The tool runner executes your tool functions automatically whenever Claude requests them. For tools with side effects (sending emails, modifying databases, financial transactions), validate inputs and gate destructive operations behind human approval. **Both** the tool runner and the manual loop support this \u2014 with the tool runner, gate inside the tool's run function (prompt the user and return a "user declined" result instead of executing), or inspect the tool call in each yielded message and take over message history with \`set_messages_params()\` / \`setMessagesParams()\` to allow or deny *before* the tool runs (it executes your function automatically only if you don't intervene); with the manual loop you gate inline before calling the function.\r
+### Handling Tool Results\r
+When Claude uses a tool, the response contains a \`tool_use\` block. You must:\r
+1. Execute the tool with the provided input\r
+2. Send the result back in a \`tool_result\` message\r
+3. Continue the conversation\r
+**Error handling in tool results:** When a tool execution fails, set \`"is_error": true\` and provide an informative error message. Claude will typically acknowledge the error and either try a different approach or ask for clarification.\r
+**Multiple tool calls:** Claude can request multiple tools in a single response. Handle them all before continuing \u2014 send all results back in a single \`user\` message.\r
+## Server-Side Tools: Code Execution\r
+The code execution tool lets Claude run code in a secure, sandboxed container. Unlike user-defined tools, server-side tools run on Anthropic's infrastructure \u2014 you don't execute anything client-side. Just include the tool definition and Claude handles the rest.\r
+### Key Facts\r
+- Runs in an isolated container (1 CPU, 5 GiB RAM, 5 GiB disk)\r
+- No internet access (fully sandboxed)\r
+- Python 3.11 with data science libraries pre-installed\r
+- Containers persist for 30 days and can be reused across requests\r
+- Free when used with web search/web fetch tools; otherwise $0.05/hour after 1,550 free hours/month per organization\r
+### Tool Definition\r
+The tool requires no schema \u2014 just declare it in the \`tools\` array:\r
+  "name": "code_execution"\r
+Claude automatically gains access to \`bash_code_execution\` (run shell commands) and \`text_editor_code_execution\` (create/view/edit files).\r
+### Pre-installed Python Libraries\r
+- **Data science**: pandas, numpy, scipy, scikit-learn, statsmodels\r
+- **Visualization**: matplotlib, seaborn\r
+- **File processing**: openpyxl, xlsxwriter, pillow, pypdf, pdfplumber, python-docx, python-pptx\r
+- **Math**: sympy, mpmath\r
+- **Utilities**: tqdm, python-dateutil, pytz, sqlite3\r
+Additional packages can be installed at runtime via \`pip install\`.\r
+### Supported File Types for Upload\r
+| Type   | Extensions                         |\r
+| Data   | CSV, Excel (.xlsx/.xls), JSON, XML |\r
+| Images | JPEG, PNG, GIF, WebP               |\r
+| Text   | .txt, .md, .py, .js, etc.          |\r
+### Container Reuse\r
+Reuse containers across requests to maintain state (files, installed packages, variables). Extract the \`container_id\` from the first response and pass it to subsequent requests.\r
+### Response Structure\r
+The response contains interleaved text and tool result blocks:\r
+- \`server_tool_use\` \u2014 What Claude is doing\r
+- \`bash_code_execution_tool_result\` \u2014 Code execution output (check \`return_code\` for success/failure)\r
+- \`text_editor_code_execution_tool_result\` \u2014 File operation results\r
+> **Security:** Always sanitize filenames with \`os.path.basename()\` / \`path.basename()\` before writing downloaded files to disk to prevent path traversal attacks. Write files to a dedicated output directory.\r
+## Server-Side Tools: Web Search and Web Fetch\r
+Web search and web fetch let Claude search the web and retrieve page content. They run server-side \u2014 just include the tool definitions and Claude handles queries, fetching, and result processing automatically.\r
+### Tool Definitions\r
+### Dynamic Filtering ({{OPUS_NAME}} / Fable 5 / Opus 4.8 / Opus 4.7 / Opus 4.6 / Sonnet 5 / Sonnet 4.6)\r
+Without dynamic filtering, the previous \`web_search_20250305\` version is also available.\r
+> **Note:** Only include the standalone \`code_execution\` tool when your application needs code execution for its own purposes (data analysis, file processing, visualization) independent of web search. Including it alongside \`_20260209\` web tools creates a second execution environment that can confuse the model.\r
+## Server-Side Tools: Programmatic Tool Calling\r
+With standard tool use, each tool call is a round trip: Claude calls, the result enters Claude's context, Claude reasons, then calls the next tool. Chained calls accumulate latency and tokens \u2014 most of that intermediate data is never needed again.\r
+Programmatic tool calling lets Claude compose those calls into a script. The script runs in the code execution container; when it invokes a tool, the container pauses, the call executes, and the result returns to the running code (not to Claude's context). The script processes it with normal control flow. Only the final output returns to Claude. Use it when chaining many tool calls or when intermediate results are large and should be filtered before reaching the context window.\r
+For full documentation, use WebFetch:\r
+- URL: \`https://platform.claude.com/docs/en/agents-and-tools/tool-use/programmatic-tool-calling\`\r
+## Server-Side Tools: Tool Search\r
+The tool search tool lets Claude dynamically discover tools from large libraries without loading all definitions into the context window. Use it when you have many tools but only a few are relevant to any given request. Discovered tool schemas are appended to the request, not swapped in \u2014 this preserves the prompt cache (see \`agent-design.md\` \xA7Caching for Agents).\r
+For full documentation, use WebFetch:\r
+- URL: \`https://platform.claude.com/docs/en/agents-and-tools/tool-use/tool-search-tool\`\r
+## Mid-conversation tool changes (Beta)\r
+**Beta header \`mid-conversation-tool-changes-2026-07-01\`; {{OPUS_NAME}} onward.** Normally \`tools\` is fixed for a conversation's lifetime \u2014 editing it changes the very front of the prompt prefix and invalidates the entire cache (see \`prompt-caching.md\` \xA7 Invalidation hierarchy). This feature lets you add and remove tools between turns while the cached prefix survives.\r
+Both operations are content blocks on a \`{"role": "system", ...}\` message appended to \`messages[]\`, and both reference a tool by name via a \`tool_reference\`:\r
+# Removal \u2014 must sit immediately before an assistant message, or last in messages.\r
+# Addition \u2014 surfaces a tool declared up front with defer_loading.\r
+**A tool you plan to add must already be declared in \`tools[]\` with \`"defer_loading": True\`.** Deferred tools are known to the request but not loaded into the model's context until a \`tool_addition\` surfaces them:\r
+tools = [\r
+    {"name": "get_weather", "description": "Get weather",\r
+    {"name": "get_forecast", "description": "Get 5-day forecast",\r
+     "defer_loading": True},\r
+**To change a tool's definition**, do it across two requests: send a \`tool_removal\` for the old definition on the first, then carry the conversation forward with the updated entry in \`tools[]\` on the next.\r
+> \u26A0\uFE0F Earlier previews used a different beta header and different block shapes; both are deprecated. Use \`mid-conversation-tool-changes-2026-07-01\` with \`tool_addition\` / \`tool_removal\` / \`tool_reference\`.\r
+SDK typings lag these blocks \u2014 pass them as plain dicts in Python, or add a \`@ts-expect-error\` in TypeScript.\r
+**Choosing between this and tool search:** tool search is for *discovery* \u2014 Claude finds what it needs from a large library on its own. Mid-conversation tool changes are for *control* \u2014 your application decides the tool set has changed (a mode switch, a resource that became available, a capability you want to revoke) and says so explicitly.\r
+## Agent Skills (Messages API)\r
+Agent Skills package task-specific instructions and files that Claude loads when relevant (e.g., the Anthropic pre-built \`pptx\`, \`xlsx\`, \`pdf\`, \`docx\` skills). On the **Messages API**, skills are enabled via the \`container\` parameter alongside the code-execution tool \u2014 this is **not** the Managed Agents surface and does **not** use \`client.beta.agents\` / \`sessions\` / \`environments\`. Availability: see \`shared/platform-availability.md\`.\r
+Required on each request:\r
+response = client.beta.messages.create(\r
+    messages=[{"role": "user", "content": "Create a 3-slide presentation on X"}],\r
+Generated files (\`.pptx\`, \`.xlsx\`, \u2026) are written inside the container; the response carries a file ID for each. Download by passing that ID to the Files API (\`client.beta.files.download(file_id)\` / \`GET /v1/files/{id}/content\` with \`anthropic-beta: files-api-2025-04-14\`).\r

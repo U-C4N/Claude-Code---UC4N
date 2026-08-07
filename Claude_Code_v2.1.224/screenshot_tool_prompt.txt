@@ -1,0 +1,95 @@
+checkCuLock
+acquireCuLock
+getSubGates
+ Available applications on this machine: 
+Modifier keys to hold during the click (e.g. "shift", "ctrl+shift"). Supports the same syntax as the key tool.
+request_access
+Request user permission to control a set of applications for this session. Must be called before any other tool in this server. The user sees a single dialog listing all requested apps and either allows the whole set or denies it. Call this again mid-session to add more apps; previously granted apps remain granted. Returns the granted apps, denied apps, and screenshot filtering capability.
+Application display names (e.g. "Slack", "Calendar") or bundle identifiers (e.g. "com.tinyspeck.slackmacgap"). Display names are resolved case-insensitively against installed apps.
+One-sentence explanation shown to the user in the approval dialog. Explain the task, not the mechanism.
+Also request permission to read the user's clipboard (separate checkbox in the dialog).
+Also request permission to write the user's clipboard. When granted, multi-line `type` calls use the clipboard fast path.
+Also request permission to send system-level key combos (quit app, switch app, lock screen). Without this, those specific combos are blocked.
+screenshot
+ Returns an error if the allowlist is empty. The returned image is what subsequent click coordinates are relative to.
+Take a higher-resolution screenshot of a specific region of the last full-screen screenshot. Use this liberally to inspect small text, button labels, or fine UI details that are hard to read in the downsampled full-screen image. IMPORTANT: Coordinates in subsequent click calls always refer to the full-screen screenshot, never the zoomed image. This tool is read-only for inspecting detail.
+(x0, y0, x1, y1): Rectangle to zoom into, in the coordinate space of the most recent full-screen screenshot. x0,y0 = top-left, x1,y1 = bottom-right.
+Save the image to disk so it can be attached to a message for the user. Returns the saved path in the tool result. Only set this when you intend to share the image.
+left_click
+Left-click at the given coordinates. The frontmost application must be in the session allowlist at the time of this call, or this tool returns an error and does nothing.
+coordinate
+coordinate
+double_click
+Double-click at the given coordinates. Selects a word in most text editors. The frontmost application must be in the session allowlist at the time of this call, or this tool returns an error and does nothing.
+coordinate
+triple_click
+Triple-click at the given coordinates. Selects a line in most text editors. The frontmost application must be in the session allowlist at the time of this call, or this tool returns an error and does nothing.
+coordinate
+right_click
+Right-click at the given coordinates. Opens a context menu in most applications. The frontmost application must be in the session allowlist at the time of this call, or this tool returns an error and does nothing.
+coordinate
+middle_click
+Middle-click (scroll-wheel click) at the given coordinates. The frontmost application must be in the session allowlist at the time of this call, or this tool returns an error and does nothing.
+coordinate
+Type text into whatever currently has keyboard focus. The frontmost application must be in the session allowlist at the time of this call, or this tool returns an error and does nothing. Newlines are supported. For keyboard shortcuts use `key` instead.
+Text to type.
+Press a key or key combination (e.g. "return", "escape", "cmd+a", "ctrl+shift+tab"). The frontmost application must be in the session allowlist at the time of this call, or this tool returns an error and does nothing. 
+Modifiers joined with "+", e.g. "cmd+shift+a".
+Number of times to repeat the key press. Default is 1.
+Scroll at the given coordinates. The frontmost application must be in the session allowlist at the time of this call, or this tool returns an error and does nothing.
+Direction to scroll.
+Number of scroll ticks.
+scroll_direction
+scroll_amount
+coordinate
+scroll_direction
+scroll_amount
+left_click_drag
+Press, move to target, and release. The frontmost application must be in the session allowlist at the time of this call, or this tool returns an error and does nothing.-
+(x, y) end point: 
+(x, y) start point. If omitted, drags from the current cursor position. 
+coordinate
+mouse_move
+Move the mouse cursor without clicking. Useful for triggering hover states. The frontmost application must be in the session allowlist at the time of this call, or this tool returns an error and does nothing.
+coordinate
+open_application
+Display name (e.g. "Slack") or bundle identifier (e.g. "com.tinyspeck.slackmacgap").
+switch_display
+Switch which monitor subsequent screenshots capture. Use this when the application you need is on a different monitor than the one shown. The screenshot tool tells you which monitor it captured and lists 
+After switching, call screenshot to see the new monitor. Pass "auto" to return to automatic monitor selection.
+Monitor name from the screenshot note (e.g. "Built-in Retina Display", "LG UltraFine"), or "auto" to re-enable automatic selection.
+list_granted_applications
+List the applications currently in the session allowlist, plus the active grant flags and coordinate mode. No side effects.
+read_clipboard
+Read the current clipboard contents as text. Requires the `clipboardRead` grant.
+write_clipboard
+Write text to the clipboard. Requires the `clipboardWrite` grant.
+Wait for a specified duration.
+duration
+duration
+cursor_position
+Get the current mouse cursor position. Returns image-pixel coordinates relative to the most recent screenshot, or logical points if no screenshot has been taken.
+hold_key
+Press and hold a key or key combination for the specified duration, then release. The frontmost application must be in the session allowlist at the time of this call, or this tool returns an error and does nothing. System-level combos require the `systemKeyCombos` grant.
+Key or chord to hold, e.g. "space", "shift+down".
+duration
+left_mouse_down
+Press the left mouse button at the current cursor position and leave it held. The frontmost application must be in the session allowlist at the time of this call, or this tool returns an error and does nothing. Use mouse_move first to position the cursor. Call left_mouse_up to release. Errors if the button is already held.
+left_mouse_up
+Release the left mouse button at the current cursor position. The frontmost application must be in the session allowlist at the time of this call, or this tool returns an error and does nothing. Pairs with left_mouse_down. Safe to call even if the button is not currently held.
+computer_batch
+e.g. click a field, type into it, press Return. Actions execute sequentially and stop on the first error. 
+The frontmost application must be in the session allowlist at the time of this call, or this tool returns an error and does nothing.
+Mid-batch screenshot actions are allowed for inspection but coordinates in subsequent clicks always refer to the PRE-BATCH full-screen screenshot.
+teachMode
+Tooltip body text. Explain what the user is looking at and why it matters. 
+One line describing exactly what will happen when the user clicks Next. Example: "Next: I'll click Create Bucket and type the name." Shown below the explanation in a smaller font.
+ Omit to center the tooltip with no arrow (for general-context steps).
+Actions to execute when the user clicks Next. Same item schema as computer_batch.actions. Empty array is valid for purely explanatory steps. Actions run sequentially and stop on first error.
+request_teach_access
+Request permission to guide the user through a task step-by-step with on-screen tooltips. Use this INSTEAD OF request_access when the user wants to LEARN how to do something (phrases like "teach me", "walk me through", "show me how", "help me learn"). On approval the main Claude window hides and a fullscreen tooltip overlay appears. You then call teach_step repeatedly; each call shows one tooltip and waits for the user to click Next. Same app-allowlist semantics as request_access, but no clipboard/system-key flags. Teach mode ends automatically when your turn ends.
+Application display names (e.g. "Slack", "Calendar") or bundle identifiers. Resolved case-insensitively against installed apps.
+What you will be teaching. Shown in the approval dialog as "Claude wants to guide you through {reason}". Keep it short and task-focused.
+teach_step
+Show one guided-tour tooltip and wait for the user to click Next. On Next, execute the actions, 
+The returned image shows the state after your actions ran; anchor the next teach_step against it. 

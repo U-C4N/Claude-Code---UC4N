@@ -1,0 +1,457 @@
+## Error Handling\r
+import anthropic\r
+    response = client.messages.create(...)\r
+except anthropic.BadRequestError as e:\r
+    print(f"Bad request: {e.message}")\r
+except anthropic.AuthenticationError:\r
+    print("Invalid API key")\r
+except anthropic.PermissionDeniedError:\r
+    print("API key lacks required permissions")\r
+except anthropic.NotFoundError:\r
+    print("Invalid model or endpoint")\r
+except anthropic.RateLimitError as e:\r
+    retry_after = int(e.response.headers.get("retry-after", "60"))\r
+    print(f"Rate limited. Retry after {retry_after}s.")\r
+except anthropic.APIStatusError as e:\r
+        print(f"Server error ({e.status_code}). Retry later.")\r
+    else:\r
+        print(f"API error: {e.message}")\r
+except anthropic.APIConnectionError:\r
+    print("Network error. Check internet connection.")\r
+## Response Helpers\r
+Every response object exposes \`_request_id\` (populated from the \`request-id\` header) \u2014 log it when reporting failures to Anthropic. Despite the underscore prefix, this property is public.\r
+message = client.messages.create(...)\r
+print(message._request_id)       # req_018EeWyXxfu5pfWkrYcMdjWG\r
+print(message.to_json())          # serialize the Pydantic model\r
+print(message.to_dict())          # plain dict\r
+To access raw headers or other response metadata, use \`.with_raw_response\`:\r
+raw = client.messages.with_raw_response.create(\r
+print(raw.headers.get("request-id"))\r
+message = raw.parse()  # the Message object messages.create() would have returned\r
+## Multi-Turn Conversations\r
+The API is stateless \u2014 send the full conversation history each time.\r
+class ConversationManager:\r
+    """Manage multi-turn conversations with the Claude API."""\r
+    def __init__(self, client: anthropic.Anthropic, model: str, system: str = None):\r
+        self.client = client\r
+        self.model = model\r
+        self.system = system\r
+        self.messages = []\r
+    def send(self, user_message: str, **kwargs) -> str:\r
+        """Send a message and get a response."""\r
+        self.messages.append({"role": "user", "content": user_message})\r
+        response = self.client.messages.create(\r
+            model=self.model,\r
+            max_tokens=kwargs.get("max_tokens", 16000),\r
+            system=self.system,\r
+            messages=self.messages,\r
+            **kwargs\r
+        )\r
+        assistant_message = next(\r
+            (b.text for b in response.content if b.type == "text"), ""\r
+        )\r
+        self.messages.append({"role": "assistant", "content": assistant_message})\r
+        return assistant_message\r
+# Usage\r
+conversation = ConversationManager(\r
+    client=anthropic.Anthropic(),\r
+    system="You are a helpful assistant."\r
+response1 = conversation.send("My name is Alice.")\r
+response2 = conversation.send("What's my name?")  # Claude remembers "Alice"\r
+- Consecutive same-role messages are allowed \u2014 the API combines them into a single turn\r
+- First message must be \`user\`\r
+- \`role: "system"\` messages are allowed mid-conversation on supporting models (no beta header needed) \u2014 see \xA7 Mid-conversation system messages above\r
+### Compaction (long conversations)\r
+> **Beta, Fable 5, {{OPUS_NAME}}, Opus 4.8, Opus 4.7, Opus 4.6, and Sonnet 4.6.** When conversations approach the 200K context window, compaction automatically summarizes earlier context server-side. The API returns a \`compaction\` block; you must pass it back on subsequent requests \u2014 append \`response.content\`, not just the text.\r
+import anthropic\r
+client = anthropic.Anthropic()\r
+messages = []\r
+def chat(user_message: str) -> str:\r
+    messages.append({"role": "user", "content": user_message})\r
+    response = client.beta.messages.create(\r
+        messages=messages,\r
+        context_management={\r
+        }\r
+    # Append full content \u2014 compaction blocks must be preserved\r
+    messages.append({"role": "assistant", "content": response.content})\r
+    return next(block.text for block in response.content if block.type == "text")\r
+# Compaction triggers automatically when context grows large\r
+print(chat("Help me build a Python web scraper"))\r
+print(chat("Add support for JavaScript-rendered pages"))\r
+print(chat("Now add rate limiting and error handling"))\r
+## Stop Reasons\r
+The \`stop_reason\` field in the response indicates why the model stopped generating:\r
+| Value | Meaning |\r
+| \`end_turn\` | Claude finished its response naturally |\r
+| \`max_tokens\` | Hit the \`max_tokens\` limit \u2014 increase it or use streaming |\r
+| \`stop_sequence\` | Hit a custom stop sequence |\r
+| \`tool_use\` | Claude wants to call a tool \u2014 execute it and continue |\r
+| \`pause_turn\` | Model paused and can be resumed (agentic flows) |\r
+| \`refusal\` | Claude refused for safety reasons \u2014 check \`stop_details\` |\r
+### Structured Stop Details\r
+When \`stop_reason\` is \`"refusal"\`, the response includes a \`stop_details\` object with structured information about the refusal:\r
+if response.stop_reason == "refusal" and response.stop_details:\r
+    print(f"Category: {response.stop_details.category}")   # e.g. "cyber", "bio", "reasoning_extraction", "frontier_llm", or None \u2014 see docs for the full set\r
+    print(f"Explanation: {response.stop_details.explanation}")\r
+### Refusal Fallbacks ({{FABLE_NAME}}) \u2014 opt in by default\r
+Fallbacks are **opt-in**: without them a refused request simply stops. Include the server-side \`fallbacks\` parameter in \`{{FABLE_ID}}\` code by default \u2014 on a policy decline the API re-runs the same request on the fallback model inside the same call. A decline before any output isn't billed (a mid-stream decline bills the streamed partial); the rescue bills at the fallback model's own rates, with cache repricing applied automatically.\r
+response = client.beta.messages.create(\r
+# Switch points: one fallback block per model that ran and declined this turn\r
+for block in response.content:\r
+    if block.type == "fallback":\r
+        print(f"{block.from_.model} declined; {block.to.model} continued")\r
+# Served-by signal \u2014 covers sticky turns, which carry no fallback block.\r
+# Pair with stop_reason: the fallback model can itself refuse.\r
+fallback_ran = any(\r
+    entry.type == "fallback_message" for entry in response.usage.iterations or []\r
+if fallback_ran and response.stop_reason != "refusal":\r
+    print(f"Served by {response.model}")\r
+A \`stop_reason: "refusal"\` on the final response means the whole chain refused. The header must be exactly \`server-side-fallback-2026-06-01\` **for this array form**; the newer \`fallbacks: "default"\` scalar form uses \`server-side-fallback-2026-07-01\` instead (see \`shared/model-migration.md\` \u2192 Migrating to {{OPUS_NAME}} \u2192 New API features), and pairing either header with the other form returns a 400. The parameter is rejected on the Batches API and unavailable on Amazon Bedrock, Vertex AI, and Microsoft Foundry \u2014 register the client-side \`BetaRefusalFallbackMiddleware\` on the client there instead. Full semantics (sticky routing, billing, streaming, echoing fallback turns back): \`shared/model-migration.md\` \u2192 Migrating to {{FABLE_NAME}} \u2192 \`refusal\` stop reason.\r
+## Cost Optimization Strategies\r
+### 1. Use Prompt Caching for Repeated Context\r
+# Automatic caching (simplest \u2014 caches the last cacheable block)\r
+response = client.messages.create(\r
+    cache_control={"type": "ephemeral"},\r
+    system=large_document_text,  # e.g., 50KB of context\r
+    messages=[{"role": "user", "content": "Summarize the key points"}]\r
+# First request: full cost\r
+# Subsequent requests: ~90% cheaper for cached portion\r
+### 2. Choose the Right Model\r
+# Default to Opus for most tasks\r
+response = client.messages.create(\r
+    messages=[{"role": "user", "content": "Explain quantum computing"}]\r
+# Use Sonnet for high-volume production workloads\r
+standard_response = client.messages.create(\r
+    messages=[{"role": "user", "content": "Summarize this document"}]\r
+# Use Haiku only for simple, speed-critical tasks\r
+simple_response = client.messages.create(\r
+    messages=[{"role": "user", "content": "Classify this as positive or negative"}]\r
+### 3. Use Token Counting Before Requests\r
+count_response = client.messages.count_tokens(\r
+    messages=messages,\r
+    system=system\r
+estimated_input_cost = count_response.input_tokens * 0.000005  # $5/1M tokens\r
+print(f"Estimated input cost: \${estimated_input_cost:.4f}")\r
+## Retry with Exponential Backoff\r
+> **Note:** The Anthropic SDK automatically retries rate limit (429) and server errors (5xx) with exponential backoff. You can configure this with \`max_retries\` (default: 2). Only implement custom retry logic if you need behavior beyond what the SDK provides.\r
+import time\r
+import random\r
+import anthropic\r
+def call_with_retry(\r
+    client: anthropic.Anthropic,\r
+    max_retries: int = 5,\r
+    base_delay: float = 1.0,\r
+    **kwargs\r
+    """Call the API with exponential backoff retry."""\r
+    last_exception = None\r
+    for attempt in range(max_retries):\r
+        try:\r
+            return client.messages.create(**kwargs)\r
+        except anthropic.RateLimitError as e:\r
+            last_exception = e\r
+        except anthropic.APIStatusError as e:\r
+            if e.status_code >= 500:\r
+                last_exception = e\r
+            else:\r
+                raise  # Client errors (4xx except 429) should not be retried\r
+        delay = min(base_delay * (2 ** attempt) + random.uniform(0, 1), max_delay)\r
+        print(f"Retry {attempt + 1}/{max_retries} after {delay:.1f}s")\r
+        time.sleep(delay)\r
+    raise last_exception\r
+## Quick Start\r
+with client.messages.stream(\r
+    messages=[{"role": "user", "content": "Write a story"}]\r
+) as stream:\r
+    for text in stream.text_stream:\r
+        print(text, end="", flush=True)\r
+async with async_client.messages.stream(\r
+    messages=[{"role": "user", "content": "Write a story"}]\r
+) as stream:\r
+    async for text in stream.text_stream:\r
+        print(text, end="", flush=True)\r
+\`messages.stream()\` (above) is the recommended helper \u2014 it accumulates state and exposes \`text_stream\` / \`get_final_message()\`. If you only need the raw event iterator and want lower memory use, pass \`stream=True\` to \`messages.create()\` instead:\r
+for event in client.messages.create(\r
+    messages=[{"role": "user", "content": "Write a story"}],\r
+    stream=True,\r
+    print(event.type)\r
+No final-message accumulation is done for you in this form.\r
+## Handling Different Content Types\r
+Claude may return text, thinking blocks, or tool use. Handle each appropriately:\r
+with client.messages.stream(\r
+    thinking={"type": "adaptive", "display": "summarized"},  # display opt-in: default is omitted (empty thinking text) on Fable 5 / Mythos 5 / {{OPUS_NAME}} / Opus 4.8 / 4.7\r
+    messages=[{"role": "user", "content": "Analyze this problem"}]\r
+) as stream:\r
+    for event in stream:\r
+        if event.type == "content_block_start":\r
+            if event.content_block.type == "thinking":\r
+                print("\\n[Thinking...]")\r
+            elif event.content_block.type == "text":\r
+                print("\\n[Response:]")\r
+        elif event.type == "content_block_delta":\r
+            if event.delta.type == "thinking_delta":\r
+                print(event.delta.thinking, end="", flush=True)\r
+            elif event.delta.type == "text_delta":\r
+                print(event.delta.text, end="", flush=True)\r
+## Streaming with Tool Use\r
+The Python tool runner supports streaming: pass \`stream=True\` to \`client.beta.messages.tool_runner(...)\` and each iteration yields a stream you consume event-by-event, with \`get_final_message()\` for the accumulated message per turn (see \`shared/tool-use-concepts.md\` \u2192 Tool Runner vs Manual Loop). Use the manual-loop pattern below only when you're not using the tool runner and need per-token streaming with tools:\r
+with client.messages.stream(\r
+    tools=tools,\r
+    messages=messages\r
+) as stream:\r
+    for text in stream.text_stream:\r
+        print(text, end="", flush=True)\r
+    response = stream.get_final_message()\r
+    # Continue with tool execution if response.stop_reason == "tool_use"\r
+## Getting the Final Message\r
+with client.messages.stream(\r
+) as stream:\r
+    for text in stream.text_stream:\r
+        print(text, end="", flush=True)\r
+    # Get full message after streaming\r
+    final_message = stream.get_final_message()\r
+    print(f"\\n\\nTokens used: {final_message.usage.output_tokens}")\r
+## Streaming with Progress Updates\r
+def stream_with_progress(client, **kwargs):\r
+    """Stream a response with progress updates."""\r
+    total_tokens = 0\r
+    content_parts = []\r
+    with client.messages.stream(**kwargs) as stream:\r
+        for event in stream:\r
+            if event.type == "content_block_delta":\r
+                if event.delta.type == "text_delta":\r
+                    text = event.delta.text\r
+                    content_parts.append(text)\r
+                    print(text, end="", flush=True)\r
+            elif event.type == "message_delta":\r
+                if event.usage and event.usage.output_tokens is not None:\r
+                    total_tokens = event.usage.output_tokens\r
+        final_message = stream.get_final_message()\r
+    print(f"\\n\\n[Tokens used: {total_tokens}]")\r
+    return "".join(content_parts)\r
+## Error Handling in Streams\r
+    with client.messages.stream(\r
+        messages=[{"role": "user", "content": "Write a story"}]\r
+    ) as stream:\r
+        for text in stream.text_stream:\r
+            print(text, end="", flush=True)\r
+except anthropic.APIConnectionError:\r
+    print("\\nConnection lost. Please retry.")\r
+except anthropic.RateLimitError:\r
+    print("\\nRate limited. Please wait and retry.")\r
+except anthropic.APIStatusError as e:\r
+    print(f"\\nAPI error: {e.status_code}")\r
+## Stream Event Types\r
+| Event Type            | Description                 | When it fires                     |\r
+| \`message_start\`       | Contains message metadata   | Once at the beginning             |\r
+| \`content_block_start\` | New content block beginning | When a text/tool_use block starts |\r
+| \`content_block_delta\` | Incremental content update  | For each token/chunk              |\r
+| \`content_block_stop\`  | Content block complete      | When a block finishes             |\r
+| \`message_delta\`       | Message-level updates       | Contains \`stop_reason\`, usage     |\r
+| \`message_stop\`        | Message complete            | Once at the end                   |\r
+## Best Practices\r
+1. **Always flush output** \u2014 Use \`flush=True\` to show tokens immediately\r
+2. **Handle partial responses** \u2014 If the stream is interrupted, you may have incomplete content\r
+3. **Track token usage** \u2014 The \`message_delta\` event contains usage information\r
+4. **Use timeouts** \u2014 Set appropriate timeouts for your application\r
+5. **Default to streaming** \u2014 Use \`.get_final_message()\` to get the complete response even when streaming, giving you timeout protection without needing to handle individual events\r
+6. **Large \`max_tokens\` without streaming raises \`ValueError\`** \u2014 The SDK refuses non-streaming requests it estimates will exceed ~10 minutes (idle connections drop). Pass \`stream=True\` / use \`messages.stream()\`, or explicitly override \`timeout\`, to suppress the guard.\r
+For conceptual overview (tool definitions, tool choice, tips), see [shared/tool-use-concepts.md](../../shared/tool-use-concepts.md).\r
+## Tool Runner (Recommended)\r
+**Beta:** The tool runner is in beta in the Python SDK.\r
+Use the \`@beta_tool\` decorator to define tools as typed functions, then pass them to \`client.beta.messages.tool_runner()\`:\r
+import anthropic\r
+from anthropic import beta_tool\r
+client = anthropic.Anthropic()\r
+@beta_tool\r
+def get_weather(location: str, unit: str = "celsius") -> str:\r
+    """Get current weather for a location.\r
+    Args:\r
+        location: City and state, e.g., San Francisco, CA.\r
+        unit: Temperature unit, either "celsius" or "fahrenheit".\r
+    # Your implementation here\r
+    return f"72\xB0F and sunny in {location}"\r
+# The tool runner handles the agentic loop automatically\r
+runner = client.beta.messages.tool_runner(\r
+    tools=[get_weather],\r
+    messages=[{"role": "user", "content": "What's the weather in Paris?"}],\r
+# Each iteration yields a BetaMessage; iteration stops when Claude is done\r
+for message in runner:\r
+    print(message)\r
+For async usage, use \`@beta_async_tool\` with \`async def\` functions.\r
+**Key benefits of the tool runner:**\r
+- No manual loop \u2014 the SDK handles calling tools and feeding results back\r
+- Type-safe tool inputs via decorators\r
+- Tool schemas are generated automatically from function signatures\r
+- Iteration stops automatically when Claude has no more tool calls\r
+### Server tools with the tool runner\r
+**Caution \u2014 the runner does not auto-resume \`pause_turn\` (as of \`anthropic\` 0.116.0).** A long-running server-tool turn can stop with \`stop_reason: "pause_turn"\`. The runner only continues after a client tool produces a result, so a paused turn ends the loop and is returned as the final message \u2014 no error, no warning, just a silently truncated answer. Unlike the TypeScript runner, the Python runner cannot be resumed mid-loop: it exits unconditionally when no client tool ran, and \`runner.append_messages(...)\` does not prevent the exit. To handle \`pause_turn\`, mirror the conversation history as you iterate, then restart the runner with the paused turn appended:\r
+messages = [{"role": "user", "content": user_input}]\r
+max_restarts = 5  # cap pause_turn restarts, mirroring max_continuations advice\r
+restarts = 0\r
+while True:\r
+    runner = client.beta.messages.tool_runner(\r
+        tools=tools,  # may mix @beta_tool functions and server-tool definitions\r
+        messages=messages,\r
+    last = None\r
+    for message in runner:\r
+        last = message\r
+        # Mirror the history \u2014 the runner keeps its own copy and does not expose it\r
+        messages.append({"role": "assistant", "content": message.content})\r
+        tool_response = runner.generate_tool_call_response()  # cached; tools still run once\r
+        if tool_response is not None:\r
+            messages.append(tool_response)\r
+    if last is None or last.stop_reason != "pause_turn":\r
+        break\r
+    restarts += 1\r
+    if restarts > max_restarts:\r
+        raise RuntimeError("giving up: turn still paused after max_restarts")\r
+    # Paused mid-turn: \`messages\` already ends with the paused assistant\r
+    # turn, so the next runner resumes it\r
+Alternatively, use the manual loop below, which handles \`pause_turn\` explicitly.\r
+## MCP Tool Conversion Helpers\r
+**Beta.** Convert [MCP (Model Context Protocol)](https://modelcontextprotocol.io/) tools, prompts, and resources to Anthropic API types for use with the tool runner. Requires \`pip install anthropic[mcp]\` (Python 3.10+).\r
+> **Note:** The Claude API also supports an \`mcp_servers\` parameter that lets Claude connect directly to remote MCP servers. Use these helpers instead when you need local MCP servers, prompts, resources, or more control over the MCP connection.\r
+### MCP Tools with Tool Runner\r
+from anthropic import AsyncAnthropic\r
+from anthropic.lib.tools.mcp import async_mcp_tool\r
+from mcp import ClientSession\r
+from mcp.client.stdio import stdio_client, StdioServerParameters\r
+client = AsyncAnthropic()\r
+async with stdio_client(StdioServerParameters(command="mcp-server")) as (read, write):\r
+    async with ClientSession(read, write) as mcp_client:\r
+        await mcp_client.initialize()\r
+        tools_result = await mcp_client.list_tools()\r
+        # tool_runner is sync \u2014 returns the runner, not a coroutine\r
+        runner = client.beta.messages.tool_runner(\r
+            model="{{OPUS_ID}}",\r
+            max_tokens=16000,\r
+            messages=[{"role": "user", "content": "Use the available tools"}],\r
+            tools=[async_mcp_tool(t, mcp_client) for t in tools_result.tools],\r
+        )\r
+        async for message in runner:\r
+            print(message)\r
+For sync usage, use \`mcp_tool\` instead of \`async_mcp_tool\`.\r
+### MCP Prompts\r
+from anthropic.lib.tools.mcp import mcp_message\r
+prompt = await mcp_client.get_prompt(name="my-prompt")\r
+response = await client.beta.messages.create(\r
+    messages=[mcp_message(m) for m in prompt.messages],\r
+### MCP Resources as Content\r
+from anthropic.lib.tools.mcp import mcp_resource_to_content\r
+resource = await mcp_client.read_resource(uri="file:///path/to/doc.txt")\r
+response = await client.beta.messages.create(\r
+    messages=[{\r
+        "role": "user",\r
+        "content": [\r
+            mcp_resource_to_content(resource),\r
+            {"type": "text", "text": "Summarize this document"},\r
+        ],\r
+### Upload MCP Resources as Files\r
+from anthropic.lib.tools.mcp import mcp_resource_to_file\r
+resource = await mcp_client.read_resource(uri="file:///path/to/data.json")\r
+uploaded = await client.beta.files.upload(file=mcp_resource_to_file(resource))\r
+Conversion functions raise \`UnsupportedMCPValueError\` if an MCP value cannot be converted (e.g., unsupported content types like audio, unsupported MIME types).\r
+## Manual Agentic Loop\r
+Prefer the tool runner above. Drop to a manual loop only when you need control the runner does not expose (e.g., a custom transport, request shapes the SDK cannot build, or avoiding a beta dependency \u2014 the runner is beta). Human-in-the-loop approval does *not* require a manual loop \u2014 gate inside the tool function (return a "user declined" result) or inspect pending \`tool_use\` blocks in the \`for message in runner:\` body and call \`runner.set_messages_params()\`.\r
+If you do need a manual loop:\r
+import anthropic\r
+client = anthropic.Anthropic()\r
+tools = [...]  # Your tool definitions\r
+messages = [{"role": "user", "content": user_input}]\r
+# Agentic loop: keep going until Claude stops calling tools\r
+while True:\r
+    response = client.messages.create(\r
+        tools=tools,\r
+        messages=messages\r
+    # If Claude is done (no more tool calls), break\r
+    if response.stop_reason == "end_turn":\r
+        break\r
+    # Server-side tool hit iteration limit; re-send to continue\r
+    if response.stop_reason == "pause_turn":\r
+        messages = [\r
+            {"role": "user", "content": user_input},\r
+            {"role": "assistant", "content": response.content},\r
+        ]\r
+        continue\r
+    # Extract tool use blocks from the response\r
+    tool_use_blocks = [b for b in response.content if b.type == "tool_use"]\r
+    # Append assistant's response (including tool_use blocks)\r
+    messages.append({"role": "assistant", "content": response.content})\r
+    # Execute each tool and collect results\r
+    tool_results = []\r
+    for tool in tool_use_blocks:\r
+        result = execute_tool(tool.name, tool.input)  # Your implementation\r
+        tool_results.append({\r
+            "type": "tool_result",\r
+            "tool_use_id": tool.id,  # Must match the tool_use block's id\r
+            "content": result\r
+        })\r
+    # Append tool results as a user message\r
+    messages.append({"role": "user", "content": tool_results})\r
+# Final response text\r
+final_text = next(b.text for b in response.content if b.type == "text")\r
+## Handling Tool Results\r
+response = client.messages.create(\r
+    tools=tools,\r
+    messages=[{"role": "user", "content": "What's the weather in Paris?"}]\r
+for block in response.content:\r
+    if block.type == "tool_use":\r
+        tool_name = block.name\r
+        tool_input = block.input\r
+        tool_use_id = block.id\r
+        result = execute_tool(tool_name, tool_input)\r
+        followup = client.messages.create(\r
+            model="{{OPUS_ID}}",\r
+            max_tokens=16000,\r
+            tools=tools,\r
+            messages=[\r
+                {"role": "user", "content": "What's the weather in Paris?"},\r
+                {"role": "assistant", "content": response.content},\r
+                {\r
+                    "role": "user",\r
+                    "content": [{\r
+                        "type": "tool_result",\r
+                        "tool_use_id": tool_use_id,\r
+                        "content": result\r
+                    }]\r
+                }\r
+            ]\r
+        )\r
+## Multiple Tool Calls\r
+tool_results = []\r
+for block in response.content:\r
+    if block.type == "tool_use":\r
+        result = execute_tool(block.name, block.input)\r
+        tool_results.append({\r
+            "type": "tool_result",\r
+            "tool_use_id": block.id,\r
+            "content": result\r
+        })\r
+# Send all results back at once\r
+if tool_results:\r
+    followup = client.messages.create(\r
+        tools=tools,\r
+        messages=[\r
+            *previous_messages,\r
+            {"role": "assistant", "content": response.content},\r
+            {"role": "user", "content": tool_results}\r
+        ]\r
+## Error Handling in Tool Results\r
+tool_result = {\r
+    "type": "tool_result",\r
+    "tool_use_id": tool_use_id,\r
+    "content": "Error: Location 'xyz' not found. Please provide a valid city name.",\r
+    "is_error": True\r
+## Tool Choice\r
+response = client.messages.create(\r
+    tools=tools,\r
+    tool_choice={"type": "tool", "name": "get_weather"},  # Force specific tool\r
+    messages=[{"role": "user", "content": "What's the weather in Paris?"}]\r
+## Code Execution\r
+### Basic Usage\r
+import anthropic\r
+client = anthropic.Anthropic()\r
+response = client.messages.create(\r
+    messages=[{\r
+        "role": "user",\r
+        "content": "Calculate the mean and standard deviation of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]"\r

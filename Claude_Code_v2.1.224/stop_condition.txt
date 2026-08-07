@@ -1,0 +1,42 @@
+SubagentStop
+Based on the conversation transcript above, has the following stopping condition been satisfied? Answer based on transcript evidence only.
+Condition: 
+Hooks: Processing prompt hook with prompt: 
+Hooks: Querying model with 
+ messages
+Cannot destructure property 'signal' from null or undefined value
+tengu_hook_prompt_too_long_retry
+Hooks: evaluator prompt too long; retrying with 
+Hooks: prompt-hook evaluator API error: 
+Hook evaluator API error: 
+Hooks: Model response: 
+Hooks: error parsing response as JSON: 
+JSON validation failed
+Hooks: model response does not conform to expected schema: 
+Schema validation failed: 
+Hooks: Prompt hook condition judged impossible: 
+hook_success
+Hooks: Prompt hook condition was not met: 
+blocking
+Hooks: Prompt hook condition was met: 
+cancelled
+Hooks: Prompt hook error: 
+Error executing prompt hook: 
+evaluatorModel
+You are evaluating a hook condition in Claude Code. Judge whether the user-provided condition is met.
+Your response must be a JSON object with one of these shapes:
+- {"ok": true, "reason": "<reason the condition is met>"}
+- {"ok": false, "reason": "<reason the condition is not met>"}
+Always include a "reason" field.
+disabled
+hook_prompt
+json_schema
+assistant
+assistant
+Iterator result interface is not an object.
+Hooks: truncated Stop transcript 
+ msgs (budget 
+, model 
+tengu_hook_prompt_transcript_truncated
+ earlier messages omitted. Evaluate the condition against the recent transcript below; if the required evidence may be in the omitted prefix, return {"ok": false, "reason": "insufficient evidence in transcript"}.]
+keptMessages

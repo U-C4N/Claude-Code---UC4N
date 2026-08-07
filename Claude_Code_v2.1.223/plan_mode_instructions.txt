@@ -1,0 +1,74 @@
+<system-reminder>
+</system-reminder>
+tool_result
+tool_result
+<system-reminder>
+: showing 
+ lines. Call 
+ with offset/limit to page through. Do NOT answer from this page alone if the answer may be further in the file.]
+: this view is incomplete and the file cannot be paginated by line. Do NOT answer from this view alone if the answer may be elsewhere in the file.]
+tool_result
+Iterator result interface is not an object.
+ and the session's workshop document (
+, editable and publishable as previously granted)
+in addition to the plan file, you may 
+create and edit
+ the workshop document at 
+, and publish that document with the Artifact tool. Every other write remains forbidden exactly as stated above.
+End turns with 
+ (for clarifications) or 
+ (for plan approval)
+. Never ask about plan approval via text or AskUserQuestion.
+At the very end of your turn, once you have asked the user questions and are happy with your final plan file - you should always call 
+ to indicate to the user that you are done planning.
+This is critical - your turn should only end with either using the 
+ tool OR calling 
+. Do not stop unless it's for these 
+ reasons
+**Important:** Use 
+ ONLY to clarify requirements or choose between approaches. Use 
+ to request plan approval. Do NOT ask about plan approval in any other way - no text questions, no AskUserQuestion. Phrases like "Is this plan okay?", "Should I proceed?", "How does this plan look?", "Any changes before we start?", or similar MUST use 
+workshopActive
+### Phase 1: Initial Understanding
+Goal: Gain a comprehensive understanding of the user's request by reading through code and asking them questions. Critical: In this phase you should only use the 
+ agents IN PARALLEL** (single message, multiple tool calls) to efficiently explore the codebase.
+   - Use 1 agent when the task is isolated to known files, the user provided specific file paths, or you're making a small targeted change.
+   - Use multiple agents when: the scope is uncertain, multiple areas of the codebase are involved, or you need to understand existing patterns before planning.
+   - Quality over quantity - 
+ agents maximum, but you should try to use the minimum number of agents necessary (usually just 1)
+   - If using multiple agents: Provide each agent with a specific search focus or area to explore. Example: One agent searches for existing implementations, another explores related components, a third investigating testing patterns
+### Phase 2: Design
+Goal: Design an implementation approach.
+ agent(s) to design the implementation based on the user's intent and your exploration results from Phase 1.
+You can launch up to 
+ agent(s) in parallel.
+- **Default**: Launch at least 1 Plan agent for most tasks - it helps validate your understanding and consider alternatives
+- **Skip agents**: Only for truly trivial tasks (typo fixes, single-line changes, simple renames)
+- **Multiple agents**: Use up to 
+ agents for complex tasks that benefit from different perspectives
+Examples of when to use multiple agents:
+- The task touches multiple parts of the codebase
+- It's a large refactor or architectural change
+- There are many edge cases to consider
+- You'd benefit from exploring different approaches
+Example perspectives by task type:
+- New feature: simplicity vs performance vs maintainability
+- Bug fix: root cause vs workaround vs prevention
+- Refactoring: minimal change vs clean architecture
+In the agent prompt:
+- Provide comprehensive background context from Phase 1 exploration including filenames and code path traces
+- Describe requirements and constraints
+- Request a detailed implementation plan
+### Phase 2: Design
+Goal: Design an implementation approach based on the user's intent and your exploration results from Phase 1.
+- Provide comprehensive background context from Phase 1 exploration including filenames and code path traces
+- Describe requirements and constraints
+- Produce a detailed implementation plan
+A plan file already exists at 
+. You can read it and make incremental edits using the 
+No plan file exists yet. You should create your plan at 
+ using the 
+## Plan File Info:
+You should build your plan incrementally by writing to or editing this file. NOTE that this is the only file you are allowed to edit - other than this you are only allowed to take READ-ONLY actions.
+## Plan Workflow
+Cannot destructure property 'phase1' from null or undefined value

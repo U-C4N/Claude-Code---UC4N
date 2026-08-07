@@ -1,0 +1,271 @@
+so every revision lands as a new version of the same artifact.\r
+Before publishing, re-read the file once for the mistakes that would\r
+break the demo \u2014 an unclosed tag, a handler wired to nothing, a script\r
+error \u2014 and fix what that read turns up. One read and its fixes are the\r
+whole check: do not spin up browsers, servers, or test harnesses to\r
+drive the page, and do not start a second polish pass.\r
+Then publish with the Artifact tool, following its own instructions \u2014 a\r
+stable title, a favicon emoji, and a one-sentence description. If the\r
+Artifact tool is unavailable, say so in one plain line and point the\r
+user at the file instead \u2014 do not hunt for another way to host it.\r
+Give the user the link plus one or two lines: what the prototype shows,\r
+what is faked, and the obvious next step.\r
+## Iterate\r
+When feedback arrives, change only what was asked and republish the SAME\r
+file, so the URL and its version history carry forward \u2014 never a new\r
+artifact per revision. If you see a bigger improvement, suggest it; do\r
+not apply it unasked. Offer two or three variations only when the ask is\r
+exploratory ("what could this look like?"); otherwise give one answer,\r
+improved.\r
+When the user says it is good, link the final prototype and close with a\r
+short list of what a real build would still need that the prototype\r
+skipped \u2014 real data, persistence, auth, error handling, whatever applies.\r
+Stop proposing changes after that.\r
+## User Request
+${e}`;return[{type:"text",text:n}]}})}var Qyv,e_v="Turn an idea into a working proof of concept and publish it as an Artifact \u2014 a single self-contained page the user can open, click through, and react to. Run a short intake, state your assumptions, build, then iterate on feedback in the same artifact. Use when the user asks to prototype an idea, mock up a concept, build a proof of concept, or wants to see something working before committing to a real build.",t_v="Offer it unprompted, too \u2014 at most once per session, as one short line before you stop and wait, and building the prototype only if the user says yes; on a no, or no answer, carry on and do not offer again. Make the offer when the user is describing or weighing a new product or UI idea with nothing built yet \u2014 still working out whether or what to build \u2014 not when they have asked for real code, are working on a concrete task in an existing codebase, or have already said no.",r_v;var oah=v(()=>{oJo();uAt();pH();zCn();sS();G_();r_v=`
+## When the idea needs real data or real actions
+A prototype that runs against the real thing proves far more than one against a mock. When the idea turns on the user's real data or real actions \u2014 their issues, their calendar, a doc, an API they already use \u2014 reading that live or connected data, or acting on the user's behalf from the published page, is a runtime capability granted per user by the control plane and declared when you publish: load the \`${wZ}\` skill before relying on it, to see which capabilities this user has and how to declare the one that fits. Fake only what no available capability covers \u2014 and if none fits, stay fully static \u2014 and keep saying what is faked.`});var n_v,o_v=(e)=>e.flatMap((t)=>[`Bash(${t})`,`PowerShell(${t})`]),D4P;var iah=v(()=>{_t();jJe();rbn();pl();Jzt();qXe();P_n();obn();qS();iEt();G_();n_v=["git status *","git log *","git diff *","git branch *","git checkout -b *","gh pr create *","gh pr view *"],D4P=o_v([...n_v,"git push origin *","git push -u origin *"])});function s_v(){return!1}function aah(e){return`Explain GitHub pull request \`${e}\`:
+1. \`gh pr view ${e} --json title,body,author,baseRefName,headRefName,additions,deletions,changedFiles,labels\` for context
+Additional guidance from the user: ${o}
+Produce a **shareable PR walkthrough artifact** \u2014 a self-contained HTML page a
+reviewer can read before opening the diff to understand what this change does,
+why it's being made, and where to focus attention. Pitch the writing at a
+reviewer seeing this PR for the first time.
+## Build it from the explainer template
+Load the \`artifact-explainer\` skill and build the page from its template,
+publishing with the ${gD} tool as that skill directs. Use the
+template's **sections flavor** \u2014 keep the sections structure, delete the
+numbered steps. Fill the slots as follows:
+- **Lede** \u2014 what this PR changes and why it's needed, in two or three
+  sentences. If the PR body already says this well, reuse it.
+- **Sections** \u2014 lead with one architecture or flow diagram when the change
+  has a structural story; otherwise skip straight to the code. Open with a
+  before/after section showing the user-observable change (behavior, API
+  shape, or output); skip it if the change has no observable surface. Then
+  group the diff into sections cut at the material's joints \u2014 group related
+  changes rather than splitting per file. In each section the code snippet is
+  usually the subject matter itself: a trimmed snippet, a plain-language
+  explanation, and anything a reviewer should look closely at; add a diagram
+  only where structure or flow genuinely needs one (the skill's diagram-first
+  default applies to concept explainers, not PR walkthroughs, which are
+  mostly symbolic content). End with a section for what's *not* obvious from
+  the diff \u2014 context the diff alone doesn't show (why this approach over an
+  alternative, what was tried and rejected, follow-ups intentionally left
+- **Recap** \u2014 restate the takeaways as where a reviewer should focus
+  attention.
+End the page body with this line verbatim:
+Additional guidance from the user: ${o}
+Produce a **shareable PR walkthrough artifact** \u2014 a self-contained HTML page a
+reviewer can read before opening the diff to understand what this change does,
+why it's being made, and where to focus attention. Pitch the writing at a
+reviewer seeing this PR for the first time.
+Wherever the answers end up in the sections below, the page must answer all
+five of these questions:
+1. What is the problem this PR is trying to solve?
+2. Why is it a problem?
+3. How are we solving it?
+4. What alternatives did we consider?
+5. Why is the current approach better than the alternatives?
+If the diff, PR body, and commit messages give no evidence for one of these \u2014
+most often 4 and 5 \u2014 say that plainly (e.g. "the PR doesn't record what
+alternatives were considered") instead of inventing an answer.
+## Structure of the artifact
+Write an HTML file and publish it with the ${gD} tool. Load
+the \`${DLe}\` skill first and give the page a
+utilitarian treatment.
+1. **What and why** \u2014 two or three sentences: what this PR changes and the
+   reason it's needed. If the PR body already says this well, reuse it.
+2. **Before / After** \u2014 a short side-by-side showing the user-observable
+   change (behavior, API shape, or output). Skip if the change has no
+   observable surface.
+3. **Tour of the diff** \u2014 one \`<details>\` block per logical piece of the
+   change. Inside each: the relevant code snippet (trimmed), a plain-language
+   explanation of what it does, and anything a reviewer should look closely
+4. **What's not obvious from the diff** \u2014 context a reviewer needs that the
+   diff alone doesn't show (why this approach over an alternative, what was
+   tried and rejected, follow-ups intentionally left out).
+End the page body with this line verbatim:
+## Keep it honest
+Describe what the diff *actually does* \u2014 trace it, don't infer from names. If
+something in the PR is unclear to you, say so in section 4 rather than
+guessing.
+`}function lah(){Pu({name:oUd,menuDescription:"Generate a shareable walkthrough artifact for a PR",description:i_v,argumentHint:"[pr number]",isEnabled:s_v,userInvocable:!0,async getPromptForCommand(e){return[{type:"text",text:u_v(e)}]}})}var i_v="Generate a shareable walkthrough artifact for a pull request \u2014 what changed, why, and a reviewer-oriented before/after narrative.",sah="No PR number was given \u2014 explain the current branch's pending PR:\n1. `git log --oneline @{upstream}..HEAD` for the commit list (fall back to `origin/main..HEAD` if no upstream)\n2. `git diff @{upstream}...HEAD` for the unified diff",a_v=`Wherever the answers end up in the sections below, the page must answer all
+five of these questions:
+1. What is the problem this PR is trying to solve?
+2. Why is it a problem?
+3. How are we solving it?
+4. What alternatives did we consider?
+5. Why is the current approach better than the alternatives?
+If the diff, PR body, and commit messages give no evidence for one of these \u2014
+most often 4 and 5 \u2014 say that plainly (e.g. "the PR doesn't record what
+alternatives were considered") instead of inventing an answer.`,l_v=`## Keep it honest
+Describe what the diff *actually does* \u2014 trace it, don't infer from names. If
+something in the PR is unclear to you, say so in section 4 rather than
+## Target
+## Additional guidance from the user
+${l}`;return[{type:"text",text:n}]}})}var d_v,p_v="Create a PR review artifact \u2014 a structured review briefing for a GitHub pull request (synthesis title and bottom line, a recommendation, reviewer judgment calls, a visual explainer, signals, and blind spots), published as a shareable page. Use when the user asks to review a PR as an artifact, publish a PR review page, or share a review briefing. NOT a narrative walkthrough \u2014 for a tour-the-diff walkthrough artifact use pr-explainer. Only for CREATING a new artifact; edits to an existing artifact modify its HTML directly.",f_v="Create a PR review artifact \u2014 a structured review briefing for a GitHub pull request (synthesis title and bottom line, a recommendation, reviewer judgment calls, a visual explainer, signals, and blind spots), published as a shareable page. Use when the user asks to review a PR as an artifact, publish a PR review page, or share a review briefing. NOT a narrative walkthrough \u2014 for a tour-the-diff walkthrough artifact use pr-explainer. Only for CREATING a new artifact; a published composed review page is updated ONLY through the acting loop's republish \u2014 never by editing its HTML directly.";var pah=v(()=>{bba();er();pH();sS();G_()});function fah(){return}var mah=v(()=>{gv();G_()});function hah(){Pu({name:uyn,menuDescription:"Clean up the changed code without changing behavior",description:"Review the changed code for reuse, simplification, efficiency, and altitude cleanups, then apply the fixes. Quality only \u2014 it does not hunt for bugs; use /code-review for that.",argumentHint:"[<target>]",userInvocable:!0,async getPromptForCommand(e,t){let r=e.trim(),n=r?`Review target: \`${r}\`
+You are improving the quality of the changed code, not hunting for bugs. Review
+it for reuse, simplification, efficiency, and altitude issues, then fix what you
+find. Do not look for correctness bugs \u2014 that is what \`/code-review\` is for.
+## Phase 1 \u2014 Review (4 cleanup agents in parallel)
+Launch **4 independent review agents** via the ${li} tool, all in a
+single message so they run concurrently. Pass each agent the diff and one of
+the four angles below. Each returns its findings with \`file\`, \`line\`, a
+one-line \`summary\`, and the concrete cost (what is duplicated, wasted, or
+harder to maintain).
+## Phase 2 \u2014 Apply the fixes
+Wait for all four agents to complete, dedup findings that point at the same
+line or mechanism, and fix each remaining one directly. Skip any finding whose
+fix would change intended behavior, require changes well outside the reviewed
+diff, or that you judge to be a false positive \u2014 note the skip rather than
+arguing with it. Finish with a brief summary of what was fixed and what was
+skipped (or confirm the code was already clean).
+`,h_v=`\`/simplify \u2192 ${li} tool unavailable \u2192 single-pass inline cleanup \u2192 apply the fixes\`
+You are improving the quality of the changed code, not hunting for bugs. Review
+it for reuse, simplification, efficiency, and altitude issues, then fix what you
+find. Do not look for correctness bugs \u2014 that is what \`/code-review\` is for.
+The ${li} tool isn't available in this context, so the usual
+4-agent fan-out can't run. Work through all four angles below yourself, in
+this same context, in one pass \u2014 do not skip an angle for lack of fan-out.
+## Phase 1 \u2014 Review (4 cleanup angles, single pass)
+Review the diff against each angle below in turn. For each, note findings with
+\`file\`, \`line\`, a one-line \`summary\`, and the concrete cost (what is
+duplicated, wasted, or harder to maintain).
+## Phase 2 \u2014 Apply the fixes
+Dedup findings that point at the same line or mechanism, and fix each
+remaining one directly. Skip any finding whose fix would change intended
+behavior, require changes well outside the reviewed diff, or that you judge to
+be a false positive \u2014 note the skip rather than arguing with it. Finish with a
+brief summary of what was fixed and what was skipped (or confirm the code was
+already clean). State clearly in your summary that this was a single-pass
+review done without the ${li} tool, not the full 4-agent
+fan-out, so whoever reads it isn't misled about what actually ran.
+`});function g_v(){return`# Skillify {{userDescriptionBlock}}
+You are capturing this session's repeatable process as a reusable skill.
+Review the conversation above \u2014 it is your source material. Pay particular attention to the user's messages (how they steered and corrected the process) and the tools/commands that were actually used.
+## Your Task
+### Step 1: Analyze the Session
+Before asking any questions, analyze the session to identify:
+- What repeatable process was performed
+- What the inputs/parameters were
+- The distinct steps (in order)
+- The success artifacts/criteria (e.g. not just "writing code," but "an open PR with CI fully passing") for each step
+- Where the user corrected or steered you
+- What tools and permissions were needed
+- What agents were used
+- What the goals and success artifacts were
+### Step 2: Interview the User
+You will use the AskUserQuestion to understand what the user wants to automate. Important notes:
+- Use AskUserQuestion for ALL questions! Never ask questions via plain text.
+- For each round, iterate as much as needed until the user is happy.
+- The user always has a freeform "Other" option to type edits or feedback -- do NOT add your own "Needs tweaking" or "I'll provide edits" option. Just offer the substantive choices.
+**Round 1: High level confirmation**
+- Suggest a name and description for the skill based on your analysis. Ask the user to confirm or rename.
+- Suggest high-level goal(s) and specific success criteria for the skill.
+**Round 2: More details**
+- Present the high-level steps you identified as a numbered list. Tell the user you will dig into the detail in the next round.
+- If you think the skill will require arguments, suggest arguments based on what you observed. Make sure you understand what someone would need to provide.
+- If it's not clear, ask if this skill should run inline (in the current conversation) or forked (as a sub-agent with its own context). Forked is better for self-contained tasks that don't need mid-process user input; inline is better when the user wants to steer mid-process.
+- Ask where the skill should be saved. Suggest a default based on context (repo-specific workflows \u2192 repo, cross-repo personal workflows \u2192 user). Options:
+  - **This repo** (\`.claude/skills/<name>/SKILL.md\`) \u2014 for workflows specific to this project
+  - **Personal** (\`~/.claude/skills/<name>/SKILL.md\`) \u2014 follows you across all repos
+**Round 3: Breaking down each step**
+For each major step, if it's not glaringly obvious, ask:
+- What does this step produce that later steps need? (data, artifacts, IDs)
+- What proves that this step succeeded, and that we can move on?
+- Should the user be asked to confirm before proceeding? (especially for irreversible actions like merging, sending messages, or destructive operations)
+- Are any steps independent and could run in parallel? (e.g., posting to Slack and monitoring CI at the same time)
+- How should the skill be executed? (e.g. always use a Task agent to conduct code review, or invoke an agent team for a set of concurrent steps)
+- What are the hard constraints or hard preferences? Things that must or must not happen?
+You may do multiple rounds of AskUserQuestion here, one round per step, especially if there are more than 3 steps or many clarification questions. Iterate as much as needed.
+IMPORTANT: Pay special attention to places where the user corrected you during the session, to help inform your design.
+**Round 4: Final questions**
+- Confirm when this skill should be invoked, and suggest/confirm trigger phrases too. (e.g. For a cherrypick workflow you could say: Use when the user wants to cherry-pick a PR to a release branch. Examples: 'cherry-pick to release', 'CP this PR', 'hotfix.')
+- You can also ask for any other gotchas or things to watch out for, if it's still unclear.
+Stop interviewing once you have enough information. IMPORTANT: Don't over-ask for simple processes!
+### Step 3: Write the SKILL.md
+Create the skill directory and file at the location the user chose in Round 2.
+Use this format:
+description: {{one-line description}}
+allowed-tools:
+  {{list of tool permission patterns observed during session}}
+when_to_use: {{detailed description of when Claude should automatically invoke this skill, including trigger phrases and example user messages}}
+argument-hint: "{{hint showing argument placeholders}}"
+arguments:
+  {{list of argument names}}
+context: {{inline or fork -- omit for inline}}
+# {{Skill Title}}
+Description of skill
+## Inputs
+- \`$arg_name\`: Description of this input
+Clearly stated goal for this workflow. Best if you have clearly defined artifacts or criteria for completion.
+## Steps
+What to do in this step. Be specific and actionable. Include commands when appropriate.
+**Success criteria**: ALWAYS include this! This shows that the step is done and we can move on. Can be a list.
+IMPORTANT: see the next section below for the per-step annotations you can optionally include for each step.
+**Per-step annotations**:
+- **Success criteria** is REQUIRED on every step. This helps the model understand what the user expects from their workflow, and when it should have the confidence to move on.
+- **Execution**: \`Direct\` (default), \`Task agent\` (straightforward subagents), \`Teammate\` (agent with true parallelism and inter-agent communication), or \`[human]\` (user does it). Only needs specifying if not Direct.
+- **Artifacts**: Data this step produces that later steps need (e.g., PR number, commit SHA). Only include if later steps depend on it.
+- **Human checkpoint**: When to pause and ask the user before proceeding. Include for irreversible actions (merging, sending messages), error judgment (merge conflicts), or output review.
+- **Rules**: Hard rules for the workflow. User corrections during the reference session can be especially useful here.
+**Step structure tips:**
+- Steps that can run concurrently use sub-numbers: 3a, 3b
+- Steps requiring the user to act get \`[human]\` in the title
+- Keep simple skills simple -- a 2-step skill doesn't need annotations on every step
+**Frontmatter rules:**
+- \`allowed-tools\`: Minimum permissions needed (use patterns like \`Bash(gh *)\` not \`Bash\`)
+- \`context\`: Only set \`context: fork\` for self-contained skills that don't need mid-process user input.
+- \`when_to_use\` is CRITICAL -- tells the model when to auto-invoke. Start with "Use when..." and include trigger phrases. Example: "Use when the user wants to cherry-pick a PR to a release branch. Examples: 'cherry-pick to release', 'CP this PR', 'hotfix'."
+- \`arguments\` and \`argument-hint\`: Only include if the skill takes parameters. Use \`$name\` in the body for substitution.
+### Step 4: Confirm and Save
+Before writing the file, output the complete SKILL.md content as a yaml code block in your response so the user can review it with proper syntax highlighting. Then ask for confirmation using AskUserQuestion with a simple question like "Does this SKILL.md look good to save?" \u2014 do NOT use the body field, keep the question concise.
+After writing, tell the user:
+- Where the skill was saved
+- How to invoke it: \`/{{skill-name}} [arguments]\`
+- That they can edit the SKILL.md directly to refine it
+`}function yah(){return}var _ah=v(()=>{G_()});function bah(){return}var y_v="# /stuck \u2014 diagnose frozen/slow Claude Code sessions\n\nThe user thinks another Claude Code session on this machine is frozen, stuck, or very slow. Investigate and post a report to #claude-code-feedback.\n\n## What to look for\n\nScan for other Claude Code processes (excluding the current one \u2014 PID is in `process.pid` but for shell commands just exclude the PID you see running this prompt). Process names are typically `claude` (installed) or `cli` (native dev build).\n\nSigns of a stuck session:\n- **High CPU (\u226590%) sustained** \u2014 likely an infinite loop. Sample twice, 1-2s apart, to confirm it's not a transient spike.\n- **Process state `D` (uninterruptible sleep)** \u2014 often an I/O hang. The `state` column in `ps` output; first character matters (ignore modifiers like `+`, `s`, `<`).\n- **Process state `T` (stopped)** \u2014 user probably hit Ctrl+Z by accident.\n- **Process state `Z` (zombie)** \u2014 parent isn't reaping.\n- **Very high RSS (\u22654GB)** \u2014 possible memory leak making the session sluggish.\n- **Stuck child process** \u2014 a hung `git`, `node`, or shell subprocess can freeze the parent. Check `pgrep -lP <pid>` for each session.\n\n## Investigation steps\n\n1. **List all Claude Code processes** (macOS/Linux):\n   ```\n   ps -axo pid=,pcpu=,rss=,etime=,state=,comm=,command= | grep -E '(claude|cli)' | grep -v grep\n   ```\n   Filter to rows where `comm` is `claude` or (`cli` AND the command path contains \"claude\").\n\n2. **For anything suspicious**, gather more context:\n   - Child processes: `pgrep -lP <pid>`\n   - If high CPU: sample again after 1-2s to confirm it's sustained\n   - If a child looks hung (e.g., a git command), note its full command line with `ps -p <child_pid> -o command=`\n   - Check the session's debug log if you can infer the session ID: `~/.claude/debug/<session-id>.txt` (the last few hundred lines often show what it was doing before hanging)\n\n3. **Consider a stack dump** for a truly frozen process (advanced, optional):\n   - macOS: `sample <pid> 3` gives a 3-second native stack sample\n   - This is big \u2014 only grab it if the process is clearly hung and you want to know *why*\n\n## Report\n\n**Only post to Slack if you actually found something stuck.** If every session looks healthy, tell the user that directly \u2014 do not post an all-clear to the channel.\n\nIf you did find a stuck/slow session, post to **#claude-code-feedback** (channel ID: `C07VBSHV7EV`) using the Slack MCP tool. Use ToolSearch to find `slack_send_message` if it's not already loaded.\n\n**Use a two-message structure** to keep the channel scannable:\n\n1. **Top-level message** \u2014 one short line: hostname, Claude Code version, and a terse symptom (e.g. \"session PID 12345 pegged at 100% CPU for 10min\" or \"git subprocess hung in D state\"). No code blocks, no details.\n2. **Thread reply** \u2014 the full diagnostic dump. Pass the top-level message's `ts` as `thread_ts`. Include:\n   - PID, CPU%, RSS, state, uptime, command line, child processes\n   - Your diagnosis of what's likely wrong\n   - Relevant debug log tail or `sample` output if you captured it\n\nIf Slack MCP isn't available, format the report as a message the user can copy-paste into #claude-code-feedback (and let them know to thread the details themselves).\n\n## Notes\n- Don't kill or signal any processes \u2014 this is diagnostic only.\n- If the user gave an argument (e.g., a specific PID or symptom), focus there first.\n";var Sah=v(()=>{G_()});function wah(){Pu({name:"update-config",menuDescription:"Change settings: hooks, permissions, environment variables",description:'Use this skill to configure the Claude Code harness via settings.json. Automated behaviors ("from now on when X", "each time X", "whenever X", "before/after X") require hooks configured in settings.json - the harness executes these, not Claude, so memory/preferences cannot fulfill them. Also use for: permissions ("allow X", "add permission", "move permission to"), env vars ("set X=Y"), hook troubleshooting, or any changes to settings.json/settings.local.json files. Examples: "allow npm commands", "add bq permission to global settings", "move permission to user settings", "set DEBUG=true", "when claude stops show X". For simple settings like theme/model, suggest the /config command.',allowedTools:["Read"],userInvocable:!0,async getPromptForCommand(e){if(e.startsWith("[hooks-only]")){let n=e.slice(12).trim(),o=Eah+`
+## Full Settings JSON Schema
+## User Request
+Choose the appropriate file based on scope:
+| File | Scope | Git | Use For |
+| \`~/.claude/settings.json\` | Global | N/A | Personal preferences for all projects |
+| \`.claude/settings.json\` | Project | Commit | Team-wide hooks, permissions, plugins |
+| \`.claude/settings.local.json\` | Project | Gitignore | Personal overrides for this project |
+Settings load in order: user \u2192 project \u2192 local (later overrides earlier).
+## Settings Schema Reference
+### Permissions
+  "permissions": {
+    "defaultMode": "default" | "plan" | "acceptEdits" | "dontAsk",
+    "additionalDirectories": ["/extra/dir"]
+**Permission Rule Syntax:**
+- Exact match: \`"Bash(npm run test)"\`
+- Tool only: \`"Read"\` - allows all Read operations
+### Environment Variables
+    "MY_API_KEY": "value"
+### Model & Agent
+  "model": "sonnet",  // or "fable", "opus", "haiku", full model ID
+  "agent": "agent-name",
+  "alwaysThinkingEnabled": true
+### Attribution (Commits & PRs)
+  "attribution": {
+    "commit": "Custom commit trailer text",
+    "pr": "Custom PR description text"
+Set \`commit\` or \`pr\` to empty string \`""\` to hide that attribution.
+### MCP Server Management
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": ["server1", "server2"],
+  "disabledMcpjsonServers": ["blocked-server"]
+### Plugins
+  "enabledPlugins": {
+    "formatter@anthropic-tools": true
+Plugin syntax: \`plugin-name@source\` where source is \`claude-code-marketplace\`, \`claude-plugins-official\`, or \`builtin\`.
+### Other Settings
+- \`language\`: Preferred response language (e.g., "japanese")
+- \`cleanupPeriodDays\`: Days to keep transcripts before automatic cleanup (default: 30; minimum 1)
+- \`respectGitignore\`: Whether to respect .gitignore (default: true)
+- \`spinnerTipsEnabled\`: Show tips in spinner
+- \`spinnerTipsOverride\`: Override spinner tips (\`{ "excludeDefault": true, "tips": ["Custom tip"] }\`)
+- \`syntaxHighlightingDisabled\`: Disable diff highlighting
+`,Eah=`## Hooks Configuration
+Hooks run commands at specific points in Claude Code's lifecycle.

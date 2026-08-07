@@ -1,0 +1,25 @@
+Cannot destructure property 'file' from null or undefined value
+Cannot destructure property 'file' from null or undefined value
+Iterator result interface is not an object.
+Cannot destructure property 'namespace' from null or undefined value
+cooNamespace
+cooCluster
+Claude needs your input
+Respond to the 
+ dialog to continue
+display_tool_name
+raw_command
+dialog_kind
+Iterator result interface is not an object.
+suppressed_request_id
+Cannot destructure property 'display_tool_name' from null or undefined value
+<system-reminder>
+The container was restarted. The following background tasks were running and are now stopped:
+Re-create them if still needed.
+</system-reminder>
+(no description)
+Cannot destructure property 'getFeatureValue_CACHED_MAY_BE_STALE' from null or undefined value
+tengu_bridge_placeholder_sweep
+[bridge:placeholder] evicting 
+ record(s) past cap: 
+replBridgePlaceholders

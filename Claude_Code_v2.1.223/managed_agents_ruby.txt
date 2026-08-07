@@ -1,0 +1,435 @@
+## Getting the Final Message\r
+with client.messages.stream(\r
+) as stream:\r
+    for text in stream.text_stream:\r
+        print(text, end="", flush=True)\r
+    # Get full message after streaming\r
+    final_message = stream.get_final_message()\r
+    print(f"\\n\\nTokens used: {final_message.usage.output_tokens}")\r
+## Streaming with Progress Updates\r
+def stream_with_progress(client, **kwargs):\r
+    """Stream a response with progress updates."""\r
+    total_tokens = 0\r
+    content_parts = []\r
+    with client.messages.stream(**kwargs) as stream:\r
+        for event in stream:\r
+            if event.type == "content_block_delta":\r
+                if event.delta.type == "text_delta":\r
+                    text = event.delta.text\r
+                    content_parts.append(text)\r
+                    print(text, end="", flush=True)\r
+            elif event.type == "message_delta":\r
+                if event.usage and event.usage.output_tokens is not None:\r
+                    total_tokens = event.usage.output_tokens\r
+        final_message = stream.get_final_message()\r
+    print(f"\\n\\n[Tokens used: {total_tokens}]")\r
+    return "".join(content_parts)\r
+## Error Handling in Streams\r
+    with client.messages.stream(\r
+        messages=[{"role": "user", "content": "Write a story"}]\r
+    ) as stream:\r
+        for text in stream.text_stream:\r
+            print(text, end="", flush=True)\r
+except anthropic.APIConnectionError:\r
+    print("\\nConnection lost. Please retry.")\r
+except anthropic.RateLimitError:\r
+    print("\\nRate limited. Please wait and retry.")\r
+except anthropic.APIStatusError as e:\r
+    print(f"\\nAPI error: {e.status_code}")\r
+## Stream Event Types\r
+| Event Type            | Description                 | When it fires                     |\r
+| \`message_start\`       | Contains message metadata   | Once at the beginning             |\r
+| \`content_block_start\` | New content block beginning | When a text/tool_use block starts |\r
+| \`content_block_delta\` | Incremental content update  | For each token/chunk              |\r
+| \`content_block_stop\`  | Content block complete      | When a block finishes             |\r
+| \`message_delta\`       | Message-level updates       | Contains \`stop_reason\`, usage     |\r
+| \`message_stop\`        | Message complete            | Once at the end                   |\r
+## Best Practices\r
+1. **Always flush output** \u2014 Use \`flush=True\` to show tokens immediately\r
+2. **Handle partial responses** \u2014 If the stream is interrupted, you may have incomplete content\r
+3. **Track token usage** \u2014 The \`message_delta\` event contains usage information\r
+4. **Use timeouts** \u2014 Set appropriate timeouts for your application\r
+5. **Default to streaming** \u2014 Use \`.get_final_message()\` to get the complete response even when streaming, giving you timeout protection without needing to handle individual events\r
+6. **Large \`max_tokens\` without streaming raises \`ValueError\`** \u2014 The SDK refuses non-streaming requests it estimates will exceed ~10 minutes (idle connections drop). Pass \`stream=True\` / use \`messages.stream()\`, or explicitly override \`timeout\`, to suppress the guard.\r
+For conceptual overview (tool definitions, tool choice, tips), see [shared/tool-use-concepts.md](../../shared/tool-use-concepts.md).\r
+## Tool Runner (Recommended)\r
+**Beta:** The tool runner is in beta in the Python SDK.\r
+Use the \`@beta_tool\` decorator to define tools as typed functions, then pass them to \`client.beta.messages.tool_runner()\`:\r
+import anthropic\r
+from anthropic import beta_tool\r
+client = anthropic.Anthropic()\r
+@beta_tool\r
+def get_weather(location: str, unit: str = "celsius") -> str:\r
+    """Get current weather for a location.\r
+    Args:\r
+        location: City and state, e.g., San Francisco, CA.\r
+        unit: Temperature unit, either "celsius" or "fahrenheit".\r
+    # Your implementation here\r
+    return f"72\xB0F and sunny in {location}"\r
+# The tool runner handles the agentic loop automatically\r
+runner = client.beta.messages.tool_runner(\r
+    tools=[get_weather],\r
+    messages=[{"role": "user", "content": "What's the weather in Paris?"}],\r
+# Each iteration yields a BetaMessage; iteration stops when Claude is done\r
+for message in runner:\r
+    print(message)\r
+For async usage, use \`@beta_async_tool\` with \`async def\` functions.\r
+**Key benefits of the tool runner:**\r
+- No manual loop \u2014 the SDK handles calling tools and feeding results back\r
+- Type-safe tool inputs via decorators\r
+- Tool schemas are generated automatically from function signatures\r
+- Iteration stops automatically when Claude has no more tool calls\r
+### Server tools with the tool runner\r
+**Caution \u2014 the runner does not auto-resume \`pause_turn\` (as of \`anthropic\` 0.116.0).** A long-running server-tool turn can stop with \`stop_reason: "pause_turn"\`. The runner only continues after a client tool produces a result, so a paused turn ends the loop and is returned as the final message \u2014 no error, no warning, just a silently truncated answer. Unlike the TypeScript runner, the Python runner cannot be resumed mid-loop: it exits unconditionally when no client tool ran, and \`runner.append_messages(...)\` does not prevent the exit. To handle \`pause_turn\`, mirror the conversation history as you iterate, then restart the runner with the paused turn appended:\r
+messages = [{"role": "user", "content": user_input}]\r
+max_restarts = 5  # cap pause_turn restarts, mirroring max_continuations advice\r
+restarts = 0\r
+while True:\r
+    runner = client.beta.messages.tool_runner(\r
+        tools=tools,  # may mix @beta_tool functions and server-tool definitions\r
+        messages=messages,\r
+    last = None\r
+    for message in runner:\r
+        last = message\r
+        # Mirror the history \u2014 the runner keeps its own copy and does not expose it\r
+        messages.append({"role": "assistant", "content": message.content})\r
+        tool_response = runner.generate_tool_call_response()  # cached; tools still run once\r
+        if tool_response is not None:\r
+            messages.append(tool_response)\r
+    if last is None or last.stop_reason != "pause_turn":\r
+        break\r
+    restarts += 1\r
+    if restarts > max_restarts:\r
+        raise RuntimeError("giving up: turn still paused after max_restarts")\r
+    # Paused mid-turn: \`messages\` already ends with the paused assistant\r
+    # turn, so the next runner resumes it\r
+Alternatively, use the manual loop below, which handles \`pause_turn\` explicitly.\r
+## MCP Tool Conversion Helpers\r
+**Beta.** Convert [MCP (Model Context Protocol)](https://modelcontextprotocol.io/) tools, prompts, and resources to Anthropic API types for use with the tool runner. Requires \`pip install anthropic[mcp]\` (Python 3.10+).\r
+> **Note:** The Claude API also supports an \`mcp_servers\` parameter that lets Claude connect directly to remote MCP servers. Use these helpers instead when you need local MCP servers, prompts, resources, or more control over the MCP connection.\r
+### MCP Tools with Tool Runner\r
+from anthropic import AsyncAnthropic\r
+from anthropic.lib.tools.mcp import async_mcp_tool\r
+from mcp import ClientSession\r
+from mcp.client.stdio import stdio_client, StdioServerParameters\r
+client = AsyncAnthropic()\r
+async with stdio_client(StdioServerParameters(command="mcp-server")) as (read, write):\r
+    async with ClientSession(read, write) as mcp_client:\r
+        await mcp_client.initialize()\r
+        tools_result = await mcp_client.list_tools()\r
+        # tool_runner is sync \u2014 returns the runner, not a coroutine\r
+        runner = client.beta.messages.tool_runner(\r
+            model="{{OPUS_ID}}",\r
+            max_tokens=16000,\r
+            messages=[{"role": "user", "content": "Use the available tools"}],\r
+            tools=[async_mcp_tool(t, mcp_client) for t in tools_result.tools],\r
+        )\r
+        async for message in runner:\r
+            print(message)\r
+For sync usage, use \`mcp_tool\` instead of \`async_mcp_tool\`.\r
+### MCP Prompts\r
+from anthropic.lib.tools.mcp import mcp_message\r
+prompt = await mcp_client.get_prompt(name="my-prompt")\r
+response = await client.beta.messages.create(\r
+    messages=[mcp_message(m) for m in prompt.messages],\r
+### MCP Resources as Content\r
+from anthropic.lib.tools.mcp import mcp_resource_to_content\r
+resource = await mcp_client.read_resource(uri="file:///path/to/doc.txt")\r
+response = await client.beta.messages.create(\r
+    messages=[{\r
+        "role": "user",\r
+        "content": [\r
+            mcp_resource_to_content(resource),\r
+            {"type": "text", "text": "Summarize this document"},\r
+        ],\r
+### Upload MCP Resources as Files\r
+from anthropic.lib.tools.mcp import mcp_resource_to_file\r
+resource = await mcp_client.read_resource(uri="file:///path/to/data.json")\r
+uploaded = await client.beta.files.upload(file=mcp_resource_to_file(resource))\r
+Conversion functions raise \`UnsupportedMCPValueError\` if an MCP value cannot be converted (e.g., unsupported content types like audio, unsupported MIME types).\r
+## Manual Agentic Loop\r
+Prefer the tool runner above. Drop to a manual loop only when you need control the runner does not expose (e.g., a custom transport, request shapes the SDK cannot build, or avoiding a beta dependency \u2014 the runner is beta). Human-in-the-loop approval does *not* require a manual loop \u2014 gate inside the tool function (return a "user declined" result) or inspect pending \`tool_use\` blocks in the \`for message in runner:\` body and call \`runner.set_messages_params()\`.\r
+If you do need a manual loop:\r
+import anthropic\r
+client = anthropic.Anthropic()\r
+tools = [...]  # Your tool definitions\r
+messages = [{"role": "user", "content": user_input}]\r
+# Agentic loop: keep going until Claude stops calling tools\r
+while True:\r
+    response = client.messages.create(\r
+        tools=tools,\r
+        messages=messages\r
+    # If Claude is done (no more tool calls), break\r
+    if response.stop_reason == "end_turn":\r
+        break\r
+    # Server-side tool hit iteration limit; re-send to continue\r
+    if response.stop_reason == "pause_turn":\r
+        messages = [\r
+            {"role": "user", "content": user_input},\r
+            {"role": "assistant", "content": response.content},\r
+        ]\r
+        continue\r
+    # Extract tool use blocks from the response\r
+    tool_use_blocks = [b for b in response.content if b.type == "tool_use"]\r
+    # Append assistant's response (including tool_use blocks)\r
+    messages.append({"role": "assistant", "content": response.content})\r
+    # Execute each tool and collect results\r
+    tool_results = []\r
+    for tool in tool_use_blocks:\r
+        result = execute_tool(tool.name, tool.input)  # Your implementation\r
+        tool_results.append({\r
+            "type": "tool_result",\r
+            "tool_use_id": tool.id,  # Must match the tool_use block's id\r
+            "content": result\r
+        })\r
+    # Append tool results as a user message\r
+    messages.append({"role": "user", "content": tool_results})\r
+# Final response text\r
+final_text = next(b.text for b in response.content if b.type == "text")\r
+## Handling Tool Results\r
+response = client.messages.create(\r
+    tools=tools,\r
+    messages=[{"role": "user", "content": "What's the weather in Paris?"}]\r
+for block in response.content:\r
+    if block.type == "tool_use":\r
+        tool_name = block.name\r
+        tool_input = block.input\r
+        tool_use_id = block.id\r
+        result = execute_tool(tool_name, tool_input)\r
+        followup = client.messages.create(\r
+            model="{{OPUS_ID}}",\r
+            max_tokens=16000,\r
+            tools=tools,\r
+            messages=[\r
+                {"role": "user", "content": "What's the weather in Paris?"},\r
+                {"role": "assistant", "content": response.content},\r
+                {\r
+                    "role": "user",\r
+                    "content": [{\r
+                        "type": "tool_result",\r
+                        "tool_use_id": tool_use_id,\r
+                        "content": result\r
+                    }]\r
+                }\r
+            ]\r
+        )\r
+## Multiple Tool Calls\r
+tool_results = []\r
+for block in response.content:\r
+    if block.type == "tool_use":\r
+        result = execute_tool(block.name, block.input)\r
+        tool_results.append({\r
+            "type": "tool_result",\r
+            "tool_use_id": block.id,\r
+            "content": result\r
+        })\r
+# Send all results back at once\r
+if tool_results:\r
+    followup = client.messages.create(\r
+        tools=tools,\r
+        messages=[\r
+            *previous_messages,\r
+            {"role": "assistant", "content": response.content},\r
+            {"role": "user", "content": tool_results}\r
+        ]\r
+## Error Handling in Tool Results\r
+tool_result = {\r
+    "type": "tool_result",\r
+    "tool_use_id": tool_use_id,\r
+    "content": "Error: Location 'xyz' not found. Please provide a valid city name.",\r
+    "is_error": True\r
+## Tool Choice\r
+response = client.messages.create(\r
+    tools=tools,\r
+    tool_choice={"type": "tool", "name": "get_weather"},  # Force specific tool\r
+    messages=[{"role": "user", "content": "What's the weather in Paris?"}]\r
+## Code Execution\r
+### Basic Usage\r
+import anthropic\r
+client = anthropic.Anthropic()\r
+response = client.messages.create(\r
+    messages=[{\r
+        "role": "user",\r
+        "content": "Calculate the mean and standard deviation of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]"\r
+    tools=[{\r
+        "name": "code_execution"\r
+for block in response.content:\r
+    if block.type == "text":\r
+        print(block.text)\r
+    elif block.type == "bash_code_execution_tool_result":\r
+        print(f"stdout: {block.content.stdout}")\r
+### Upload Files for Analysis\r
+# 1. Upload a file\r
+uploaded = client.beta.files.upload(file=open("sales_data.csv", "rb"))\r
+# 2. Pass to code execution via container_upload block\r
+# Code execution is GA; Files API is still beta (pass via extra_headers)\r
+response = client.messages.create(\r
+    messages=[{\r
+        "role": "user",\r
+        "content": [\r
+            {"type": "text", "text": "Analyze this sales data. Show trends and create a visualization."},\r
+            {"type": "container_upload", "file_id": uploaded.id}\r
+        ]\r
+### Retrieve Generated Files\r
+import os\r
+OUTPUT_DIR = "./claude_outputs"\r
+os.makedirs(OUTPUT_DIR, exist_ok=True)\r
+for block in response.content:\r
+    if block.type == "bash_code_execution_tool_result":\r
+        result = block.content\r
+        if result.type == "bash_code_execution_result" and result.content:\r
+            for file_ref in result.content:\r
+                if file_ref.type == "bash_code_execution_output":\r
+                    metadata = client.beta.files.retrieve_metadata(file_ref.file_id)\r
+                    file_content = client.beta.files.download(file_ref.file_id)\r
+                    # Use basename to prevent path traversal; validate result\r
+                    safe_name = os.path.basename(metadata.filename)\r
+                    if not safe_name or safe_name in (".", ".."):\r
+                        print(f"Skipping invalid filename: {metadata.filename}")\r
+                        continue\r
+                    output_path = os.path.join(OUTPUT_DIR, safe_name)\r
+                    file_content.write_to_file(output_path)\r
+                    print(f"Saved: {output_path}")\r
+### Container Reuse\r
+# First request: set up environment\r
+response1 = client.messages.create(\r
+    messages=[{"role": "user", "content": "Install tabulate and create data.json with sample data"}],\r
+# Get container ID from response\r
+container_id = response1.container.id\r
+# Second request: reuse the same container\r
+response2 = client.messages.create(\r
+    container=container_id,\r
+    messages=[{"role": "user", "content": "Read data.json and display as a formatted table"}],\r
+### Response Structure\r
+for block in response.content:\r
+    if block.type == "text":\r
+        print(block.text)  # Claude's explanation\r
+    elif block.type == "server_tool_use":\r
+        print(f"Running: {block.name} - {block.input}")  # What Claude is doing\r
+    elif block.type == "bash_code_execution_tool_result":\r
+        result = block.content\r
+        if result.type == "bash_code_execution_result":\r
+            if result.return_code == 0:\r
+                print(f"Output: {result.stdout}")\r
+            else:\r
+                print(f"Error: {result.stderr}")\r
+        else:\r
+            print(f"Tool error: {result.error_code}")\r
+    elif block.type == "text_editor_code_execution_tool_result":\r
+        print(f"File operation: {block.content}")\r
+## Memory Tool\r
+### Basic Usage\r
+import anthropic\r
+client = anthropic.Anthropic()\r
+response = client.messages.create(\r
+    messages=[{"role": "user", "content": "Remember that my preferred language is Python."}],\r
+### SDK Memory Helper\r
+Subclass \`BetaAbstractMemoryTool\`:\r
+from anthropic.lib.tools import BetaAbstractMemoryTool\r
+class MyMemoryTool(BetaAbstractMemoryTool):\r
+    def view(self, command): ...\r
+    def create(self, command): ...\r
+    def str_replace(self, command): ...\r
+    def insert(self, command): ...\r
+    def delete(self, command): ...\r
+    def rename(self, command): ...\r
+memory = MyMemoryTool()\r
+# Use with tool runner\r
+runner = client.beta.messages.tool_runner(\r
+    tools=[memory],\r
+    messages=[{"role": "user", "content": "Remember my preferences"}],\r
+for message in runner:\r
+    print(message)\r
+For full implementation examples, use WebFetch:\r
+- \`https://github.com/anthropics/anthropic-sdk-python/blob/main/examples/memory/basic.py\`\r
+## Structured Outputs\r
+### JSON Outputs (Pydantic \u2014 Recommended)\r
+from pydantic import BaseModel\r
+from typing import List\r
+import anthropic\r
+class ContactInfo(BaseModel):\r
+    name: str\r
+    email: str\r
+    plan: str\r
+    interests: List[str]\r
+    demo_requested: bool\r
+client = anthropic.Anthropic()\r
+response = client.messages.parse(\r
+    messages=[{\r
+        "role": "user",\r
+        "content": "Extract: Jane Doe (jane@co.com) wants Enterprise, interested in API and SDKs, wants a demo."\r
+    output_format=ContactInfo,\r
+# response.parsed_output is a validated ContactInfo instance\r
+contact = response.parsed_output\r
+print(contact.name)           # "Jane Doe"\r
+print(contact.interests)      # ["API", "SDKs"]\r
+### Raw Schema\r
+response = client.messages.create(\r
+    messages=[{\r
+        "role": "user",\r
+        "content": "Extract info: John Smith (john@example.com) wants the Enterprise plan."\r
+    output_config={\r
+        "format": {\r
+            "type": "json_schema",\r
+            "schema": {\r
+                "type": "object",\r
+                "properties": {\r
+                    "name": {"type": "string"},\r
+                    "email": {"type": "string"},\r
+                    "plan": {"type": "string"},\r
+                    "demo_requested": {"type": "boolean"}\r
+                },\r
+                "required": ["name", "email", "plan", "demo_requested"],\r
+                "additionalProperties": False\r
+            }\r
+        }\r
+import json\r
+# output_config.format guarantees the first block is text with valid JSON\r
+text = next(b.text for b in response.content if b.type == "text")\r
+data = json.loads(text)\r
+### Strict Tool Use\r
+response = client.messages.create(\r
+    messages=[{"role": "user", "content": "Book a flight to Tokyo for 2 passengers on March 15"}],\r
+    tools=[{\r
+        "name": "book_flight",\r
+        "description": "Book a flight to a destination",\r
+        "strict": True,\r
+        "input_schema": {\r
+            "type": "object",\r
+            "properties": {\r
+                "destination": {"type": "string"},\r
+                "date": {"type": "string", "format": "date"},\r
+            },\r
+            "required": ["destination", "date", "passengers"],\r
+            "additionalProperties": False\r
+        }\r
+### Using Both Together\r
+response = client.messages.create(\r
+    messages=[{"role": "user", "content": "Plan a trip to Paris next month"}],\r
+    output_config={\r
+        "format": {\r
+            "type": "json_schema",\r
+            "schema": {\r
+                "type": "object",\r
+                "properties": {\r
+                    "summary": {"type": "string"},\r
+                    "next_steps": {"type": "array", "items": {"type": "string"}}\r
+                },\r
+                "required": ["summary", "next_steps"],\r
+                "additionalProperties": False\r
+            }\r
+        }\r
+    tools=[{\r
+        "name": "search_flights",\r
+        "description": "Search for available flights",\r
+        "strict": True,\r
+        "input_schema": {\r
+            "type": "object",\r
+            "properties": {\r
+                "destination": {"type": "string"},\r
+                "date": {"type": "string", "format": "date"}\r
+            },\r
+            "required": ["destination", "date"],\r
+            "additionalProperties": False\r
+        }\r
+`;var l7m=()=>{};var d7m="# Managed Agents \u2014 Python\r\n\r\n> **Bindings not shown here:** This README covers the most common managed-agents flows for Python. If you need a class, method, namespace, field, or behavior that isn't shown, WebFetch the Python SDK repo **or the relevant docs page** from `shared/live-sources.md` rather than guess. Do not extrapolate from cURL shapes or another language's SDK.\r\n\r\n> **Agents are persistent \u2014 create once, reference by ID.** Store the agent ID returned by `agents.create` and pass it to every subsequent `sessions.create`; do not call `agents.create` in the request path. **Recommended:** define agents and environments as version-controlled YAML applied with the `ant` CLI \u2014 see `shared/anthropic-cli.md` (its live-docs URL is in `shared/live-sources.md`). The CLI owns the control plane (create/update); your code owns the data plane (sessions with the stored ID). The examples below show in-code creation for when you must provision programmatically; in production the create call belongs in setup, not in the request path.\r\n\r\n## Installation\r\n\r\n```bash\r\npip install anthropic\r\n```\r\n\r\n## Client Initialization\r\n\r\n```python\r\nimport anthropic\r\n\r\n# Default \u2014 resolves credentials from the environment:\r\n# ANTHROPIC_API_KEY, or ANTHROPIC_AUTH_TOKEN, or an `ant auth login` profile.\r\n# Prefer this for local dev; don't hardcode a key.\r\nclient = anthropic.Anthropic()\r\n\r\n# Explicit API key (only when you must inject a specific key)\r\nclient = anthropic.Anthropic(api_key=\"your-api-key\")\r\n```\r\n\r\n---\r\n\r\n## Create an Environment\r\n\r\n```python\r\nenvironment = client.beta.environments.create(\r\n    name=\"my-dev-env\",\r\n    config={\r\n        \"type\": \"cloud\",\r\n        \"networking\": {\"type\": \"unrestricted\"},\r\n    },\r\n)\r\nprint(environment.id)  # env_...\r\n```\r\n\r\n---\r\n\r\n## Create an Agent (required first step)\r\n\r\n> \u26A0\uFE0F **There is no inline agent config.** `model`/`system`/`tools` live on the agent object, not the session. Always start with `agents.create()` \u2014 the session only takes `agent={\"type\": \"agent\", \"id\": agent.id}`.\r\n\r\n### Minimal\r\n\r\n```python\r\n# 1. Create the agent (reusable, versioned)\r\nagent = client.beta.agents.create(\r\n    name=\"Coding Assistant\",\r\n    model=\"{{OPUS_ID}}\",\r\n    tools=[{\"type\": \"agent_toolset_20260401\", \"default_config\": {\"enabled\": True}}],\r\n)\r\n\r\n# 2. Start a session\r\nsession = client.beta.sessions.create(\r\n    agent={\"type\": \"agent\", \"id\": agent.id, \"version\": agent.version},\r\n    environment_id=environment.id,\r\n)\r\nprint(session.id, session.status)\r\nprint(f\"Trace: https://platform.claude.com/workspaces/default/sessions/{session.id}\")  # swap 'default' for your workspace ID if the API key is not in the Default workspace\r\n```\r\n\r\n### With system prompt and custom tools\r\n\r\n```python\r\nimport os\r\n\r\nagent = client.beta.agents.create(\r\n    name=\"Code Reviewer\",\r\n    model=\"{{OPUS_ID}}\",\r\n    system=\"You are a senior code reviewer.\",\r\n    tools=[\r\n        {\"type\": \"agent_toolset_20260401\"},\r\n        {\r\n            \"type\": \"custom\",\r\n            \"name\": \"run_tests\",\r\n            \"description\": \"Run the test suite\",\r\n            \"input_schema\": {\r\n                \"type\": \"object\",\r\n                \"properties\": {\r\n                    \"test_path\": {\"type\": \"string\", \"description\": \"Path to test file\"}\r\n                },\r\n                \"required\": [\"test_path\"],\r\n            },\r\n        },\r\n    ],\r\n)\r\n\r\nsession = client.beta.sessions.create(\r\n    agent={\"type\": \"agent\", \"id\": agent.id, \"version\": agent.version},\r\n    environment_id=environment.id,\r\n    title=\"Code review session\",\r\n    resources=[\r\n        {\r\n            \"type\": \"github_repository\",\r\n            \"url\": \"https://github.com/owner/repo\",\r\n            \"mount_path\": \"/workspace/repo\",\r\n            \"authorization_token\": os.environ[\"GITHUB_TOKEN\"],\r\n            \"branch\": \"main\",\r\n        }\r\n    ],\r\n)\r\n```\r\n\r\n---\r\n\r\n## Send a User Message\r\n\r\n```python\r\nclient.beta.sessions.events.send(\r\n    session_id=session.id,\r\n    events=[\r\n        {\r\n            \"type\": \"user.message\",\r\n            \"content\": [{\"type\": \"text\", \"text\": \"Review the auth module\"}],\r\n        }\r\n    ],\r\n)\r\n```\r\n\r\n> \uD83D\uDCA1 **Stream-first:** Open the stream *before* (or concurrently with) sending the message. The stream only delivers events that occur after it opens \u2014 stream-after-send means early events arrive buffered in one batch. See [Steering Patterns](../../shared/managed-agents-events.md#steering-patterns).\r\n\r\n---\r\n\r\n## Stream Events (SSE)\r\n\r\n```python\r\nimport json\r\n\r\n# Stream-first: open stream, then send while stream is live\r\nwith client.beta.sessions.events.stream(\r\n    session_id=session.id,\r\n) as stream:\r\n    client.beta.sessions.events.send(\r\n        session_id=session.id,\r\n        events=[{\"type\": \"user.message\", \"content\": [{\"type\": \"text\", \"text\": \"...\"}]}],\r\n    )\r\n    for event in stream:\r\n        ...  # process events\r\n\r\n# Standalone stream iteration:\r\nwith client.beta.sessions.events.stream(\r\n    session_id=session.id,\r\n) as stream:\r\n    for event in stream:\r\n        if event.type == \"agent.message\":\r\n            for block in event.content:\r\n                if block.type == \"text\":\r\n                    print(block.text, end=\"\", flush=True)\r\n        elif event.type == \"agent.custom_tool_use\":\r\n            # Custom tool invocation \u2014 session is now idle\r\n            print(f\"\\nCustom tool call: {event.name}\")\r\n            print(f\"Input: {json.dumps(event.input)}\")\r\n            # Send result back (see below)\r\n        elif event.type == \"session.status_idle\":\r\n            print(\"\\n--- Agent idle ---\")\r\n        elif event.type == \"session.status_terminated\":\r\n            print(\"\\n--- Session terminated ---\")\r\n            break\r\n```\r\n\r\n---\r\n\r\n## Provide Custom Tool Result\r\n\r\n```python\r\nclient.beta.sessions.events.send(\r\n    session_id=session.id,\r\n    events=[\r\n        {\r\n            \"type\": \"user.custom_tool_result\",\r\n            \"custom_tool_use_id\": \"sevt_abc123\",\r\n            \"content\": [{\"type\": \"text\", \"text\": \"All 42 tests passed.\"}],\r\n        }\r\n    ],\r\n)\r\n```\r\n\r\n---\r\n\r\n## Poll Events\r\n\r\n```python\r\nevents = client.beta.sessions.events.list(\r\n    session_id=session.id,\r\n)\r\nfor event in events.data:\r\n    print(f\"{event.type}: {event.id}\")\r\n```\r\n\r\n> \u26A0\uFE0F **Prefer the SDK over raw `requests`/`httpx`.** If you hand-roll a poll loop, don't assume `timeout=(5, 60)` or `httpx.Timeout(120)` caps total call duration \u2014 both are **per-chunk** read timeouts (reset on every byte), so a trickling response can block forever. For a hard wall-clock deadline, track `time.monotonic()` at the loop level and bail explicitly, or wrap with `asyncio.wait_for()`. See [Receiving Events](../../shared/managed-agents-events.md#receiving-events).\r\n\r\n---\r\n\r\n## Full Streaming Loop with Custom Tools\r\n\r\n```python\r\nimport json\r\n\r\n\r\ndef run_custom_tool(tool_name: str, tool_input: dict) -> str:\r\n    \"\"\"Execute a custom tool and return the result.\"\"\"\r\n    if tool_name == \"run_tests\":\r\n        # Your tool implementation here\r\n        return \"All tests passed.\"\r\n    return f\"Unknown tool: {tool_name}\"\r\n\r\n\r\ndef run_session(client, session_id: str):\r\n    \"\"\"Stream events and handle custom tool calls.\"\"\"\r\n    while True:\r\n        with client.beta.sessions.events.stream(\r\n            session_id=session_id,\r\n        ) as stream:\r\n            tool_calls = []\r\n            for event in stream:\r\n                if event.type == \"agent.message\":\r\n                    for block in event.content:\r\n                        if block.type == \"text\":\r\n                            print(block.text, end=\"\", flush=True)\r\n                elif event.type == \"agent.custom_tool_use\":\r\n                    tool_calls.append(event)\r\n                elif event.type == \"session.status_idle\":\r\n                    break\r\n                elif event.type == \"session.status_terminated\":\r\n                    return\r\n\r\n        if not tool_calls:\r\n            break\r\n\r\n        # Process custom tool calls\r\n        results = []\r\n        for call in tool_calls:\r\n            result = run_custom_tool(call.name, call.input)\r\n            results.append({\r\n                \"type\": \"user.custom_tool_result\",\r\n                \"custom_tool_use_id\": call.id,\r\n                \"content\": [{\"type\": \"text\", \"text\": result}],\r\n            })\r\n\r\n        client.beta.sessions.events.send(\r\n            session_id=session_id,\r\n            events=results,\r\n        )\r\n```\r\n\r\n---\r\n\r\n## Upload a File\r\n\r\n```python\r\nwith open(\"data.csv\", \"rb\") as f:\r\n    file = client.beta.files.upload(\r\n        file=f,\r\n    )\r\n\r\n# Use in a session\r\nsession = client.beta.sessions.create(\r\n    agent={\"type\": \"agent\", \"id\": agent.id, \"version\": agent.version},\r\n    environment_id=environment.id,\r\n    resources=[{\"type\": \"file\", \"file_id\": file.id, \"mount_path\": \"/workspace/data.csv\"}],\r\n)\r\n```\r\n\r\n---\r\n\r\n## List and Download Session Files\r\n\r\nList files the agent wrote to `/mnt/session/outputs/` during a session, then download them.\r\n\r\n```python\r\n# List files associated with a session\r\nfiles = client.beta.files.list(\r\n    scope_id=session.id,\r\n    betas=[\"managed-agents-2026-04-01\"],\r\n)\r\nfor f in files.data:\r\n    print(f.filename, f.size_bytes)\r\n    # Download each file and save to disk\r\n    file_content = client.beta.files.download(f.id)\r\n    file_content.write_to_file(f.filename)\r\n```\r\n\r\n> \uD83D\uDCA1 There's a brief indexing lag (~1\u20133s) between `session.status_idle` and output files appearing in `files.list`. Retry once or twice if the list is empty.\r\n\r\n---\r\n\r\n## Session Management\r\n\r\n```python\r\n# Get session details\r\nsession = client.beta.sessions.retrieve(session_id=\"sesn_011CZxAbc123Def456\")\r\nprint(session.status, session.usage)\r\n\r\n# List sessions\r\nsessions = client.beta.sessions.list()\r\n\r\n# Delete a session\r\nclient.beta.sessions.delete(session_id=\"sesn_011CZxAbc123Def456\")\r\n\r\n# Archive a session\r\nclient.beta.sessions.archive(session_id=\"sesn_011CZxAbc123Def456\")\r\n```\r\n\r\n---\r\n\r\n## MCP Server Integration\r\n\r\n```python\r\n# Agent declares MCP server (no auth here \u2014 auth goes in a vault)\r\nagent = client.beta.agents.create(\r\n    name=\"MCP Agent\",\r\n    model=\"{{OPUS_ID}}\",\r\n    mcp_servers=[\r\n        {\"type\": \"url\", \"name\": \"my-tools\", \"url\": \"https://my-mcp-server.example.com/sse\"},\r\n    ],\r\n    tools=[\r\n        {\"type\": \"agent_toolset_20260401\", \"default_config\": {\"enabled\": True}},\r\n        {\"type\": \"mcp_toolset\", \"mcp_server_name\": \"my-tools\"},\r\n    ],\r\n)\r\n\r\n# Session attaches vault(s) containing credentials for those MCP server URLs\r\nsession = client.beta.sessions.create(\r\n    agent=agent.id,\r\n    environment_id=environment.id,\r\n    vault_ids=[vault.id],\r\n)\r\n```\r\n\r\nSee `shared/managed-agents-tools.md` \xA7Vaults for creating vaults and adding credentials.\r\n";var u7m=()=>{};var f7m=`# Claude API \u2014 Ruby\r

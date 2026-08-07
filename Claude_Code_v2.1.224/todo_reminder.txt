@@ -1,0 +1,40 @@
+ denied access to 
+Claude requested permissions to use 
+, but you haven't granted it yet.
+Preapproved host
+Cannot destructure property 'url' from null or undefined value
+Cannot destructure property 'verbose' from null or undefined value
+, prompt: "
+Cannot destructure property 'url' from null or undefined value
+Error: Invalid URL "
+". The URL provided could not be parsed.
+invalid_url
+Cannot destructure property 'model' from null or undefined value
+Cannot destructure property 'url' from null or undefined value
+Cannot destructure property 'abortController' from null or undefined value
+Cannot destructure property 'isNonInteractiveSession' from null or undefined value
+provenance_denied
+http_error
+tengu_web_fetch_http_error
+redirect
+REDIRECT DETECTED: The URL redirects to a different host.
+Original URL: 
+Redirect URL: 
+Status: 
+To complete your request, I need to fetch content from the redirected URL. Please use WebFetch again with these parameters:
+- prompt: "
+Cannot destructure property 'content' from null or undefined value
+text/markdown
+[Binary content (
+) also saved to 
+tengu_web_fetch_provenance_prompt
+Cannot destructure property 'result' from null or undefined value
+tool_result
+userSettings
+projectSettings
+localSettings
+flagSettings
+userSettings
+projectSettings
+localSettings
+flagSettings

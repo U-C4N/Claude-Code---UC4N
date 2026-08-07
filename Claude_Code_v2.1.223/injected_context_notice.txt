@@ -1,0 +1,29 @@
+flagSettings
+Iterator result interface is not an object.
+inputJSONSchema
+ has strict: true but its schema is not strict-compatible (
+); sending non-strict
+tengu_structured_output_strict
+firstParty
+tengu_fgts
+description
+input_schema
+cache_control
+description
+input_schema
+cache_control
+deferLoading
+cacheControl
+[betas] Stripped from tool schemas: [
+] (experimental betas disabled)
+Iterator result interface is not an object.
+tengu_sysprompt_block
+tengu_sysprompt_using_tool_based_cache
+x-anthropic-billing-header
+Iterator result interface is not an object.
+tengu_sysprompt_boundary_found
+tengu_sysprompt_missing_boundary_marker
+skipGlobalCacheForSystemPrompt
+promptBlockCount
+staticBlockLength
+dynamicBlockLength

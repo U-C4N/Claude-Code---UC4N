@@ -1,0 +1,113 @@
+Cannot destructure property 'commit' from null or undefined value
+bash_full
+- End git commit messages with:
+  - Run a git status command to see all untracked files. IMPORTANT: Never use the -uall flag as it can cause memory issues on large repos.
+  - Run a git diff command to see both staged and unstaged changes that will be committed.
+  - Run a git log command to see recent commit messages, so that you can follow this repository's commit message style.
+2. Analyze all staged changes (both previously staged and newly added) and draft a commit message:
+  - Summarize the nature of the changes (eg. new feature, enhancement to an existing feature, bug fix, refactoring, test, docs, etc.). Ensure the message accurately reflects the changes and their purpose (i.e. "add" means a wholly new feature, "update" means an enhancement to an existing feature, "fix" means a bug fix, etc.).
+  - Do not commit files that likely contain secrets (.env, credentials.json, etc). Warn the user if they specifically request to commit those files
+  - Draft a concise (1-2 sentences) commit message that focuses on the "why" rather than the "what"
+  - Ensure it accurately reflects the changes and their purpose
+3. Run the following commands in parallel:
+   - Add relevant untracked files to the staging area.
+   - Create the commit with a message
+ ending with:
+   - Run git status after the commit completes to verify success.
+   Note: git status depends on the commit completing, so run it sequentially after the commit.
+4. If the commit fails due to pre-commit hook: fix the issue and create a NEW commit
+Important notes:
+- NEVER run additional commands to read or explore code, besides git bash commands
+- NEVER use the 
+- DO NOT push to the remote repository unless the user explicitly asks you to do so
+- IMPORTANT: Never use git commands with the -i flag (like git rebase -i or git add -i) since they require interactive input which is not supported.
+- IMPORTANT: Do not use --no-edit with git rebase commands, as the --no-edit flag is not a valid option for git rebase.
+- If there are no changes to commit (i.e., no untracked files and no modifications), do not create an empty commit
+- In order to ensure good formatting, ALWAYS pass the commit message via a HEREDOC, a la this example:
+<example>
+git commit -m "$(cat <<'EOF'
+   Commit message here.
+# Creating pull requests
+Use the gh command via the Bash tool for ALL GitHub-related tasks including working with issues, pull requests, checks, and releases. If given a Github URL use the gh command to get the information needed.
+IMPORTANT: When the user asks you to create a pull request, follow these steps carefully:
+1. Run the following bash commands in parallel using the 
+ tool, in order to understand the current state of the branch since it diverged from the main branch:
+   - Run a git status command to see all untracked files (never use -uall flag)
+   - Run a git diff command to see both staged and unstaged changes that will be committed
+   - Check if the current branch tracks a remote branch and is up to date with the remote, so you know if you need to push to the remote
+   - Run a git log command and `git diff [base-branch]...HEAD` to understand the full commit history for the current branch (from the time it diverged from the base branch)
+2. Analyze all changes that will be included in the pull request, making sure to look at all relevant commits (NOT just the latest commit, but ALL commits that will be included in the pull request!!!), and draft a pull request title and summary:
+   - Keep the PR title short (under 70 characters)
+   - Use the description/body for details, not the title
+3. Run the following commands in parallel:
+   - Create new branch if needed
+   - Push to remote with -u flag if needed
+   - Create PR using gh pr create with the format below. Use a HEREDOC to pass the body to ensure correct formatting.
+<example>
+gh pr create --title "the pr title" --body "$(cat <<'EOF'
+## Summary
+## Test plan
+Important:
+- DO NOT use the 
+- Return the PR URL when you're done, so the user can see it
+# Other common operations
+- View comments on a Github PR: gh api repos/foo/bar/pulls/123/comments
+ more (truncated for prompt size)
+Filesystem: 
+Network: 
+Ignored violations: 
+You should always default to running commands within the sandbox. Do NOT attempt to set `dangerouslyDisableSandbox: true` unless:
+Evidence of sandbox-caused failures includes:
+When you see evidence of sandbox-caused failure:
+The user *explicitly* asks you to bypass sandbox
+A specific command just failed and you see evidence of sandbox restrictions causing the failure. Note that commands can fail for many reasons unrelated to the sandbox (missing files, wrong arguments, network issues, etc.).
+The user *explicitly* asks you to bypass sandbox
+A specific command just failed and you see evidence of sandbox restrictions causing the failure. Note that commands can fail for many reasons unrelated to the sandbox (missing files, wrong arguments, network issues, etc.).
+"Operation not permitted" errors for file/network operations
+Access denied to specific paths outside allowed directories
+Network connection failures to non-whitelisted hosts
+Unix socket connection errors
+"Operation not permitted" errors for file/network operations
+Access denied to specific paths outside allowed directories
+Network connection failures to non-whitelisted hosts
+Unix socket connection errors
+Immediately retry with `dangerouslyDisableSandbox: true` (don't ask, just do it)
+Briefly explain what sandbox restriction likely caused the failure. Be sure to mention that the user can use the `/sandbox` command to manage restrictions.
+This goes through the permission gate (a user prompt, or the auto-mode classifier when auto mode is active)
+Immediately retry with `dangerouslyDisableSandbox: true` (don't ask, just do it)
+Briefly explain what sandbox restriction likely caused the failure. Be sure to mention that the user can use the `/sandbox` command to manage restrictions.
+This goes through the permission gate (a user prompt, or the auto-mode classifier when auto mode is active)
+Treat each command you execute with `dangerouslyDisableSandbox: true` individually. Even if you have recently run a command with this setting, you should default to running future commands within the sandbox.
+Do not suggest adding sensitive paths like ~/.bashrc, ~/.zshrc, ~/.ssh/*, or credential files to the sandbox allowlist.
+All commands MUST run in sandbox mode - the `dangerouslyDisableSandbox` parameter is disabled by policy.
+Commands cannot run outside the sandbox under any circumstances.
+If a command fails due to sandbox restrictions, work with the user to adjust sandbox settings instead.
+All commands MUST run in sandbox mode - the `dangerouslyDisableSandbox` parameter is disabled by policy.
+Commands cannot run outside the sandbox under any circumstances.
+If a command fails due to sandbox restrictions, work with the user to adjust sandbox settings instead.
+For temporary files, always use the `$TMPDIR` environment variable. TMPDIR is automatically set to the correct sandbox-writable directory in sandbox mode. Do NOT use `/tmp` directly - use `$TMPDIR` instead.
+## Command sandbox
+By default, your command will be run in a sandbox. This sandbox controls which directories and network hosts commands may access or modify without an explicit override.
+The sandbox has the following restrictions:
+getFsReadConfig
+getNetworkRestrictionConfig
+getAllowUnixSockets
+getIgnoreViolations
+Cannot destructure property 'commit' from null or undefined value
+- End git commit messages with:
+- End PR bodies with:
+bash_lean
+- Interactive flags (`-i`, e.g. `git rebase -i`, `git add -i`) are not supported in this environment.
+- Use the `gh` CLI for GitHub operations (PRs, issues, API).
+- Commit or push only when the user asks
+. If on the default branch, branch first.
+- IMPORTANT: Avoid using this tool to run 
+ commands, unless explicitly instructed or after you have verified that a dedicated tool cannot accomplish your task. Instead, use the appropriate dedicated tool as this will provide a much better experience for the user.
+- Working directory persists between calls. Shell state (env vars, functions) does not persist; the shell is initialized from the user's profile.
+- `run_in_background` runs the command detached: it keeps running across turns and re-invokes you when it exits. No `&` needed.
+ Foreground `sleep` is blocked; use Monitor with an until-loop to wait on a condition.
+- Commands are cheap to run and their errors are informative: run the straightforward command rather than perfecting it mentally first, and adjust from what it prints.
+- Commands are cheap to run and their errors are informative: run the straightforward command rather than perfecting it mentally first, and adjust from what it prints.
+Executes a bash command and returns its output.
+- Command output is displayed to you, not reliably to the user.
+- `timeout` is in milliseconds: default 

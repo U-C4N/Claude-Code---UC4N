@@ -1,0 +1,174 @@
+Patterns you'll write on the client side when driving a Managed Agent session, grounded in working SDK examples.\r
+Code samples are TypeScript \u2014 other languages follow the same shape; see \`{lang}/managed-agents/README.md\` (cURL and C#: \`curl/managed-agents.md\`) for equivalents.\r
+## 1. Lossless stream reconnect\r
+**Problem:** SSE has no replay. If the connection drops mid-session, a naive reconnect re-opens the stream from "now" and you silently miss every event emitted in between.\r
+**Solution:** on reconnect, fetch the full event history via \`events.list()\` *before* consuming the live stream, and dedupe on event ID as the live stream catches up.\r
+const seenEventIds = new Set<string>()\r
+const stream = await client.beta.sessions.events.stream(session.id)\r
+// Stream is now open and buffering server-side. Read history first.\r
+for await (const event of client.beta.sessions.events.list(session.id)) {\r
+  seenEventIds.add(event.id)\r
+  handle(event)\r
+// Tail the live stream. Dedupe only gates handle() \u2014 terminal checks must run\r
+// even for already-seen events, or a terminal event that was in the history\r
+// response gets skipped by \`continue\` and the loop never exits.\r
+for await (const event of stream) {\r
+  if (!seenEventIds.has(event.id)) {\r
+    seenEventIds.add(event.id)\r
+    handle(event)\r
+  if (event.type === 'session.status_terminated') break\r
+  if (event.type === 'session.status_idle' && event.stop_reason.type !== 'requires_action') break\r
+## 2. \`processed_at\` \u2014 queued vs processed\r
+Every event on the stream carries \`processed_at\` (ISO 8601), set when the event finishes processing. For client-sent events (\`user.message\`, \`user.interrupt\`, \`user.tool_confirmation\`) it's \`null\` while the event is queued behind earlier ones, and populated once the agent processes it \u2014 so the same event appears on the stream twice, once with \`null\` and once with a timestamp. (Exception: a \`user.interrupt\` sent while the session is paused at its budget is accepted and ignored \u2014 it never appears at all; see \`shared/managed-agents-events.md\` \xA7 Reaching a session budget.)\r
+**Three event types skip the queued phase:** \`user.define_outcome\`, \`user.custom_tool_result\`, and \`user.tool_result\` are processed on receipt and echoed back with \`processed_at\` already populated. A pending \u2192 acknowledged UI that assumes "first sighting is always \`null\`" will never clear for these \u2014 treat a populated \`processed_at\` on first sighting as immediately acknowledged.\r
+for await (const event of stream) {\r
+  if (event.type === 'user.message') {\r
+    if (event.processed_at == null) onQueued(event.id)\r
+    else onProcessed(event.id, event.processed_at)\r
+Use this to drive pending \u2192 acknowledged UI state for anything you send. How you map a locally-rendered optimistic message to the server-assigned \`event.id\` is application-specific (typically via the return value of \`events.send()\` or FIFO ordering).\r
+## 3. Interrupt a running session\r
+Send \`user.interrupt\` as a normal event. The session keeps running until it reaches a safe boundary, then goes idle.\r
+await client.beta.sessions.events.send(session.id, {\r
+  events: [{ type: 'user.interrupt' }],\r
+// Drain until the session is truly done \u2014 see Pattern 5 for the full gate.\r
+for await (const event of stream) {\r
+  if (event.type === 'session.status_terminated') break\r
+  if (\r
+    event.type === 'session.status_idle' &&\r
+    event.stop_reason.type !== 'requires_action'\r
+  ) break\r
+Reference: \`interrupt.ts\` \u2014 sends the interrupt the moment it sees \`span.model_request_start\`, drains to idle, then verifies via \`sessions.retrieve()\`.\r
+## 4. \`tool_confirmation\` round-trip\r
+When the agent has \`permission_policy: { type: 'always_ask' }\`, any call to that tool fires an \`agent.tool_use\` event with \`evaluated_permission === 'ask'\` and the session goes idle waiting for a decision. Respond with \`user.tool_confirmation\`.\r
+for await (const event of stream) {\r
+  if (event.type === 'agent.tool_use' && event.evaluated_permission === 'ask') {\r
+    await client.beta.sessions.events.send(session.id, {\r
+      events: [{\r
+        type: 'user.tool_confirmation',\r
+        tool_use_id: event.id,         // not a toolu_ id \u2014 use event.id\r
+        result: 'allow',               // or 'deny'\r
+        // deny_message: '...',        // optional, only with result: 'deny'\r
+Key points:\r
+- \`result\` is \`'allow' | 'deny'\`. Use \`deny_message\` to tell the model *why* you denied \u2014 it gets surfaced back to the agent.\r
+- Multiple pending tools: respond once per \`agent.tool_use\` event with \`evaluated_permission === 'ask'\`.\r
+Reference: \`tool-permissions.ts\`.\r
+## 5. Correct idle-break gate\r
+Do not break on \`session.status_idle\` alone. The session goes idle transiently \u2014 e.g. between parallel tool executions, while waiting for a \`user.tool_confirmation\`, or while awaiting a \`user.custom_tool_result\`. Break when idle with a non-\`requires_action\` \`stop_reason\` (terminal, or \`budget_reached\` \u2014 resumable only by a budget update, so break unless you intend to change or remove the budget), or on \`session.status_terminated\`.\r
+for await (const event of stream) {\r
+  handle(event)\r
+  if (event.type === 'session.status_terminated') break\r
+  if (event.type === 'session.status_idle') {\r
+    if (event.stop_reason.type === 'requires_action') continue // waiting on you \u2014 handle it\r
+    break // end_turn, retries_exhausted, or budget_reached \u2014 see list below\r
+\`stop_reason.type\` values on \`session.status_idle\`:\r
+- \`requires_action\` \u2014 agent is waiting on a client-side event (tool confirmation, custom tool result). Handle it, don't break.\r
+- \`retries_exhausted\` \u2014 terminal failure. Break, then check \`sessions.retrieve()\` for the error state.\r
+- \`budget_reached\` \u2014 the session hit its spend cap and paused. Not terminal and not resumable by any event: change (typically raise) or remove the session's \`budget\` to resume, or treat it as done. A \`session.usage\` event with the final cost immediately precedes this idle. See \`shared/managed-agents-core.md\` \xA7 Session budgets.\r
+## 6. Post-idle status-write race\r
+The SSE stream emits \`session.status_idle\` slightly before the session's queryable status reflects it. Clients that break on idle and immediately call \`sessions.delete()\` or \`sessions.archive()\` will intermittently 400 with "cannot delete/archive while running."\r
+Poll before cleanup:\r
+  s = await client.beta.sessions.retrieve(session.id)\r
+  if (s.status !== 'running') break\r
+  await new Promise(r => setTimeout(r, 200))\r
+  await client.beta.sessions.archive(session.id)\r
+} // else: still running after 2s \u2014 don't archive, let it settle or escalate\r
+## 7. Stream-first, then send\r
+Always open the stream **before** sending the kickoff event. Otherwise the agent may process the event and emit the first events before your consumer is attached, and you'll miss them.\r
+const stream = await client.beta.sessions.events.stream(session.id)\r
+await client.beta.sessions.events.send(session.id, {\r
+  events: [{ type: 'user.message', content: [{ type: 'text', text: 'Hello' }] }],\r
+for await (const event of stream) { /* ... */ }\r
+The \`Promise.all([stream, send])\` shape works too, but stream-first is simpler and has the same effect \u2014 the stream starts buffering the moment it's opened.\r
+## 8. File-mount gotchas\r
+**The mounted resource has a different \`file_id\` than the file you uploaded.** Session creation makes a session-scoped copy.\r
+const uploaded = await client.beta.files.upload({ file, purpose: 'agent_resource' })\r
+// uploaded.id         \u2192 the original file\r
+const session = await client.beta.sessions.create({\r
+  resources: [{ type: 'file', file_id: uploaded.id, mount_path: '/workspace/data.csv' }],\r
+// session.resources[0].file_id !== uploaded.id  \u2190 different IDs\r
+Delete the original via \`files.delete(uploaded.id)\`; the session-scoped copy is garbage-collected with the session. \`mount_path\` must be absolute \u2014 see \`shared/managed-agents-environments.md\`.\r
+## 9. Secrets for non-MCP APIs and CLIs \u2014 keep them host-side via custom tools\r
+**Problem:** you want the agent to call a third-party API or run a CLI that needs a secret (API key, token, service-account credential), but you can't or don't want to hand the secret to a vault.\r
+**First check:** for cloud environments, the first-class answer is now a vault \`environment_variable\` credential \u2014 the agent's shell sees an opaque placeholder and the real secret is substituted at egress. See \`shared/managed-agents-tools.md\` \u2192 Vaults. Use this pattern instead when that doesn't fit: **self-hosted sandboxes** (env-var credentials not yet supported there), clients that reject the placeholder via local format validation, secrets that must never leave your infrastructure, or calls that need host-side binaries.\r
+**Solution:** move the authenticated call to your side. Declare a custom tool on the agent; when the agent emits \`agent.custom_tool_use\`, your orchestrator (the process reading the SSE stream) executes the call with its own credentials and responds with \`user.custom_tool_result\`. The container never sees the key.\r
+// Agent template: declare the tool, no credentials\r
+tools: [{ type: 'custom', name: 'linear_graphql', input_schema: { /* query, vars */ } }]\r
+// Orchestrator: handle the call with host-side creds\r
+for await (const event of stream) {\r
+  if (event.type === 'agent.custom_tool_use' && event.name === 'linear_graphql') {\r
+    const result = await linear.request(event.input.query, event.input.vars) // host's key\r
+    await client.beta.sessions.events.send(session.id, {\r
+      events: [{\r
+        type: 'user.custom_tool_result',\r
+        custom_tool_use_id: event.id,\r
+        content: [{ type: 'text', text: JSON.stringify(result) }],\r
+Same shape works for \`gh\` CLI, local eval scripts, or anything else that needs host-side auth or binaries.\r
+**Security note:** this does not expose a public endpoint. \`agent.custom_tool_use\` arrives on the SSE stream your orchestrator already holds open with your Anthropic API key, and \`user.custom_tool_result\` goes back via \`events.send()\` under the same key. Your orchestrator is a client, not a server \u2014 nothing unauthenticated is listening.\r
+**Do not embed API keys in the system prompt or user messages as a workaround.** Prompts and messages are stored in the session's event history, returned by \`events.list()\`, and included in compaction summaries \u2014 a secret placed there is durably persisted and readable via the API for the life of the session.\r
+`;var Ach=()=>{};var xch=`# Managed Agents \u2014 Core Concepts\r
+## Architecture\r
+Managed Agents is built around four core concepts:\r
+| Concept | Endpoint | What it is |\r
+| **Agent** | \`/v1/agents\` | A persisted, versioned object defining the agent's capabilities and persona: model, system prompt, tools, MCP servers, skills. **Must be created before starting a session.** See the Agents section below. |\r
+| **Session** | \`/v1/sessions\` | A stateful interaction with an agent. References a pre-created agent by ID + an environment + initial instructions. Produces an event stream. |\r
+| **Environment** | \`/v1/environments\` | A template defining the configuration for container provisioning. |\r
+| **Container** | N/A | An isolated compute instance where the agent's **tools** execute (bash, file ops, code). The agent loop does not run here \u2014 it runs on Anthropic's orchestration layer and acts on the container via tool calls. |\r
+                       \u2502  Anthropic orchestration layer      \u2502\r
+                                      \u2502 tool calls\r
+                                      \u25BC\r
+Environment (template) \u2500\u2500\u25B6 Container (tool execution workspace)\r
+                                 \u2502\r
+                         Session \u2500\u2524\r
+                                 \u251C\u2500\u2500 Resources (files, repos, memory stores \u2014 attached at startup)\r
+                                 \u251C\u2500\u2500 Vault IDs (MCP credential references)\r
+                                 \u2514\u2500\u2500 Conversation (event stream in/out)\r
+> **Agent creation is a prerequisite.** Sessions reference a pre-created agent by ID \u2014 \`model\`/\`system\`/\`tools\` live on the agent object, never on the session. Every flow starts with \`POST /v1/agents\`.\r
+## Session Lifecycle\r
+rescheduling \u2192 running \u2194 idle \u2192 terminated\r
+| Status         | Description                                                        |\r
+| \`idle\` | Agent has finished the current task, and is awaiting input. It's either waiting for input to continue working via a \`user.message\`, blocked awaiting a \`user.custom_tool_result\` or \`user.tool_confirmation\`, or paused because the session budget cap was reached. The \`stop_reason\` attached contains more information about why the Agent has stopped working. |\r
+| \`running\` | Session has starting running, and the Agent is actively doing work. |\r
+| \`rescheduling\` | Session is (re)scheduling after a retryable error has occurred, ready to be picked up by the orchestration system. |\r
+| \`terminated\` | Session has ended and is in an irreversible, unusable state \u2014 **either on completion or because of an unrecoverable error**. Terminated does not by itself mean failure; fetch the session to tell the two apart. |\r
+- Events can be sent when the session is \`running\` or \`idle\`. Messages are queued and processed in order. Exception: a session paused at its budget (\`stop_reason: budget_reached\`) accepts only **settle events** \u2014 events that resolve work already in progress (\`user.tool_confirmation\`, \`user.tool_result\`, \`user.custom_tool_result\`, \`user.interrupt\`) rather than starting new work \u2014 see \xA7 Session budgets.\r
+- The agent transitions \`idle \u2192 running\` when it receives a new event, then back to \`idle\` when done.\r
+- Errors surface as \`session.error\` events in the stream, not as a status value.\r
+Every session has a live trace view in the Anthropic Console at \`https://platform.claude.com/workspaces/{workspace}/sessions/{session_id}\`. Print this URL immediately after creating a session so the user can watch tool calls and messages stream in real time. **\`{workspace}\` is the workspace the API key belongs to** \u2014 use \`default\` only when that's the org's Default workspace. The session response does **not** include a workspace field and the Console has no workspace-agnostic session route, so for non-default workspaces substitute the workspace's ID (visible in the Console URL bar, or expose it as a config value alongside the API key). A \`default\` link to a session that lives in another workspace lands on a **"Session not found"** page \u2014 the **Search workspaces** button there will locate it, but it is not an automatic redirect.\r
+### Built-in session features\r
+- **Context compaction** \u2014 if you approach max context, the API automatically condenses session history to keep the interaction going\r
+- **Prompt caching** \u2014 historical repeated tokens are cached, reducing processing time and cost\r
+- **Extended thinking** \u2014 on by default; \`agent.thinking\` events signal thinking progress and carry no thinking content\r
+### Session operations\r
+| Operation | Notes |\r
+| List / fetch | Paginated list or single resource by ID |\r
+| Update | \`title\`, \`metadata\`, and the session-local \`agent.tools\`/\`agent.mcp_servers\` can be overridden (see \xA7 Updating the agent configuration mid-session). \`budget\` can only be changed or removed (see \xA7 Session budgets). \`vault_ids\` is create-only \u2014 update requests setting it are rejected. |\r
+| Archive | Session becomes **read-only**. Not reversible. |\r
+| Delete | Permanently deletes session, event history, container, and checkpoints. |\r
+These are ops/inspection calls \u2014 typically made from a terminal, not application code. From the shell (see \`shared/anthropic-cli.md\`):\r
+ant beta:sessions list --transform '{id,title,status,created_at}' --format jsonl\r
+ant beta:sessions retrieve --session-id "$SID"\r
+ant beta:sessions:events stream --session-id "$SID"   # watch events live\r
+ant beta:sessions archive  --session-id "$SID"\r
+ant beta:sessions delete   --session-id "$SID"\r
+## Sessions\r
+A session is a running agent instance inside an environment.\r
+### Session Object\r
+Key fields returned by the API:\r
+| Field           | Type     | Description                                         |\r
+| \`id\` | string | Unique session ID |\r
+| \`title\` | string | Human-readable title |\r
+| \`created_at\` | string | ISO 8601 timestamp |\r
+| \`updated_at\` | string | ISO 8601 timestamp |\r
+| \`archived_at\` | string | ISO 8601 timestamp (nullable) |\r
+| \`environment_id\` | string | Environment ID |\r
+| \`agent\` | object | Agent configuration |\r
+| \`resources\` | array | Attached files, repos, and memory stores |\r
+| \`metadata\` | object | User-provided key-value pairs (max 8 keys) |\r
+| \`usage\` | object | Cumulative usage: token counts, \`server_tool_use\` (web search/fetch request counts), \`list_cost\` (consumption priced at public list rates, as \`{amount, currency}\` with the amount an integer string in minor units \u2014 cents), and \`active_seconds\` (time with \u22651 thread running; concurrent-thread overlap counted once \u2014 unlike \`stats.active_seconds\`, which sums per-thread time) |\r
+| \`budget\` | object | The session's spend cap, when one was set at creation \u2014 see \xA7 Session budgets |\r
+| \`stats\` | object | Timing statistics \u2014 \`stats.active_seconds\` sums per-thread time, unlike \`usage.active_seconds\` |\r
+### Creating a session\r
+**A session is meaningless without an agent.** Sessions reference a pre-created agent by ID. Create the agent first via \`agents.create()\`, then reference it:\r
+// 1. Create the agent (reusable, versioned)\r
+const agent = await client.beta.agents.create(\r
+    name: "Coding Assistant",\r

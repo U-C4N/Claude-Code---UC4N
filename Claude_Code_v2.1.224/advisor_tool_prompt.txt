@@ -1,0 +1,336 @@
+<managed-settings>
+<auto-memory-index>
+# Pinned memories (apply to every conversation)
+Codebase and user instructions are shown below. Be sure to adhere to these instructions. IMPORTANT: These instructions OVERRIDE any default behavior and you MUST follow them exactly as written.µ
+session_start
+/v2/ccr-sessions/-/chat-project
+user:projects:read
+user:projects:write
+tengu_amber_moleskin
+Autocompact is thrashing: the context refilled to the limit within 3 turns of the previous compact, 3 times in a row. A file being read or a tool output is likely too large for the context window. Try reading in smaller chunks, or use /clear to start fresh.
+memdir_relevance
+ssh.github.com
+io.modelcontextprotocol/protocolVersion
+io.modelcontextprotocol/clientInfo
+io.modelcontextprotocol/serverInfo
+io.modelcontextprotocol/clientCapabilities
+io.modelcontextprotocol/subscriptionId
+Mcp-Param-
+x-mcp-header
+setServerIdentity
+_partitionFor
+_deleteBoth
+evictKey
+captureGeneration$
+resetForReconnect
+toolDefinition
+outputValidator
+exchange
+_commonHeaders
+_startOrAuth
+finishAuth
+setProtocolVersion
+_stepUpAuthorize
+_applyBodyDerivedHeaders
+_startOrAuthSse
+_scheduleReconnection
+_handleSseStream
+terminateSession
+resumeStream
+_dispose
+https://claude.com/claude-code
+SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths
+ClaudeInChromeDomain
+CLAUDE_CODE_PROCESS_WRAPPER
+Claude-Code-Plugin-Manager
+https://code.claude.com/docs/en/claude_code_docs_map.md
+https://platform.claude.com/llms.txt
+https://claude.com/docs/llms.txt
+https://claude.com/docs/claude-tag/overview.md
+[shell command execution disabled by policy]
+.orphaned_at
+https://downloads.claude.ai/claude-code-releases/plugins/claude-plugins-official
+marketplaces/claude-plugins-official/
+[pluginBinaryAssets]
+asset-cache
+This plugin uses a source type your Claude Code version does not support. Update Claude Code and try again.
+plugin.json
+zzenvsubzz
+Invalid name <redacted>. Names can only contain letters, numbers, hyphens, and underscores.
+io.modelcontextprotocol/skills
+Blocked by enterprise managed policy
+Disabled by disableClaudeAiConnectors setting
+claude-code-jetbrains-plugin
+didStopImmediatePropagation
+stopImmediatePropagation
+onResponse
+insertChild
+removeChild
+getChild
+getChildCount
+getParent
+freeRecursive
+markDirty
+hasNewLayout
+markLayoutSeen
+setMeasureFunc
+unsetMeasureFunc
+getComputedLeft
+getComputedTop
+getComputedWidth
+getComputedHeight
+getComputedRight
+getComputedLayout
+getComputedBorder
+getComputedPadding
+getComputedMargint
+setWidth
+setWidthPercent
+setWidthAuto
+setHeight
+setHeightPercent
+setHeightAuto
+setMinWidth
+setMinWidthPercent
+setMinHeight
+setMinHeightPercent
+setMaxWidth
+setMaxWidthPercent
+setMaxHeight
+setMaxHeightPercent
+setFlexDirection
+setFlexGrow
+setFlexShrink
+setFlexBasis
+setFlexBasisPercent
+setFlexBasisAuto
+setFlexWrap
+setAlignItems
+setAlignSelf
+setAlignContent
+setDisplay
+getDisplay
+setPositionType
+setPosition
+setPositionPercent
+setPositionAuto
+setOverflow
+setDirection
+setBoxSizing
+setMargin
+setMarginPercent
+setMarginAuto
+setPadding
+setGapPercent
+getFlexDirection
+getAlignItems
+getAlignSelf
+getAlignContent
+getFlexGrow
+getFlexShrink
+getFlexBasis
+getFlexWrap
+getWidth
+getHeight
+getOverflow
+getPositionType
+getDirection
+copyStyle
+setDirtiedFunc
+unsetDirtiedFunc
+setIsReferenceBaseline
+isReferenceBaseline
+setAspectRatio
+getAspectRatio
+setAlwaysFormsContainingBlock
+calculateLayout
+resolveEventPriority
+dispatch
+dispatchDiscrete
+dispatchContinuous
+pushAutoFocusFallback
+handleAutoFocus
+handleClickFocus
+focusNext
+focusPrevious
+focusDirection
+moveFocus
+needsCompaction
+transition
+withInverse
+withCurrentMatch
+setSelectionBg
+withSelectionBg
+renderPreviousOutput_DEPRECATED
+forceFullReset
+renderFullFrame
+getRenderOpsForDone
+noSelect
+resetScreenReaderDiffState
+stdoutSize
+hasStaleTerminalSize
+syncTerminalSize
+enterAlternateScreen
+exitAlternateScreen
+restoreTerminalAfterHandoff
+skipSyncMarkers
+onRender
+shouldSampleLiveCounts
+onRenderScreenReader
+computeScreenReaderPark
+emitAtlasReset
+maybeProactiveAtlasReset
+proactiveAtlasResetOnFocus
+forceRedraw
+probeExternalClear
+invalidatePrevFrame
+setAltScreenActive
+setAltScreenBackground
+handoffAltScreen
+handoffRawMode
+getStylePool
+getCharPool
+getHyperlinkPool
+detachForShutdown
+drainStdin
+reenterAltScreen
+altScreenBackgroundSeq
+resetFramesForAltScreen
+getSelectedText
+copySelectionNoClear
+copySelection
+clearTextSelection
+setSearchHighlight
+scanElementSubtree
+setSearchPositions
+setSelectionBgColor
+moveSelectionFocus
+hasTextSelection
+subscribeToSelectionChange
+notifySelectionChange
+dispatchClick
+dispatchHover
+dispatchPasteEvent
+dispatchKeyboardEvent
+getHyperlinkAt
+openHyperlink
+fileLinkOpensInPanel
+handleMultiClick
+handleSelectionStart
+handleSelectionDrag
+suspendStdin
+resumeStdin
+writeRaw
+restoreConsolePatches
+waitUntilExit
+maybeResetPools
+resetPools
+patchConsole
+patchStderr
+processText
+holdTail
+processSequence
+anthropic.claude-code
+handleError
+handleCloseCleanup
+without an SSE event boundary
+X-CCR-Turn-Id
+_dispatchLeg
+mcp-slack-send
+html,body{margin:0;padding:0}
+.status{display:inline-flex;align-items:center;gap:8px;padding:4px 10px 4px 8px;border-radius:999px;background:rgba(85,138,66,.10);color:#345C28;font-size:12.5px;font-weight:500;letter-spacing:-.005em;margin-bottom:20px}
+h1{font-family:ui-serif,Charter,"Iowan Old Style",Georgia,serif;font-weight:400;font-size:32px;line-height:1.15;letter-spacing:-.02em;margin:0 0 10px;text-wrap:balance}
+acct:unwired
+acct:logged-out
+acct:incomplete
+urn:ietf:params:oauth:grant-type:token-exchange
+urn:ietf:params:oauth:token-type:id-jag
+urn:ietf:params:oauth:token-type:id_token
+setMetadata
+getCuratedMetadataScope
+markStepUpPending
+clientInformation
+saveClientInformation
+saveTokens
+logTokenPersistFailed
+xaaRefresh
+redirectToAuthorization
+saveCodeVerifier
+codeVerifier
+invalidateCredentials
+saveDiscoveryState
+servePolicyCheckedDiscoveryState
+discoveryState
+refreshAuthorization
+readConcurrentRefreshWinner
+_doRefresh
+mcp-skill-archives
+meta.jsonr
+_authThenStart
+com.apple.finder
+Another Claude session is currently using the computer. Wait for that session to finish, or find a non-computer-use approach.
+computer-use.lock
+_setPeer
+tengu_frond_boric
+tengu_log_datadog_events
+application/json, text/event-stream
+callToolStream
+event_origin
+event_origin_server
+initialize
+normalizeFileUri
+beforeFileEdited
+getNewDiagnostics
+parseDiagnosticResult
+areDiagnosticsEqual
+areDiagnosticArraysEqual
+handleQueryStart
+sanitizeDiagnosticFiles
+formatDiagnosticsSummary
+formatDiagnosticsBlock
+getSeveritySymbol
+diffWithOptionsObj
+addToPath
+extractCommon
+removeEmpty
+castInput
+tokenize
+postProcess
+buildValues
+# Advisor Tool
+You have access to an `advisor` tool backed by a stronger reviewer model. It takes NO parameters -- when you call advisor(), your entire conversation history is automatically forwarded. They see the task, every tool call you've made, every result you've seen.
+Call advisor BEFORE substantive work -- before writing, before committing to an interpretation, before building on an assumption. If the task requires orientation first (finding files, fetching a source, seeing what's there), do that, then call advisor. Orientation is not substantive work. Writing, editing, and declaring an answer are.
+Also call advisor:
+- When you believe the task is complete. BEFORE this call, make your deliverable durable: write the file, save the result, commit the change. The advisor call takes time; if the session ends during it, a durable result persists and an unwritten one doesn't.
+- When stuck -- errors recurring, approach not converging, results that don't fit.
+- When considering a change of approach.
+On tasks longer than a few steps, call advisor at least once before committing to an approach and once before declaring done. On short reactive tasks where the next action is dictated by tool output you just read, you don't need to keep calling -- the advisor adds most of its value on the first call, before the approach crystallizes.
+Give the advice serious weight. If you follow a step and it fails empirically, or you have primary-source evidence that contradicts a specific claim (the file says X, the paper states Y), adapt. A passing self-test is not evidence the advice is wrong -- it's evidence your test doesn't check what the advice is checking.
+If you've already retrieved data pointing one way and the advisor points another: don't silently switch. Surface the conflict in one more advisor call -- "I found X, you suggest Y, which constraint breaks the tie?" The advisor saw your evidence but may have underweighted it; a reconcile call is cheaper than committing to the wrong branch.
+readFile
+getStats
+CLAUDE_CODE_EXECPATH
+CLAUDE_CODE_INVOKED_SKILLS
+paste-cache
+DesignSync
+fragment pr on PullRequest {
+  number title state isDraft additions deletions
+  reviewDecision
+  commits(last:1){nodes{commit{statusCheckRollup{
+    state
+    contexts(first:0){
+      checkRunCountsByState{state count}
+      statusContextCountsByState{state count}
+Auto mode could not evaluate this action and is blocking it for safety
+PreToolUse hook did not respond before its timeout (host client may be unreachable). The tool call was not executed; other configured hooks may not have completed.
+PreToolUse hook failed with an unexpected error. The tool call was not executed; other configured hooks may not have completed.
+enforce_web_search_mcp_isolation
+tengu_doorbell_agave
+tengu_heron_tallow
+Enterprise policy requires sandboxing, but this command would not be sandboxed on Windows: either the sandbox is unavailable, or the command matches a sandbox exclusion pattern only in part. Compound commands and commands with shell metacharacters must run sandboxed even when a statement matches an exclusion. Shell command execution is blocked by policy.
+command contains control characters that would be hidden in the approval dialog
+flag:idle-window
+x-anthropic-billing-header:
+artifact-design
+artifact-diagramming
+artifact-capabilities

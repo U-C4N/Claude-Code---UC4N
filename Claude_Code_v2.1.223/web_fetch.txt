@@ -1,0 +1,244 @@
+auto memory
+File has not been read yet. Read it first before writing to it.
+File content has changed since it was last read. This commonly happens when a linter or formatter run via Bash rewrites the file. Call Read on this file to refresh, then retry the edit.Ì
+- Fast file pattern matching tool that works with any codebase size
+- Supports glob patterns like "**/*.js" or "src/**/*.ts"
+- Returns matching file paths sorted by modification time
+- Use this tool when you need to find files by name patterns
+ExitPlanMode
+NotebookEdit
+PowerShell
+repl-registered
+SendUserMessage
+You ended the turn without calling SendUserMessage.
+Send a message to the user
+[Request interrupted by user]
+[Request interrupted by user for tool use]
+The user doesn't want to take this action right now. STOP what you are doing and wait for the user to tell you how to proceed.
+API Error: Request was aborted.
+Operation stopped by hookW
+ hook feedback:
+[structured-output-enforce]
+The previous response failed to produce a valid tool call. Please retry the tool call now.
+Your tool call was malformed and could not be parsed. Please retry.
+[Your previous response had no visible output. Please continue and produce a user-visible response.]
+The PermissionDenied hook indicated you may retry this tool call.;
+https://browser-intake-us5-datadoghq.com/api/v2/logs
+tengu_orford_ness4
+<user-code>
+claude-code-error-tracking
+isEnabled
+activationSource
+tengu_ax_screen_reader
+0123456789abcdefghijklmnopqrstuvwxyz
+server-fallback-tombstoneJ
+subagent-park
+getRecent
+background
+enterWith
+if (-not $EncodedCommand) {
+    Write-Output '{"valid":false,"errors":[{"message":"No command provided","errorId":"NoInput"}],"statements":[],"variables":[],"hasStopParsing":false,"originalCommand":""}'
+    exit 0
+$Command = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($EncodedCommand))
+$tokens = $null
+$parseErrors = $null
+$ast = [System.Management.Automation.Language.Parser]::ParseInput(
+    $Command,
+    [ref]$tokens,
+    [ref]$parseErrors
+$allVariables = [System.Collections.ArrayList]::new()
+function Get-RawCommandElements {
+    param([System.Management.Automation.Language.CommandAst]$CmdAst)
+    $elems = [System.Collections.ArrayList]::new()
+    foreach ($ce in $CmdAst.CommandElements) {
+        $ceData = @{ type = $ce.GetType().Name; text = $ce.Extent.Text }
+        if ($ce.PSObject.Properties['Value'] -and $null -ne $ce.Value -and $ce.Value -is [string]) {
+            $ceData.value = $ce.Value
+        }
+        if ($ce -is [System.Management.Automation.Language.CommandExpressionAst]) {
+            $ceData.expressionType = $ce.Expression.GetType().Name
+        }
+        [void]$elems.Add($ceData)
+    return $elems
+function Get-RawRedirections {
+    param($Redirections)
+    $result = [System.Collections.ArrayList]::new()
+    foreach ($redir in $Redirections) {
+        $redirData = @{ type = $redir.GetType().Name }
+        if ($redir -is [System.Management.Automation.Language.FileRedirectionAst]) {
+            $redirData.append = [bool]$redir.Append
+            $redirData.fromStream = $redir.FromStream.ToString()
+            $redirData.locationText = $redir.Location.Extent.Text
+        }
+        [void]$result.Add($redirData)
+    return $result
+function Get-SecurityPatterns($A) {
+    foreach ($n in $A.FindAll({ param($x)
+        $x -is [System.Management.Automation.Language.MemberExpressionAst] -or
+        $x -is [System.Management.Automation.Language.SubExpressionAst] -or
+        $x -is [System.Management.Automation.Language.ArrayExpressionAst] -or
+        $x -is [System.Management.Automation.Language.ExpandableStringExpressionAst] -or
+        $x -is [System.Management.Automation.Language.ScriptBlockExpressionAst] -or
+        $x -is [System.Management.Automation.Language.ParenExpressionAst]
+        'InvokeMemberExpressionAst' { $p.hasMemberInvocations = $true }
+        'MemberExpressionAst' { $p.hasMemberInvocations = $true }
+        'SubExpressionAst' { $p.hasSubExpressions = $true }
+        'ArrayExpressionAst' { $p.hasSubExpressions = $true }
+        'ParenExpressionAst' { $p.hasSubExpressions = $true }
+        'ExpandableStringExpressionAst' { $p.hasExpandableStrings = $true }
+        'ScriptBlockExpressionAst' { $p.hasScriptBlocks = $true }
+    if ($p.Count -gt 0) { return $p }
+    return $null
+$varExprs = $ast.FindAll({ param($node) $node -is [System.Management.Automation.Language.VariableExpressionAst] }, $true)
+foreach ($v in $varExprs) {
+    [void]$allVariables.Add(@{
+        path = $v.VariablePath.ToString()
+        isSplatted = [bool]$v.Splatted
+$typeLiterals = [System.Collections.ArrayList]::new()
+foreach ($t in $ast.FindAll({ param($n)
+    $n -is [System.Management.Automation.Language.TypeExpressionAst] -or
+    $n -is [System.Management.Automation.Language.TypeConstraintAst]
+}, $true)) { [void]$typeLiterals.Add($t.TypeName.FullName) }
+$hasStopParsing = $false
+foreach ($tok in $tokens) {
+        $hasStopParsing = $true; break
+$statements = [System.Collections.ArrayList]::new()
+$script:hasBg = $false
+foreach ($p in $ast.FindAll({param($n) $n -is [System.Management.Automation.Language.PipelineBaseAst]}, $true)) {
+    if ($p.PSObject.Properties['Background'] -and $p.Background) { $script:hasBg = $true; break }
+function Process-BlockStatements {
+    param($Block)
+    if (-not $Block) { return }
+    foreach ($stmt in $Block.Statements) {
+        $statement = @{
+            type = $stmt.GetType().Name
+            text = $stmt.Extent.Text
+        }
+        if ($stmt -is [System.Management.Automation.Language.PipelineAst]) {
+            $elements = [System.Collections.ArrayList]::new()
+            foreach ($element in $stmt.PipelineElements) {
+                $elemData = @{
+                    type = $element.GetType().Name
+                    text = $element.Extent.Text
+                }
+                if ($element -is [System.Management.Automation.Language.CommandAst]) {
+                    $elemData.commandElements = @(Get-RawCommandElements -CmdAst $element)
+                    $elemData.redirections = @(Get-RawRedirections -Redirections $element.Redirections)
+                } elseif ($element -is [System.Management.Automation.Language.CommandExpressionAst]) {
+                    $elemData.expressionType = $element.Expression.GetType().Name
+                    $elemData.redirections = @(Get-RawRedirections -Redirections $element.Redirections)
+                }
+                [void]$elements.Add($elemData)
+            }
+            $statement.elements = @($elements)
+            $allNestedCmds = $stmt.FindAll(
+                { param($node) $node -is [System.Management.Automation.Language.CommandAst] },
+                $true
+            )
+            $nestedCmds = [System.Collections.ArrayList]::new()
+            foreach ($cmd in $allNestedCmds) {
+                if ($cmd.Parent -eq $stmt) { continue }
+                $nested = @{
+                    type = $cmd.GetType().Name
+                    text = $cmd.Extent.Text
+                    commandElements = @(Get-RawCommandElements -CmdAst $cmd)
+                    redirections = @(Get-RawRedirections -Redirections $cmd.Redirections)
+                }
+                [void]$nestedCmds.Add($nested)
+            }
+            if ($nestedCmds.Count -gt 0) {
+                $statement.nestedCommands = @($nestedCmds)
+            }
+            $r = $stmt.FindAll({param($n) $n -is [System.Management.Automation.Language.FileRedirectionAst]}, $true)
+            if ($r.Count -gt 0) {
+                $rr = @(Get-RawRedirections -Redirections $r)
+                $statement.redirections = if ($statement.redirections) { @($statement.redirections) + $rr } else { $rr }
+            }
+        } else {
+            $nestedCmdAsts = $stmt.FindAll(
+                { param($node) $node -is [System.Management.Automation.Language.CommandAst] },
+                $true
+            )
+            $nested = [System.Collections.ArrayList]::new()
+            foreach ($cmd in $nestedCmdAsts) {
+                [void]$nested.Add(@{
+                    type = 'CommandAst'
+                    text = $cmd.Extent.Text
+                    commandElements = @(Get-RawCommandElements -CmdAst $cmd)
+                    redirections = @(Get-RawRedirections -Redirections $cmd.Redirections)
+                })
+            }
+            if ($nested.Count -gt 0) {
+                $statement.nestedCommands = @($nested)
+            }
+            $r = $stmt.FindAll({param($n) $n -is [System.Management.Automation.Language.FileRedirectionAst]}, $true)
+            if ($r.Count -gt 0) { $statement.redirections = @(Get-RawRedirections -Redirections $r) }
+        }
+        $sp = Get-SecurityPatterns $stmt
+        if ($sp) { $statement.securityPatterns = $sp }
+        [void]$statements.Add($statement)
+    if ($Block.Traps) {
+        foreach ($trap in $Block.Traps) {
+            $statement = @{
+                type = 'TrapStatementAst'
+                text = $trap.Extent.Text
+            }
+            $nestedCmdAsts = $trap.FindAll(
+                { param($node) $node -is [System.Management.Automation.Language.CommandAst] },
+                $true
+            )
+            $nestedCmds = [System.Collections.ArrayList]::new()
+            foreach ($cmd in $nestedCmdAsts) {
+                $nested = @{
+                    type = $cmd.GetType().Name
+                    text = $cmd.Extent.Text
+                    commandElements = @(Get-RawCommandElements -CmdAst $cmd)
+                    redirections = @(Get-RawRedirections -Redirections $cmd.Redirections)
+                }
+                [void]$nestedCmds.Add($nested)
+            }
+            if ($nestedCmds.Count -gt 0) {
+                $statement.nestedCommands = @($nestedCmds)
+            }
+            $r = $trap.FindAll({param($n) $n -is [System.Management.Automation.Language.FileRedirectionAst]}, $true)
+            if ($r.Count -gt 0) { $statement.redirections = @(Get-RawRedirections -Redirections $r) }
+            $sp = Get-SecurityPatterns $trap
+            if ($sp) { $statement.securityPatterns = $sp }
+            [void]$statements.Add($statement)
+        }
+Process-BlockStatements -Block $ast.BeginBlock
+Process-BlockStatements -Block $ast.ProcessBlock
+Process-BlockStatements -Block $ast.EndBlock
+Process-BlockStatements -Block $ast.CleanBlock
+Process-BlockStatements -Block $ast.DynamicParamBlock
+if ($ast.ParamBlock) {
+  $pb = $ast.ParamBlock
+  $pn = [System.Collections.ArrayList]::new()
+  foreach ($c in $pb.FindAll({param($n) $n -is [System.Management.Automation.Language.CommandAst]}, $true)) {
+    [void]$pn.Add(@{type='CommandAst';text=$c.Extent.Text;commandElements=@(Get-RawCommandElements -CmdAst $c);redirections=@(Get-RawRedirections -Redirections $c.Redirections)})
+  $pr = $pb.FindAll({param($n) $n -is [System.Management.Automation.Language.FileRedirectionAst]}, $true)
+  $ps = Get-SecurityPatterns $pb
+  if ($pn.Count -gt 0 -or $pr.Count -gt 0 -or $ps) {
+    $st = @{type='ParamBlockAst';text=$pb.Extent.Text}
+    if ($pn.Count -gt 0) { $st.nestedCommands = @($pn) }
+    if ($pr.Count -gt 0) { $st.redirections = @(Get-RawRedirections -Redirections $pr) }
+    if ($ps) { $st.securityPatterns = $ps }
+    [void]$statements.Add($st)
+$hasUsingStatements = $ast.UsingStatements -and $ast.UsingStatements.Count -gt 0
+$hasScriptRequirements = $ast.ScriptRequirements -ne $null
+    valid = ($parseErrors.Count -eq 0)
+    errors = @($parseErrors | ForEach-Object {
+        @{
+            message = $_.Message
+            errorId = $_.ErrorId
+        }
+    statements = @($statements)
+    variables = @($allVariables)
+    hasStopParsing = $hasStopParsing
+    originalCommand = $Command
+    typeLiterals = @($typeLiterals)
+    hasUsingStatements = [bool]$hasUsingStatements
+    hasScriptRequirements = [bool]$hasScriptRequirements
+    hasBackgroundJob = [bool]$script:hasBg
+$output | ConvertTo-Json -Depth 10 -Compress
+try { $PSDefaultParameterValues['Out-File:Encoding'] = 'utf8' } catch {}; if ($ExecutionContext.SessionState.LanguageMode -eq 'FullLanguage') { try { $OutputEncoding = [System.Text.UTF8Encoding]::new() } catch {}; if ($null -ne $PSStyle) { try { $PSStyle.OutputRendering = 'PlainText' } catch {} } }; 

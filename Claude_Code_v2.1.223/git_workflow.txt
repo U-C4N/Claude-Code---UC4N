@@ -1,0 +1,86 @@
+ more (truncated for prompt size)
+Filesystem: 
+Network: 
+Ignored violations: 
+You should always default to running commands within the sandbox. Do NOT attempt to set `dangerouslyDisableSandbox: true` unless:
+Evidence of sandbox-caused failures includes:
+When you see evidence of sandbox-caused failure:
+The user *explicitly* asks you to bypass sandbox
+A specific command just failed and you see evidence of sandbox restrictions causing the failure. Note that commands can fail for many reasons unrelated to the sandbox (missing files, wrong arguments, network issues, etc.).
+The user *explicitly* asks you to bypass sandbox
+A specific command just failed and you see evidence of sandbox restrictions causing the failure. Note that commands can fail for many reasons unrelated to the sandbox (missing files, wrong arguments, network issues, etc.).
+"Operation not permitted" errors for file/network operations
+Access denied to specific paths outside allowed directories
+Network connection failures to non-whitelisted hosts
+Unix socket connection errors
+"Operation not permitted" errors for file/network operations
+Access denied to specific paths outside allowed directories
+Network connection failures to non-whitelisted hosts
+Unix socket connection errors
+Immediately retry with `dangerouslyDisableSandbox: true` (don't ask, just do it)
+Briefly explain what sandbox restriction likely caused the failure. Be sure to mention that the user can use the `/sandbox` command to manage restrictions.
+This goes through the permission gate (a user prompt, or the auto-mode classifier when auto mode is active)
+Immediately retry with `dangerouslyDisableSandbox: true` (don't ask, just do it)
+Briefly explain what sandbox restriction likely caused the failure. Be sure to mention that the user can use the `/sandbox` command to manage restrictions.
+This goes through the permission gate (a user prompt, or the auto-mode classifier when auto mode is active)
+Treat each command you execute with `dangerouslyDisableSandbox: true` individually. Even if you have recently run a command with this setting, you should default to running future commands within the sandbox.
+Do not suggest adding sensitive paths like ~/.bashrc, ~/.zshrc, ~/.ssh/*, or credential files to the sandbox allowlist.
+All commands MUST run in sandbox mode - the `dangerouslyDisableSandbox` parameter is disabled by policy.
+Commands cannot run outside the sandbox under any circumstances.
+If a command fails due to sandbox restrictions, work with the user to adjust sandbox settings instead.
+All commands MUST run in sandbox mode - the `dangerouslyDisableSandbox` parameter is disabled by policy.
+Commands cannot run outside the sandbox under any circumstances.
+If a command fails due to sandbox restrictions, work with the user to adjust sandbox settings instead.
+For temporary files, always use the `$TMPDIR` environment variable. TMPDIR is automatically set to the correct sandbox-writable directory in sandbox mode. Do NOT use `/tmp` directly - use `$TMPDIR` instead.
+## Command sandbox
+By default, your command will be run in a sandbox. This sandbox controls which directories and network hosts commands may access or modify without an explicit override.
+The sandbox has the following restrictions:
+getFsReadConfig
+getNetworkRestrictionConfig
+getAllowUnixSockets
+getIgnoreViolations
+Cannot destructure property 'commit' from null or undefined value
+- End git commit messages with:
+- End PR bodies with:
+bash_lean
+- Interactive flags (`-i`, e.g. `git rebase -i`, `git add -i`) are not supported in this environment.
+- Use the `gh` CLI for GitHub operations (PRs, issues, API).
+- Commit or push only when the user asks
+. If on the default branch, branch first.
+- IMPORTANT: Avoid using this tool to run 
+ commands, unless explicitly instructed or after you have verified that a dedicated tool cannot accomplish your task. Instead, use the appropriate dedicated tool as this will provide a much better experience for the user.
+- Working directory persists between calls. Shell state (env vars, functions) does not persist; the shell is initialized from the user's profile.
+- `run_in_background` runs the command detached: it keeps running across turns and re-invokes you when it exits. No `&` needed.
+ Foreground `sleep` is blocked; use Monitor with an until-loop to wait on a condition.
+- Command output is displayed to you, not reliably to the user.
+- Command output is displayed to you, not reliably to the user.
+- Commands are cheap to run and their errors are informative: run the straightforward command rather than perfecting it mentally first, and adjust from what it prints.
+- Commands are cheap to run and their errors are informative: run the straightforward command rather than perfecting it mentally first, and adjust from what it prints.
+Executes a bash command and returns its output.
+- `timeout` is in milliseconds: default 
+File search: Use 
+ (NOT find or ls)
+Content search: Use 
+ (NOT grep or rg)
+Read files: Use 
+ (NOT cat/head/tail)
+Edit files: Use 
+ (NOT sed/awk)
+Write files: Use 
+ (NOT echo >/cat <<EOF)
+Prefer to create a new commit rather than amending an existing commit.
+Before running destructive operations (e.g., git reset --hard, git push --force, git checkout --), consider whether there is a safer alternative that achieves the same goal. Only use destructive operations when they are truly the best approach.
+Never skip hooks (--no-verify) or bypass signing (--no-gpg-sign, -c commit.gpgsign=false) unless the user has explicitly asked for it. If a hook fails, investigate and fix the underlying issue.
+Prefer to create a new commit rather than amending an existing commit.
+Before running destructive operations (e.g., git reset --hard, git push --force, git checkout --), consider whether there is a safer alternative that achieves the same goal. Only use destructive operations when they are truly the best approach.
+Never skip hooks (--no-verify) or bypass signing (--no-gpg-sign, -c commit.gpgsign=false) unless the user has explicitly asked for it. If a hook fails, investigate and fix the underlying issue.
+Use the Monitor tool to stream events from a background process (each stdout line is a notification). For one-shot "wait until done," use Bash with run_in_background instead.
+Use the Monitor tool to stream events from a background process (each stdout line is a notification).
+If you must poll an external process, use a check command (e.g. `gh run view`) rather than sleeping first.
+If you must sleep, keep the duration short to avoid blocking the user.
+If you must poll an external process, use a check command (e.g. `gh run view`) rather than sleeping first.
+If you must sleep, keep the duration short to avoid blocking the user.
+If your command will create new directories or files, first use this tool to run `ls` to verify the parent directory exists and is the correct location.
+Always quote file paths that contain spaces with double quotes in your command (e.g., cd "path with spaces/file.txt")
+You may specify an optional timeout in milliseconds (up to 
+ minutes). By default, your command will timeout after 

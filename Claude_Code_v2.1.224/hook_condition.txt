@@ -1,0 +1,59 @@
+evaluatorModel
+You are evaluating a hook condition in Claude Code. Judge whether the user-provided condition is met.
+Your response must be a JSON object with one of these shapes:
+- {"ok": true, "reason": "<reason the condition is met>"}
+- {"ok": false, "reason": "<reason the condition is not met>"}
+Always include a "reason" field.
+disabled
+hook_prompt
+json_schema
+assistant
+assistant
+Iterator result interface is not an object.
+Hooks: truncated Stop transcript 
+ msgs (budget 
+, model 
+tengu_hook_prompt_transcript_truncated
+ earlier messages omitted. Evaluate the condition against the recent transcript below; if the required evidence may be in the omitted prefix, return {"ok": false, "reason": "insufficient evidence in transcript"}.]
+keptMessages
+Hooks: Processing agent hook with prompt: 
+Hooks: Starting agent query with 
+ messages
+Cannot destructure property 'signal' from null or undefined value
+SubagentStop
+You are verifying a stop condition in Claude Code. Your task is to verify that the agent completed the given plan.
+You are evaluating a 
+ hook in Claude Code. Your task is to evaluate the condition described in the user message.
+ The conversation transcript is available at: 
+You can read this file to analyze the conversation history if needed.
+Use the available tools to inspect the codebase and verify the condition.
+Use as few steps as possible - be efficient and direct.
+When done, return your result using the 
+ tool with:
+- ok: true if the condition is met
+- ok: false with reason if the condition is not met
+disabled
+hook_agent
+stream_event
+stream_request_start
+assistant
+Hooks: Agent turn 
+ hit max turns, aborting
+attachment
+structured_output
+Hooks: Got structured output: 
+Iterator result interface is not an object.
+Hooks: Agent hook did not complete within 50 turns
+tengu_agent_stop_hook_max_turns
+cancelled
+Hooks: Agent hook did not return structured output
+tengu_agent_stop_hook_error
+Hooks: Agent hook condition was not met: 
+tengu_agent_stop_hook_blocking
+blocking
+Agent hook condition was not met: 
+Hooks: Agent hook condition was met
+tengu_agent_stop_hook_success
+hook_success
+Hooks: Agent hook error: 
+Error executing agent hook: 
